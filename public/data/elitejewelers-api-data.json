@@ -1,0 +1,1059 @@
+{
+  "products": [
+    {
+      "product_type": "head",
+      "product_id": "H001",
+      "name": "4 Prong",
+      "price": 0,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H002",
+      "name": "6 Prong",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H003",
+      "name": "Hidden Halo",
+      "price": 300,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H004",
+      "name": "Single Halo",
+      "price": 600,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H005",
+      "name": "Double Halo",
+      "price": 800,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H006",
+      "name": "Bezel",
+      "price": 300,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H007",
+      "name": "Halo",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H008",
+      "name": "Oval",
+      "price": 800,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H009",
+      "name": "Tulip",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H010",
+      "name": "Two Stone",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H011",
+      "name": "Amelie",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H012",
+      "name": "Elan",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H013",
+      "name": "Elanora",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H014",
+      "name": "Aurelie",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "head",
+      "product_id": "H015",
+      "name": "Isadora",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S001",
+      "name": "Plain",
+      "price": 0,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S002",
+      "name": "Pave",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S003",
+      "name": "Knife Edge",
+      "price": 0,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S004",
+      "name": "Channel",
+      "price": 800,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S005",
+      "name": "Cathedral",
+      "price": 0,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S006",
+      "name": "Split",
+      "price": 400,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S007",
+      "name": "Twisted",
+      "price": 400,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S008",
+      "name": "Wide Plain",
+      "price": 400,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S009",
+      "name": "French Pave",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S010",
+      "name": "Pave Stones",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S011",
+      "name": "8 Stones",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S012",
+      "name": "Multi Row",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S013",
+      "name": "Cathedral Side Stone",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S014",
+      "name": "Side Bezel Stones",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S015",
+      "name": "Twisted 2",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S016",
+      "name": "Fluted",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S017",
+      "name": "Braided",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S018",
+      "name": "Amelie",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S019",
+      "name": "Elan",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S020",
+      "name": "Elanora",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S021",
+      "name": "Aurelie",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S022",
+      "name": "Isadora",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "band",
+      "product_id": "B001",
+      "name": "Plain Band",
+      "price": 300,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "band",
+      "product_id": "B002",
+      "name": "Cathedral",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "band",
+      "product_id": "B003",
+      "name": "Knife Edge",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "band",
+      "product_id": "B004",
+      "name": "Split",
+      "price": 0,
+      "currency": "USD",
+      "status": "inactive"
+    },
+    {
+      "product_type": "band",
+      "product_id": "B005",
+      "name": "Channel Band",
+      "price": 600,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "band",
+      "product_id": "B006",
+      "name": "Plate Prong Band",
+      "price": 600,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M001",
+      "name": "White Gold 9K",
+      "price": 500,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M002",
+      "name": "Yellow Gold 9K",
+      "price": 500,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M003",
+      "name": "Rose Gold 9K",
+      "price": 500,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M004",
+      "name": "White Gold 10K",
+      "price": 600,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M005",
+      "name": "Yellow Gold 10K",
+      "price": 600,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M006",
+      "name": "Rose Gold 10K",
+      "price": 600,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M007",
+      "name": "White Gold 14K",
+      "price": 700,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M008",
+      "name": "Yellow Gold 14K",
+      "price": 700,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M009",
+      "name": "Rose Gold 14K",
+      "price": 700,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M010",
+      "name": "White Gold 18K",
+      "price": 1000,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M011",
+      "name": "Yellow Gold 18K",
+      "price": 1000,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M012",
+      "name": "Rose Gold 18K",
+      "price": 1000,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "metal",
+      "product_id": "M013",
+      "name": "Platinum",
+      "price": 1100,
+      "currency": "USD",
+      "status": "active"
+    }
+  ],
+  "stones": [
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 1,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 600,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 2,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 1500,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 3,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 2500,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 4,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 3600,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 5,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 4700,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 6,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 5700,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 7,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 7200,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 8,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 8500,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 9,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 9200,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 10,
+      "color": "Lab",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 11800,
+      "status": "active"
+    },
+    {
+      "rule_type": "grade",
+      "shape": "All",
+      "carat": null,
+      "color": "Lab",
+      "quality": "Standard",
+      "clarity": "SI2, SI1, VS2",
+      "pricing_method": "rate",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "grade",
+      "shape": "All",
+      "carat": null,
+      "color": "Lab",
+      "quality": "Premium",
+      "clarity": "VS1, VVS2, VVS1",
+      "pricing_method": "rate",
+      "value": 15,
+      "status": "active"
+    },
+    {
+      "rule_type": "grade",
+      "shape": "All",
+      "carat": null,
+      "color": "Lab",
+      "quality": "High-End",
+      "clarity": "IF, FL",
+      "pricing_method": "rate",
+      "value": 74.6,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 1,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 900,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 2,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 2400,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 3,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 4000,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 4,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 5800,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 5,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 7800,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 6,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 8800,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 7,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 10500,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 8,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 11500,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 9,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 12500,
+      "status": "active"
+    },
+    {
+      "rule_type": "carat",
+      "shape": "All",
+      "carat": 10,
+      "color": "Natural",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 14000,
+      "status": "active"
+    },
+    {
+      "rule_type": "grade",
+      "shape": "All",
+      "carat": null,
+      "color": "Natural",
+      "quality": "Standard",
+      "clarity": "SI2, SI1, VS2",
+      "pricing_method": "rate",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "grade",
+      "shape": "All",
+      "carat": null,
+      "color": "Natural",
+      "quality": "Premium",
+      "clarity": "VS1, VVS2, VVS1",
+      "pricing_method": "rate",
+      "value": 16.3,
+      "status": "active"
+    },
+    {
+      "rule_type": "grade",
+      "shape": "All",
+      "carat": null,
+      "color": "Natural",
+      "quality": "High-End",
+      "clarity": "IF, FL",
+      "pricing_method": "rate",
+      "value": 85.8,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH01",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH02",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH03",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH04",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH05",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH06",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH07",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH08",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH09",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH10",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH11",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "inactive"
+    },
+    {
+      "rule_type": "shape",
+      "shape": "SH12",
+      "carat": null,
+      "color": null,
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "inactive"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD01",
+      "carat": null,
+      "color": "Yellow",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD02",
+      "carat": null,
+      "color": "Blue",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD03",
+      "carat": null,
+      "color": "Red",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD04",
+      "carat": null,
+      "color": "Green",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD05",
+      "carat": null,
+      "color": "Orange",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD06",
+      "carat": null,
+      "color": "Pink",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD07",
+      "carat": null,
+      "color": "Brown",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD08",
+      "carat": null,
+      "color": "Purple",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD09",
+      "carat": null,
+      "color": "Black",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "colored_diamond",
+      "shape": "CD10",
+      "carat": null,
+      "color": "Peach",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "gemstone",
+      "shape": "GS01",
+      "carat": null,
+      "color": "blue-sapphire",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "gemstone",
+      "shape": "GS02",
+      "carat": null,
+      "color": "green-emerald",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "gemstone",
+      "shape": "GS03",
+      "carat": null,
+      "color": "green-sapphire",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "gemstone",
+      "shape": "GS04",
+      "carat": null,
+      "color": "moissanite",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "gemstone",
+      "shape": "GS05",
+      "carat": null,
+      "color": "pink-sapphire",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "gemstone",
+      "shape": "GS06",
+      "carat": null,
+      "color": "red-ruby",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "gemstone",
+      "shape": "GS07",
+      "carat": null,
+      "color": "yellow-sapphire",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    }
+  ]
+}

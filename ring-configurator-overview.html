@@ -1,0 +1,1520 @@
+<style>
+  #primary {
+    margin-top: 0 !important;
+  }
+
+  .rco-page,
+  .rco-page * {
+    box-sizing: border-box;
+  }
+
+  .rco-page {
+    --rco-ink: #18181b;
+    --rco-muted: #66666e;
+    --rco-line: #dedee3;
+    --rco-soft: #f6f6f8;
+    --rco-accent: #5938ee;
+    width: 100%;
+    overflow: hidden;
+    background: #ffffff;
+    color: var(--rco-ink);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+  }
+
+  .rco-container {
+    width: min(1180px, calc(100% - 48px));
+    margin: 0 auto;
+  }
+
+  .rco-eyebrow {
+    margin: 0 0 17px;
+    color: var(--rco-accent);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .rco-page h1,
+  .rco-page h2,
+  .rco-page h3,
+  .rco-page p {
+    letter-spacing: 0;
+  }
+
+  .rco-page h2 {
+    margin: 0;
+    font-size: clamp(34px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.08;
+  }
+
+  .rco-hero {
+    position: relative;
+    min-height: 660px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--rco-line);
+    background:
+      radial-gradient(
+        circle at 18% 20%,
+        rgba(166, 120, 63, 0.14),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at 82% 14%,
+        rgba(23, 23, 23, 0.08),
+        transparent 30%
+      ),
+      linear-gradient(135deg, #ffffff 0%, #f8f5ef 100%);
+  }
+
+  .rco-hero::before {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.86);
+    content: "";
+  }
+
+  .rco-hero-inner {
+    position: relative;
+    z-index: 1;
+    padding: 98px 0 176px;
+  }
+
+  .rco-hero h1 {
+    max-width: 850px;
+    margin: 0;
+    font-size: clamp(52px, 7vw, 82px);
+    font-weight: 700;
+    line-height: 0.98;
+  }
+
+  .rco-hero-lead {
+    max-width: 650px;
+    margin: 28px 0 0;
+    color: #4f4f57;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+
+  .rco-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px;
+    margin-top: 32px;
+  }
+
+  .rco-button-primary,
+  .rco-button-secondary,
+  .rco-button-outline {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 23px;
+    border: 1px solid transparent;
+    border-radius: 1px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .rco-button-primary {
+    background: var(--rco-accent);
+    color: #ffffff;
+  }
+
+  .rco-button-primary:hover {
+    background: #4628cf;
+  }
+
+  .rco-button-secondary,
+  .rco-button-outline {
+    border-color: var(--rco-ink);
+    color: var(--rco-ink);
+  }
+
+  .rco-button-secondary:hover,
+  .rco-button-outline:hover {
+    background: var(--rco-ink);
+    color: #ffffff;
+  }
+
+  .rco-button-primary:focus-visible,
+  .rco-button-secondary:focus-visible,
+  .rco-button-outline:focus-visible {
+    outline: 3px solid #ddd7ff;
+    outline-offset: 3px;
+  }
+
+  .rco-platform-note {
+    margin: 19px 0 0;
+    color: #77777e;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .rco-hero-facts {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--rco-line);
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  .rco-hero-fact {
+    min-height: 94px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    padding: 18px max(20px, calc((100vw - 1180px) / 8));
+    border-right: 1px solid var(--rco-line);
+  }
+
+  .rco-hero-fact:last-child {
+    border-right: 0;
+  }
+
+  .rco-hero-fact span,
+  .rco-platform-card > span {
+    color: #85858c;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .rco-hero-fact strong {
+    font-size: 13px;
+  }
+
+  .rco-section,
+  .rco-demo-section,
+  .rco-how-section,
+  .rco-platform-section {
+    padding-top: 108px;
+    padding-bottom: 108px;
+  }
+
+  .rco-split,
+  .rco-section-heading,
+  .rco-platform-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    gap: 76px;
+    align-items: start;
+  }
+
+  .rco-copy,
+  .rco-heading-copy,
+  .rco-demo-aside p,
+  .rco-integration-copy > p,
+  .rco-platform-heading > p,
+  .rco-final-cta > p {
+    color: var(--rco-muted);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .rco-copy p {
+    margin: 0 0 17px;
+  }
+
+  .rco-detail-list {
+    display: grid;
+    gap: 11px;
+    margin-top: 27px;
+  }
+
+  .rco-detail-list span {
+    position: relative;
+    padding: 11px 0 11px 24px;
+    border-top: 1px solid var(--rco-line);
+    color: #34343a;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .rco-detail-list span::before {
+    position: absolute;
+    top: 16px;
+    left: 3px;
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--rco-accent);
+    border-radius: 50%;
+    content: "";
+  }
+
+  .rco-demo-section,
+  .rco-integration-band {
+    background: var(--rco-soft);
+  }
+
+  #rco-live-demo .rco-container {
+    width: min(1240px, calc(100% - 48px));
+  }
+
+  .rco-section-heading {
+    align-items: end;
+    margin-bottom: 49px;
+  }
+
+  .rco-heading-copy,
+  .rco-demo-aside p,
+  .rco-platform-heading > p {
+    margin: 0;
+  }
+
+  .rco-demo-aside {
+    display: grid;
+    justify-items: start;
+    gap: 21px;
+  }
+
+  .rco-button-outline {
+    min-height: 42px;
+    padding: 0 18px;
+    font-size: 11px;
+  }
+
+  .rco-demo-frame {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid #d3d3d8;
+    border-radius: 3px;
+    background: #ffffff;
+    box-shadow: 0 22px 60px rgba(25, 25, 32, 0.12);
+  }
+
+  .rco-browser-bar {
+    min-height: 47px;
+    display: grid;
+    grid-template-columns: 100px minmax(180px, 460px) 100px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 17px;
+    border-bottom: 1px solid #dedee2;
+    background: #ededf0;
+  }
+
+  .rco-browser-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .rco-browser-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #a9a9af;
+  }
+
+  .rco-address-bar {
+    padding: 7px 18px;
+    border: 1px solid #d9d9dd;
+    background: #ffffff;
+    color: #77777d;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .rco-browser-status {
+    color: #76767d;
+    font-size: 9px;
+    font-weight: 700;
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  .rco-demo-viewport {
+    width: 896px;
+    height: 574px;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .rco-demo-iframe {
+    width: 1280px;
+    height: 820px;
+    display: block;
+    border: 0;
+    background: #ffffff;
+    transform: scale(0.7);
+    transform-origin: top left;
+  }
+
+  .rco-page .rco-demo-frame .rco-demo-viewport > iframe.rco-demo-iframe {
+    width: 1280px !important;
+    min-width: 1280px !important;
+    max-width: none !important;
+    height: 820px !important;
+  }
+
+  .rco-demo-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 12px;
+    color: #78787f;
+    font-size: 10px;
+  }
+
+  .rco-demo-caption strong {
+    color: #36363b;
+    text-transform: uppercase;
+  }
+
+  .rco-guided-demo-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 896px) minmax(280px, 300px);
+    justify-content: center;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .rco-guided-demo-main {
+    min-width: 0;
+  }
+
+  .rco-guide-panel {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 621px;
+    min-height: 0;
+    max-height: 621px;
+    overflow: hidden;
+    border: 1px solid var(--rco-line);
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 22px 60px rgba(25, 25, 32, 0.09);
+  }
+
+  .rco-guide-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 22px 22px 0;
+  }
+
+  .rco-guide-kicker {
+    margin: 0;
+    color: var(--rco-muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .rco-guide-live-dot {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #a6783f;
+    box-shadow: 0 0 0 7px rgba(166, 120, 63, 0.13);
+  }
+
+  .rco-guide-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 18px;
+    padding: 26px 24px 24px;
+  }
+
+  .rco-guide-category {
+    width: fit-content;
+    max-width: 100%;
+    padding: 8px 11px;
+    border: 1px solid rgba(89, 56, 238, 0.18);
+    border-radius: 999px;
+    background: rgba(89, 56, 238, 0.06);
+    color: var(--rco-accent);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .rco-guide-body h3 {
+    margin: 0;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+  }
+
+  .rco-guide-body p {
+    margin: 0;
+    color: var(--rco-muted);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .rco-guide-benefit {
+    padding: 17px;
+    border: 1px solid #e8e3dc;
+    border-radius: 14px;
+    background: #fbfaf8;
+  }
+
+  .rco-guide-benefit span {
+    display: block;
+    margin-bottom: 7px;
+    color: #a6783f;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .rco-guide-related {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rco-guide-related li {
+    border: 1px solid var(--rco-line);
+    border-radius: 999px;
+    background: var(--rco-soft);
+    padding: 8px 10px;
+    color: #303036;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .rco-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 52px;
+    border-top: 1px solid var(--rco-line);
+    border-left: 1px solid var(--rco-line);
+  }
+
+  .rco-feature-card {
+    min-height: 270px;
+    display: flex;
+    flex-direction: column;
+    padding: 27px;
+    border-right: 1px solid var(--rco-line);
+    border-bottom: 1px solid var(--rco-line);
+    background: #ffffff;
+  }
+
+  .rco-feature-marker {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #cbc6ed;
+    color: var(--rco-accent);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .rco-feature-card h3 {
+    margin: auto 0 12px;
+    padding-top: 44px;
+    font-size: 18px;
+    line-height: 1.28;
+  }
+
+  .rco-feature-card p {
+    min-height: 67px;
+    margin: 0;
+    color: var(--rco-muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .rco-faq-section {
+    padding: 108px max(24px, calc((100% - 1180px) / 2));
+    border-top: 1px solid var(--rco-line);
+    background: #ffffff;
+  }
+
+  .rco-faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 52px;
+  }
+
+  .rco-faq-item {
+    min-height: 174px;
+    padding: 28px;
+    border: 1px solid var(--rco-line);
+    background: #f8f8f6;
+  }
+
+  .rco-faq-item h3 {
+    margin: 0 0 14px;
+    color: var(--rco-ink);
+    font-size: 18px;
+    line-height: 1.28;
+  }
+
+  .rco-faq-item p {
+    margin: 0;
+    color: var(--rco-muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .rco-how-section {
+    border-top: 1px solid var(--rco-line);
+    background: #ffffff;
+  }
+
+  .rco-steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin: 48px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rco-step {
+    min-height: 196px;
+    display: grid;
+    align-content: start;
+    gap: 26px;
+    padding: 24px 22px;
+    border: 1px solid var(--rco-line);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--rco-soft) 100%);
+    box-shadow: 0 16px 36px rgba(21, 21, 28, 0.05);
+  }
+
+  .rco-step-number {
+    display: inline-grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid rgba(46, 35, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(46, 35, 255, 0.06);
+    color: var(--rco-accent);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .rco-step h3 {
+    max-width: 210px;
+    margin: 0 0 9px;
+    font-size: 17px;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+  }
+
+  .rco-step p {
+    max-width: 230px;
+    margin: 0;
+    color: var(--rco-muted);
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .rco-integration-section {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 80px;
+    align-items: center;
+    padding-top: 112px;
+    padding-bottom: 112px;
+  }
+
+  .rco-integration-copy > p {
+    margin: 24px 0 0;
+  }
+
+  .rco-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 29px;
+  }
+
+  .rco-platforms span {
+    padding: 9px 11px;
+    border: 1px solid var(--rco-line);
+    background: #ffffff;
+    color: #3e3e43;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .rco-code-panel {
+    overflow: hidden;
+    border: 1px solid var(--rco-line);
+    border-radius: 3px;
+    background: #eeeef1;
+    box-shadow: 0 18px 48px rgba(21, 21, 28, 0.09);
+  }
+
+  .rco-embed-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 11px;
+    padding: 25px;
+    border-bottom: 1px solid var(--rco-line);
+    background: #ffffff;
+  }
+
+  .rco-embed-flow span {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid var(--rco-line);
+    color: #313136;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .rco-embed-flow i {
+    color: var(--rco-accent);
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .rco-code-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 19px;
+    border-bottom: 1px solid var(--rco-line);
+    background: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .rco-code-header span:last-child {
+    color: var(--rco-accent);
+  }
+
+  .rco-code-panel pre {
+    margin: 0;
+    padding: 28px;
+    overflow-x: auto;
+    color: #37373c;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .rco-platform-heading {
+    align-items: end;
+    margin-bottom: 48px;
+  }
+
+  .rco-platform-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--rco-line);
+    border-left: 1px solid var(--rco-line);
+  }
+
+  .rco-platform-card {
+    min-height: 220px;
+    padding: 28px;
+    border-right: 1px solid var(--rco-line);
+    border-bottom: 1px solid var(--rco-line);
+  }
+
+  .rco-platform-card h3 {
+    margin: 56px 0 12px;
+    font-size: 18px;
+  }
+
+  .rco-platform-card p {
+    margin: 0;
+    color: var(--rco-muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .rco-final-cta {
+    padding: 116px max(24px, calc((100% - 920px) / 2));
+    border-top: 1px solid var(--rco-line);
+    background: #f0eef9;
+    text-align: center;
+  }
+
+  .rco-final-cta > p {
+    max-width: 650px;
+    margin: 22px auto 0;
+  }
+
+  .rco-final-cta .rco-actions {
+    justify-content: center;
+  }
+
+  @media (max-width: 1180px) {
+    .rco-guided-demo-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .rco-guide-panel {
+      position: static;
+      height: auto;
+      max-height: none;
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .rco-split,
+    .rco-section-heading,
+    .rco-integration-section,
+    .rco-platform-heading {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .rco-feature-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rco-faq-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .rco-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rco-platform-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .rco-platform-card {
+      min-height: 190px;
+    }
+
+    .rco-demo-viewport {
+      width: 742px;
+      height: 476px;
+    }
+
+    .rco-demo-iframe {
+      transform: scale(0.58);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .rco-container {
+      width: min(100% - 32px, 1180px);
+    }
+
+    .rco-hero {
+      min-height: 700px;
+    }
+
+    .rco-hero-inner {
+      padding: 76px 0 250px;
+    }
+
+    .rco-hero h1 {
+      font-size: 46px;
+    }
+
+    .rco-hero-lead {
+      font-size: 16px;
+    }
+
+    .rco-hero-facts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rco-hero-fact {
+      min-height: 76px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--rco-line);
+    }
+
+    .rco-hero-fact:nth-child(2) {
+      border-right: 0;
+    }
+
+    .rco-section,
+    .rco-demo-section,
+    .rco-faq-section,
+    .rco-how-section,
+    .rco-platform-section {
+      padding-top: 76px;
+      padding-bottom: 76px;
+    }
+
+    .rco-page h2 {
+      font-size: 36px;
+    }
+
+    .rco-feature-grid,
+    .rco-faq-grid,
+    .rco-steps {
+      grid-template-columns: 1fr;
+    }
+
+    .rco-feature-card {
+      min-height: 235px;
+    }
+
+    .rco-faq-item {
+      min-height: 0;
+      padding: 22px;
+    }
+
+    .rco-demo-frame {
+      margin-right: -16px;
+      margin-left: -16px;
+      border-right: 0;
+      border-left: 0;
+      border-radius: 0;
+    }
+
+    .rco-guide-panel {
+      margin-right: -16px;
+      margin-left: -16px;
+      border-right: 0;
+      border-left: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .rco-guide-body {
+      padding: 22px;
+    }
+
+    .rco-guide-body h3 {
+      font-size: 28px;
+    }
+
+    .rco-browser-bar {
+      grid-template-columns: auto 1fr;
+    }
+
+    .rco-browser-status {
+      display: none;
+    }
+
+    .rco-demo-viewport {
+      width: 486px;
+      height: 312px;
+    }
+
+    .rco-demo-iframe {
+      transform: scale(0.38);
+    }
+
+    .rco-address-bar {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rco-demo-caption {
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .rco-step {
+      min-height: 0;
+      gap: 18px;
+    }
+
+    .rco-integration-section {
+      padding-top: 84px;
+      padding-bottom: 84px;
+    }
+
+    .rco-embed-flow {
+      grid-template-columns: 1fr;
+    }
+
+    .rco-embed-flow i {
+      text-align: center;
+    }
+
+    .rco-code-panel pre {
+      padding: 22px;
+      font-size: 11px;
+    }
+
+    .rco-final-cta {
+      padding: 88px 16px;
+    }
+
+    .rco-button-primary,
+    .rco-button-secondary {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .rco-demo-viewport {
+      width: 358px;
+      height: 230px;
+    }
+
+    .rco-demo-iframe {
+      transform: scale(0.28);
+    }
+  }
+</style>
+
+<div class="rco-page">
+  <main class="rco-main">
+    <section class="rco-hero">
+      <div class="rco-container rco-hero-inner">
+        <p class="rco-eyebrow">3D ring configurator demo</p>
+        <h1>Keyideas Ring Configurator</h1>
+        <p class="rco-hero-lead">
+          A ring setting configurator that helps shoppers design a ring setting with an interactive 3D preview, guided personalization, AI assistance, and a clear review before they continue to diamond selection.
+        </p>
+        <div class="rco-actions">
+          <a class="rco-button-primary" href="/apps/jewelry/keyideas-ring-configurator-demo/">Launch Demo</a>
+        </div>
+      </div>
+
+      <div class="rco-hero-facts" aria-label="Configurator highlights">
+        <div class="rco-hero-fact">
+          <span>Viewer</span><strong>Interactive 3D</strong>
+        </div>
+        <div class="rco-hero-fact">
+          <span>Stone</span><strong>Preview options</strong>
+        </div>
+        <div class="rco-hero-fact">
+          <span>Design</span><strong>Personalized setting</strong>
+        </div>
+        <div class="rco-hero-fact">
+          <span>Next</span><strong>Diamond selection</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="rco-section rco-container" id="rco-overview">
+      <div class="rco-split">
+        <div>
+          <p class="rco-eyebrow">Product overview</p>
+          <h2>Turn ring options into a guided design experience.</h2>
+        </div>
+        <div class="rco-copy">
+          <p>
+            Keyideas Ring Configurator gives shoppers a clear way to configure a
+            ring setting, inspect a Preview Stone, and review the result before
+            moving to Step 2 for actual diamond selection.
+          </p>
+          <p>
+            Customers can explore Natural or Lab-grown diamond preview
+            selection, cut and clarity controls, colored diamond and gemstone
+            preview options, setting/head style, ring style, matching band,
+            metal color, purity/karat, ring size, bi-metal head accent options,
+            engraving, AI Assistant guidance, sharing, and a grouped build
+            summary.
+          </p>
+          <div class="rco-detail-list">
+            <span>Interactive 3D ring preview</span>
+            <span>AI-Guided Assistance</span>
+            <span>Clear review before diamond selection</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rco-demo-section" id="rco-live-demo">
+      <div class="rco-container">
+        <div class="rco-section-heading">
+          <div>
+            <p class="rco-eyebrow">Live product demo</p>
+            <h2>The configurator is ready to preview.</h2>
+          </div>
+          <div class="rco-demo-aside">
+            <p>
+              Open the demo page to view the working configurator. The 3D
+              viewer, option controls, AI-guided assistance, and grouped build
+              summary stay focused on the ring design journey.
+            </p>
+          </div>
+        </div>
+
+        <div class="rco-guided-demo-layout">
+          <div class="rco-guided-demo-main">
+            <div class="rco-demo-frame">
+              <div class="rco-browser-bar" aria-hidden="true">
+                <div class="rco-browser-dots">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="rco-address-bar">Keyideas Ring Configurator</div>
+                <span class="rco-browser-status">Demo page</span>
+              </div>
+              <div class="rco-demo-viewport">
+                <iframe
+                  class="rco-demo-iframe"
+                  src="https://next-frontend-app-one.vercel.app/?theme=theme-3&flow=3B"
+                  title="Keyideas Ring Configurator demo store page"
+                  loading="lazy"
+                  allowfullscreen
+                >
+                </iframe>
+              </div>
+            </div>
+            <div class="rco-demo-caption">
+              <span>Preview the ring setting experience before continuing.</span>
+              <strong>Continue to diamond selection</strong>
+            </div>
+          </div>
+
+          <aside class="rco-guide-panel" aria-live="polite" aria-label="Configurator feature guide">
+            <div class="rco-guide-top">
+              <p class="rco-guide-kicker">Guided feature demo</p>
+              <span class="rco-guide-live-dot" aria-hidden="true"></span>
+            </div>
+            <div class="rco-guide-body">
+              <span class="rco-guide-category" id="rco-guide-category">Interactive Demo</span>
+              <h3 id="rco-guide-heading">Guided Ring Configuration</h3>
+              <p id="rco-guide-copy">
+                Explore the configurator and this guide highlights the active feature.
+              </p>
+              <div class="rco-guide-benefit">
+                <span>Why it matters</span>
+                <p id="rco-guide-benefit">
+                  Helps shoppers understand each decision while designing the ring.
+                </p>
+              </div>
+              <ul class="rco-guide-related" id="rco-guide-related" aria-label="Related capabilities">
+                <li>3D preview</li>
+                <li>Guided choices</li>
+                <li>Build summary</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="rco-section rco-container" id="rco-capabilities">
+      <div class="rco-section-heading">
+        <div>
+          <p class="rco-eyebrow">Configurator highlights</p>
+          <h2>What Makes This Configurator Stand Out</h2>
+        </div>
+        <p class="rco-heading-copy">
+          A focused set of visual tools for product exploration, presented in
+          one consistent ring setting workflow.
+        </p>
+      </div>
+
+      <div class="rco-feature-grid">
+        <article class="rco-feature-card">
+          <span class="rco-feature-marker">3D</span>
+          <h3>Interactive 3D Preview</h3>
+          <p>
+            Explore the ring setting in a smooth 3D experience while adjusting
+            key preferences.
+          </p>
+        </article>
+        <article class="rco-feature-card">
+          <span class="rco-feature-marker">AI</span>
+          <h3>AI-Guided Assistance</h3>
+          <p>
+            Guide shoppers through supported choices, quick adjustments, and design decisions directly inside the configurator.
+          </p>
+        </article>
+        <article class="rco-feature-card">
+          <span class="rco-feature-marker">LN</span>
+          <h3>Lab-Grown &amp; Natural Preferences</h3>
+          <p>
+            Compare diamond origin preferences during the preview stage before moving to actual diamond selection.
+          </p>
+        </article>
+        <article class="rco-feature-card">
+          <span class="rco-feature-marker">AP</span>
+          <h3>Advanced Personalization</h3>
+          <p>
+            Bring together metal, purity, ring size, bi-metal accents, matching band, and engraving in one guided workflow.
+          </p>
+        </article>
+        <article class="rco-feature-card">
+          <span class="rco-feature-marker">CG</span>
+          <h3>Colored Diamond &amp; Gemstone Preview</h3>
+          <p>
+            Give shoppers more visual flexibility with colorless diamond, colored diamond, and gemstone preview modes.
+          </p>
+        </article>
+        <article class="rco-feature-card">
+          <span class="rco-feature-marker">BS</span>
+          <h3>Clear Build Summary</h3>
+          <p>
+            Review selected setting, head, preview stone, engraving, and pricing
+            details in one place.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="rco-how-section">
+      <div class="rco-container">
+        <div class="rco-section-heading">
+          <div>
+            <p class="rco-eyebrow">How it works</p>
+            <h2>Five clear choices. One configured ring.</h2>
+          </div>
+          <p class="rco-heading-copy">
+            The experience keeps the ring visible while shoppers move from
+            design decisions to a complete demo configuration.
+          </p>
+        </div>
+
+        <ol class="rco-steps">
+          <li class="rco-step">
+            <span class="rco-step-number">01</span>
+            <div>
+              <h3>Preview the stone fit</h3>
+              <p>
+                Choose Preview Stone type, origin, shape, target carat, and
+                diamond-only cut/clarity controls.
+              </p>
+            </div>
+          </li>
+          <li class="rco-step">
+            <span class="rco-step-number">02</span>
+            <div>
+              <h3>Pick the setting/head</h3>
+              <p>
+                Select a compatible head or setting style for the ring setting
+                preview.
+              </p>
+            </div>
+          </li>
+          <li class="rco-step">
+            <span class="rco-step-number">03</span>
+            <div>
+              <h3>Configure the band</h3>
+              <p>
+                Choose ring style, ring size, and supported matching band
+                options.
+              </p>
+            </div>
+          </li>
+          <li class="rco-step">
+            <span class="rco-step-number">04</span>
+            <div>
+              <h3>Choose metal and engraving</h3>
+              <p>
+                Set metal color, purity/karat, optional bi-metal head accent,
+                and optional inscription.
+              </p>
+            </div>
+          </li>
+          <li class="rco-step">
+            <span class="rco-step-number">05</span>
+            <div>
+              <h3>Review and continue</h3>
+              <p>
+                Check the grouped build summary and Preview Total, then continue
+                to the Choose Diamond step.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="rco-faq-section" id="rco-faq">
+      <div class="rco-container">
+        <div class="rco-section-heading">
+          <div>
+            <p class="rco-eyebrow">Helpful answers</p>
+            <h2>Frequently Asked Questions</h2>
+          </div>
+          <p class="rco-heading-copy">
+            Clear answers for shoppers as they explore, personalize, and review
+            their ring setting.
+          </p>
+        </div>
+
+        <div class="rco-faq-grid">
+          <article class="rco-faq-item">
+            <h3>
+              How does the Ring Configurator improve the shopping experience?
+            </h3>
+            <p>
+              It lets shoppers build confidence before moving forward by showing
+              ring setting options, preview stone preferences, engraving, and
+              pricing details in one interactive 3D experience.
+            </p>
+          </article>
+
+          <article class="rco-faq-item">
+            <h3>Why is a preview stone shown before diamond selection?</h3>
+            <p>
+              The preview stone helps shoppers visualize proportion, fit, and
+              overall design balance. The final center diamond is selected
+              separately in the next step.
+            </p>
+          </article>
+
+          <article class="rco-faq-item">
+            <h3>
+              Can shoppers compare lab-grown and natural diamond preferences?
+            </h3>
+            <p>
+              Yes. Shoppers can preview lab-grown or natural diamond preferences
+              to understand how the design and preview pricing change before
+              choosing the final diamond.
+            </p>
+          </article>
+
+          <article class="rco-faq-item">
+            <h3>What parts of the ring can be personalized?</h3>
+            <p>
+              Shoppers can configure the setting style, head style, metal color,
+              purity, ring size, matching band, bi-metal accent, engraving, and
+              supported preview stone options.
+            </p>
+          </article>
+
+          <article class="rco-faq-item">
+            <h3>How does AI guidance help during configuration?</h3>
+            <p>
+              The AI Assistant helps shoppers narrow choices, apply supported
+              options, compare preferences, and make quicker design decisions
+              without leaving the configurator.
+            </p>
+          </article>
+
+          <article class="rco-faq-item">
+            <h3>What does the build summary show?</h3>
+            <p>
+              The summary gives shoppers a clear review of the selected setting,
+              head, preview stone, engraving, and pricing details before they
+              continue to diamond selection.
+            </p>
+          </article>
+
+          <article class="rco-faq-item">
+            <h3>Can shoppers share their configured design?</h3>
+            <p>
+              Yes. The Share action lets shoppers copy or share the current
+              design so they can review it later or discuss it before
+              continuing.
+            </p>
+          </article>
+
+          <article class="rco-faq-item">
+            <h3>What happens after the ring setting is configured?</h3>
+            <p>
+              After reviewing the configured setting, shoppers can continue to
+              the diamond selection step where the final center stone is chosen.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="rco-final-cta">
+      <p class="rco-eyebrow">Launch the experience</p>
+      <h2>Let shoppers see the ring come together.</h2>
+      <p>
+        Open the demo store page and let shoppers preview the setting before
+        continuing to the Choose Diamond step.
+      </p>
+      <div class="rco-actions">
+        <a class="rco-button-primary" href="/apps/jewelry/keyideas-ring-configurator-demo/">Launch Demo</a>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var allowedOrigins = [
+      "https://next-frontend-app-one.vercel.app",
+      "http://localhost:3000"
+    ];
+
+    var guideContent = {
+      default: {
+        heading: "Guided Ring Configuration",
+        category: "Interactive Demo",
+        copy: "Explore the configurator and this guide highlights the active feature.",
+        benefit: "Helps shoppers understand each decision while designing the ring.",
+        related: ["3D preview", "Guided choices", "Build summary"]
+      },
+      "stone-type": {
+        heading: "Stone Type",
+        category: "Preview Stone",
+        copy: "Shoppers can switch between colorless diamond, colored diamond, and gemstone preview modes.",
+        benefit: "Helps compare design directions before final diamond selection.",
+        related: ["Colorless diamond", "Colored diamond", "Gemstone preview"]
+      },
+      "center-stone-shape": {
+        heading: "Center Stone",
+        category: "Preview Stone",
+        copy: "Shoppers can preview different center stone shapes while designing the setting.",
+        benefit: "Clarifies proportion, style, and design balance early.",
+        related: ["Shape preview", "Ring proportion", "3D visual"]
+      },
+      "target-carat": {
+        heading: "Target Carat",
+        category: "Preview Fit",
+        copy: "Shoppers can adjust preview carat size to see how stone scale changes the design.",
+        benefit: "Makes visual proportion easier to compare.",
+        related: ["Stone scale", "Preview fit", "Design balance"]
+      },
+      "diamond-origin": {
+        heading: "Lab-Grown & Natural Preference",
+        category: "Diamond Preference",
+        copy: "Shoppers can preview lab-grown and natural diamond preferences.",
+        benefit: "Keeps origin preference visible before the next step.",
+        related: ["Lab-grown", "Natural", "Preview pricing"]
+      },
+      "cut-clarity": {
+        heading: "Cut & Clarity",
+        category: "Diamond Preference",
+        copy: "Shoppers can preview quality preferences using cut and clarity controls.",
+        benefit: "Keeps quality preference simple inside the design flow.",
+        related: ["Cut", "Clarity", "Quality preference"]
+      },
+      "colored-diamond": {
+        heading: "Colored Diamond Preview",
+        category: "Coloured Stone",
+        copy: "Shoppers can explore coloured diamond tones and intensity options.",
+        benefit: "Shows expressive design choices beyond colorless diamonds.",
+        related: ["Colour tone", "Intensity", "Preview stone"]
+      },
+      gemstone: {
+        heading: "Gemstone Preview",
+        category: "Gemstone",
+        copy: "Shoppers can preview gemstone options as an alternative design direction.",
+        benefit: "Expands the design experience beyond diamond-only previews.",
+        related: ["Gemstone options", "Alternative design", "Visual preview"]
+      },
+      "setting-head": {
+        heading: "Setting / Head",
+        category: "Ring Setting",
+        copy: "Shoppers can choose how the center stone sits on the ring.",
+        benefit: "Makes profile and setting style easier to understand.",
+        related: ["Head style", "Stone placement", "Setting profile"]
+      },
+      band: {
+        heading: "Band",
+        category: "Ring Style",
+        copy: "Shoppers can configure the ring style and band preferences as part of the setting.",
+        benefit: "Helps compare setting designs with the ring visible.",
+        related: ["Ring style", "Band design", "Setting subtotal"]
+      },
+      "matching-band": {
+        heading: "Matching Band",
+        category: "Bridal Set",
+        copy: "Shoppers can add or adjust matching band options.",
+        benefit: "Supports a more complete bridal set preview.",
+        related: ["Matching band", "Quantity", "Set preview"]
+      },
+      "ring-size": {
+        heading: "Ring Size",
+        category: "Personalization",
+        copy: "Shoppers can choose the ring size system and size directly in the configurator.",
+        benefit: "Keeps size preference visible in the build summary.",
+        related: ["Size system", "Selected size", "Summary update"]
+      },
+      "metal-purity": {
+        heading: "Metal & Purity",
+        category: "Metal Selection",
+        copy: "Shoppers can choose metal color and purity separately.",
+        benefit: "Makes metal selection clearer and easier to review.",
+        related: ["Metal colour", "Purity", "Price review"]
+      },
+      "bi-metal": {
+        heading: "Bi-metal Head Accent",
+        category: "Advanced Personalization",
+        copy: "Shoppers can choose a separate head accent metal while keeping the shank primary.",
+        benefit: "Demonstrates premium personalization beyond one metal choice.",
+        related: ["Primary metal", "Accent head", "Live preview"]
+      },
+      engraving: {
+        heading: "Engraving",
+        category: "Personalization",
+        copy: "Shoppers can personalize the ring with text, font choices, and supported symbols.",
+        benefit: "Adds emotional value before the next step.",
+        related: ["Inscription", "Font choice", "Symbols"]
+      },
+      "build-summary": {
+        heading: "Build Summary",
+        category: "Review",
+        copy: "Shoppers can review setting, head, preview stone, engraving, and pricing details.",
+        benefit: "Creates a clear checkpoint before diamond selection.",
+        related: ["Selected options", "Preview total", "Review step"]
+      },
+      "choose-diamond": {
+        heading: "Continue to Diamond Selection",
+        category: "Next Step",
+        copy: "After configuring the setting, shoppers continue to select the actual center diamond.",
+        benefit: "Keeps setting design and diamond selection clearly separated.",
+        related: ["Configured setting", "Final diamond", "Next step"]
+      }
+    };
+
+    var heading = document.getElementById("rco-guide-heading");
+    var category = document.getElementById("rco-guide-category");
+    var copy = document.getElementById("rco-guide-copy");
+    var benefit = document.getElementById("rco-guide-benefit");
+    var related = document.getElementById("rco-guide-related");
+
+    function updateGuide(feature) {
+      var content = guideContent[feature] || guideContent.default;
+      heading.textContent = content.heading;
+      category.textContent = content.category;
+      copy.textContent = content.copy;
+      benefit.textContent = content.benefit;
+      related.innerHTML = "";
+
+      content.related.forEach(function (item) {
+        var chip = document.createElement("li");
+        chip.textContent = item;
+        related.appendChild(chip);
+      });
+    }
+
+    window.addEventListener("message", function (event) {
+      if (allowedOrigins.indexOf(event.origin) === -1) return;
+      if (!event.data || event.data.type !== "ring-configurator:feature-guide") return;
+      updateGuide(event.data.feature);
+    });
+  })();
+</script>

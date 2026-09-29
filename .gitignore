@@ -1,0 +1,5 @@
+# Dependencies are restored from package-lock.json and must not be committed.
+node_modules/
+
+# Local operating-system metadata
+.DS_Store

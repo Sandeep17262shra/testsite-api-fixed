@@ -1,0 +1,1963 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f8f8f8;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Theme 3 root container & builder structure                                */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.theme3-root {
+  --theme3-ink: #303030;
+  --theme3-muted: #6d6d6a;
+  --theme3-line: #d9d9d5;
+  --theme3-soft: #f3f3f1;
+  --theme3-stage: #ededeb;
+  --theme3-accent: #a6783f;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--theme3-soft);
+  color: var(--theme3-ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.theme3-builder {
+  position: relative;
+  width: min(1560px, 100%);
+  height: calc(100vh - 36px);
+  height: calc(100dvh - 36px);
+  min-height: 0;
+  display: grid;
+  margin: 0 auto;
+  border: 1px solid var(--theme3-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Top Navigation Bar (Theme 3 Section Nav)                                   */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.theme3-section-nav {
+  display: grid;
+  grid-template-columns: repeat(var(--theme3-section-count, 3), minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+  border-bottom: 1px solid var(--theme3-line);
+  background: var(--theme3-soft);
+}
+
+.theme3-section-nav button {
+  min-width: 0;
+  min-height: 63px;
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  padding: 9px 16px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--theme3-ink);
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.theme3-section-nav button:hover:not(.active):not(:disabled) {
+  background: #f5f5f3;
+}
+
+.theme3-section-nav button.active {
+    background: var(--theme3-ink);
+  color: #ffffff;
+}
+
+.theme3-section-nav button:disabled {
+  border-color: #e5e5e1;
+  background: #f2f2ef;
+  color: #adada8;
+  cursor: not-allowed;
+}
+
+.theme3-section-index {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  color: #111111;
+}
+
+.theme3-section-nav button.active .theme3-section-index {
+  background: transparent;
+  color: #ffffff;
+}
+
+.theme3-section-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  background: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.theme3-section-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.theme3-section-copy strong {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme3-section-copy small {
+  color: inherit;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.72;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme3-mobile-section-label {
+  display: none;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Workspace Layout: Left Preview Pane + Right Options Pane                   */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.theme3-workspace {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 76px minmax(0, 1fr);
+  grid-template-areas:
+    "nav nav"
+    "preview options";
+}
+
+.theme3-workspace .theme3-section-nav {
+  grid-area: nav;
+}
+
+.theme3-workspace .theme3-preview-pane {
+  grid-area: preview;
+}
+
+.theme3-workspace .theme3-options-pane {
+  grid-area: options;
+}
+
+.theme3-preview-pane {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--theme3-line);
+  background: #ededeb;
+}
+
+.theme3-preview-pane canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Covers the canvas while a new model (e.g. switching Necklace/Bracelet)     */
+/* is loading, so the raw/unlit GLTF never flashes before its material and   */
+/* color are applied.                                                        */
+.theme3-model-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #f8f8f8;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.12s ease-out;
+}
+
+.theme3-model-loading.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+
+.theme3-preview-caption {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 80px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.theme3-mobile-preview-label {
+  display: none;
+}
+
+.theme3-preview-caption strong {
+  font-size: 14px;
+  font-weight: 400;
+  color: #303030;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Floating Preview Controls (360, View, Reset, Share)                        */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.gb-preview-controls {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.gb-preview-control {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  border: 1px solid rgba(23, 23, 23, 0.12);
+  border-radius: 50vh;
+  background: rgba(255, 255, 255, 0.94);
+  color: #111111;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.gb-preview-control:hover {
+  background: #ffffff;
+  border-color: rgba(23, 23, 23, 0.25);
+}
+
+.gb-preview-control.active {
+  border-color: #111111;
+  background: #ffffff;
+}
+
+.gb-preview-control img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.gb-share-control img {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Options Pane & Configurator Panel                                          */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.theme3-options-pane {
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.theme3-configurator-panel {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.theme3-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 28px;
+  border-bottom: 1px solid var(--theme3-line);
+}
+
+.theme3-panel-suheader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.theme3-panel-header h2 {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-color-secondary, #92928d);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.theme3-panel-header-actions {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.theme3-share-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme3-share-toast {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111111;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 20;
+  animation: theme3ToastFade 0.2s ease forwards;
+}
+
+.theme3-share-toast::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: #111111 transparent transparent transparent;
+}
+
+@keyframes theme3ToastFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.theme3-header-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme3-header-btn {
+    padding: 6px 16px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #303030;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s, border-color 0.15s;
+    min-height: 36px;
+}
+
+.theme3-header-btn:hover {
+  border-color: #111111;
+  background: #f8f8f8;
+}
+
+.theme3-header-btn:active {
+  background: #ebebeb;
+}
+
+.theme3-subtotal-block {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 15px;
+}
+
+.theme3-subtotal-block strong {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #111111;
+}
+
+.theme3-subtotal-block small {
+  color: var(--theme3-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.theme3-summary-scroll-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  justify-self: end;
+  transition: opacity 0.25s ease, transform 0.2s ease;
+}
+
+.theme3-summary-scroll-arrow svg {
+  width: 10px;
+  height: 10px;
+  transition: transform 0.25s ease;
+  /* Same as the ring: the summary opens upward, so closed = arrow up,
+     open = arrow down. */
+  transform: rotate(180deg);
+}
+
+.theme3-summary-scroll-arrow.is-expanded svg {
+  transform: none;
+}
+
+.theme3-summary-scroll-arrow:hover {
+  transform: translateY(-2px);
+}
+
+.theme3-summary-scroll-arrow.is-expanded:hover {
+  transform: translateY(2px);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Scrollable Panel Area                                                      */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.theme3-panel-scroll {
+  min-height: 0;
+  padding: 0 16px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: 16px 80px;
+  scrollbar-color: #b8b8b3 transparent;
+  scrollbar-width: thin;
+}
+
+.theme3-panel-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.theme3-panel-scroll::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #b8b8b3;
+}
+
+.theme3-option-section {
+  scroll-margin-top: 16px;
+}
+
+.theme3-option-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 8px;
+}
+
+.theme3-option-section-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #303030;
+}
+
+.theme3-section-header-price {
+  margin-left: auto;
+  color: #303030;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Option Rows, Cards, Metal Pills, and Text Options                          */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.gb-option-row {
+  min-height: 0;
+  display: block;
+  padding: 14px 0 14px;
+}
+
+.gb-option-title {
+  min-height: 22px;
+  padding: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gb-option-title span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.gb-option-slider {
+  min-width: 0;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.gb-option-track-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gb-option-track {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(118px, 1fr);
+  gap: 14px;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 0 8px;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.gb-option-track::-webkit-scrollbar {
+  display: none;
+}
+
+.gb-option-track img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.gb-option-track.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.gb-option-track.is-dragging * {
+  pointer-events: none;
+}
+
+/* Two-line option row */
+.theme3-root .gb-option-row--two-line .gb-option-track {
+  grid-auto-flow: column;
+  grid-auto-columns: 118px;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  row-gap: 10px;
+}
+
+.theme3-root .theme3-initial-grid .gb-card-option {
+  min-width: 0;
+  width: 100%;
+  min-height: 94px;
+  display: grid;
+  place-items: center;
+  padding: 10px 8px;
+}
+
+/* Card Option (Square with image + label underneath) */
+.theme3-root .gb-card-option {
+  min-height: 94px;
+  display: grid;
+  grid-template-rows: 70px auto;
+  place-items: center;
+  gap: 5px;
+  padding: 10px 8px;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--theme3-ink);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.theme3-root .gb-card-option:hover {
+  border-color: #b0b0aa;
+}
+
+.theme3-root .gb-card-option.active {
+  border-color: var(--theme3-ink);
+  background: #F8F8F8;
+  box-shadow: none;
+}
+
+.theme3-root .gb-card-option img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  display: block;
+}
+/* Birthstone grid option — separate from gb-card-option so it can't inherit/collide with its rules */
+.theme3-root .gb-stone-card-option {
+  min-height: 94px;
+  display: grid;
+  grid-template-rows: 70px auto;
+  place-items: center;
+  gap: 5px;
+  padding: 10px 8px;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--theme3-ink);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.theme3-root .gb-stone-card-option:hover {
+  border-color: #b0b0aa;
+}
+
+.theme3-root .gb-stone-card-option.active {
+  border-color: var(--theme3-ink);
+  background: #f8f8f8;
+  box-shadow: none;
+}
+
+.theme3-root .gb-stone-card-option img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: contain;
+  display: block;
+}
+
+.theme3-root .gb-stone-card-option span {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+.theme3-root .gb-card-option span {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Metal Swatch Option (styled with backgroundColor) */
+.theme3-root .gb-metal-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.theme3-root .gb-metal-option:hover {
+  border-color: #b0b0aa;
+}
+
+.theme3-root .gb-metal-option.active {
+  border-color: var(--theme3-ink);
+}
+
+.theme3-root .gb-metal-option small {
+  max-width: 96px;
+  overflow: hidden;
+  color: var(--theme3-ink);
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Text Option (Pills for fonts, sizes, etc.) */
+.theme3-root .gb-text-option {
+  min-height: 42px;
+  padding: 6px 14px;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--theme3-ink);
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.theme3-root .gb-text-option:hover {
+  border-color: #b0b0aa;
+}
+
+.theme3-root .gb-text-option.active {
+  border-color: var(--theme3-ink);
+  background: #F8F8F8;
+  box-shadow: none;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Inscription / Name Pendant Controls                                        */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.theme3-engraving-controls {
+  display: grid;
+  gap: 12px;
+  padding: 12px 0 0px;
+}
+
+.theme3-engraving-controls > label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.theme3-engraving-controls > label small {
+  color: var(--theme3-muted);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.theme3-engraving-controls input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d4d4cf;
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--theme3-ink);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.theme3-engraving-controls input:focus {
+  border-color: var(--theme3-ink);
+  box-shadow: 0 0 0 2px rgba(23, 23, 23, 0.1);
+}
+
+.name-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1px solid #d4d4cf;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #c92a2a;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.name-remove-btn:hover {
+  background: #fff5f5;
+  border-color: #ffa8a8;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Charms section specific styling                                            */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.necklace-charm-category-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+}
+
+.necklace-charm-category-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #dcdcd8;
+  border-radius: 6px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.necklace-charm-category-btn.active {
+  background: #303030;
+  border-color: #303030;
+}
+
+.necklace-charm-category-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #303030;
+  margin-left: 6px;
+}
+
+.selected-charms-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0 0px;
+}
+
+.selected-charm-slot {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #dcdcd8;
+  border-radius: 4px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.selected-charm-slot.active-slot {
+  border-color: #303030;
+    border: 1px solid #000 !important;
+  background: #f5f5f3;
+}
+
+.selected-charm-slot img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.selected-charm-slot.add-slot {
+  border-style: dashed;
+  color: #888888;
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.selected-charm-slot.add-slot:hover {
+  border-color: #303030;
+  color: #303030;
+}
+
+.remove-slot-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #303030;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Clear-all icon at the end of the active-charm row. */
+.clear-all-charms-btn {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  color: #e0342c;
+  cursor: pointer;
+  padding: 0;
+}
+
+.clear-all-charms-btn:hover {
+  color: #b8281f;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Order Summary in Header (matching Ring Configurator & Design)              */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.order-summary-card {
+  line-height: 1.8;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.order-summary-section {
+  margin-bottom: 14px;
+}
+
+
+
+.order-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.order-summary-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.order-summary-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111111;
+  text-align: right;
+}
+
+.order-summary-desc {
+  font-size: 12px;
+  font-weight: 500;
+  color: #898985;
+  line-height: 1.7;
+}
+
+.order-summary-charms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-summary-charm-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 1.7;
+}
+
+.order-summary-charm-name {
+  font-size: 12px;
+  font-weight: 400;
+  color: #111111;
+}
+
+.order-summary-charm-metal {
+  font-size: 12px;
+  font-weight: 500;
+  color: #898985;
+  text-align: right;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Sticky Bottom Footer                                                       */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.theme3-panel-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  align-items: center;
+  padding: 10px 16px; /* same as ring */
+  border-top: 1px solid var(--theme3-line);
+  background: #ffffff;
+  box-shadow: 0 -5px 18px rgba(28, 28, 26, 0.04);
+}
+
+.theme3-panel-footer > div {
+  display: grid;
+  gap: 2px;
+}
+
+
+
+.theme3-panel-footer strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #303030;
+}
+
+.theme3-panel-footer > button {
+  min-height: 36px;
+  padding: 0 16px; /* matches ring configurator */
+  border: 1px solid #242424;
+  border-radius: 4px;
+  background: #242424;
+  color: #ffffff;
+  font-size: 12px; /* matches ring configurator */
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.theme3-panel-footer > button:hover {
+  opacity: 0.88;
+}
+
+/* Keep the button's colour while "Adding to Cart..." (disabled), like the ring. */
+.theme3-panel-footer > button:disabled,
+.theme3-panel-footer > button:disabled:hover {
+  opacity: 1;
+  cursor: default;
+}
+
+.theme3-panel-footer > .theme3-footer-build-summary,
+.theme3-panel-footer > .theme3-footer-actions {
+  display: none;
+}
+
+.theme3-continue-status {
+  min-height: 14px;
+  grid-column: 1 / -1;
+  margin: -4px 0 0;
+  color: var(--theme3-muted, #767676);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Modals / Popups                                                            */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.confirm-popup {
+  width: 90%;
+  max-width: 400px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  text-align: center;
+  position: relative;
+}
+
+.close-cross {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555555;
+}
+
+.cnfm-btn {
+  background: #303030 !important;
+  color: #ffffff !important;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+}
+
+.bracelet-necklace {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  display: flex;
+  gap: 12px;
+}
+
+.bracelet-necklace button {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(23, 23, 23, 0.15);
+  border-radius: 50vh;
+  color: #111111;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .theme3-root {
+    position: static;
+    inset: auto;
+    height: auto;
+    min-height: 100vh;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .theme3-builder {
+    height: auto;
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+    width: 100%;
+  }
+
+  .theme3-workspace {
+   flex: 1 1 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+  }
+
+  .theme3-preview-pane {
+    height: 440px;
+    flex-shrink: 0;
+    z-index: 5;
+    border-right: 0;
+    border-bottom: 1px solid var(--theme3-line);
+    overflow: hidden;
+    transition: height 280ms ease;
+    cursor: pointer;
+  }
+
+  .theme3-workspace.sandbox-collapsed .theme3-preview-pane {
+    height: 340px;
+  }
+
+  .theme3-options-pane {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .theme3-configurator-panel {
+    height: auto;
+    display: block;
+  }
+
+  .theme3-panel-scroll {
+    padding-bottom: 112px;
+    overflow: visible;
+  }
+
+  .theme3-panel-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 12;
+  }
+}
+
+@media (max-width: 640px) {
+  .theme3-section-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #ffffff;
+    grid-template-columns: repeat(var(--theme3-section-count, 3), minmax(0, 1fr));
+    grid-auto-columns: initial;
+    grid-auto-flow: row;
+    gap: 0;
+    padding: 14px 28px 13px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--theme3-line);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .theme3-section-nav button {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    justify-self: center;
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: center;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .theme3-section-nav button:not(:last-of-type)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 28px);
+    width: calc(100% - 56px);
+    border-top: 1px solid #000000;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .theme3-section-nav button.active,
+  .theme3-section-nav button:disabled {
+    background: transparent;
+  }
+
+  .theme3-section-index {
+    position: relative;
+    z-index: 1;
+    width: 34px;
+    height: 34px;
+    background: #ececea;
+    color: #62625f;
+    font-size: 12px;
+  }
+
+  .theme3-section-nav button.active .theme3-section-index {
+    background: var(--theme3-ink);
+    color: #ffffff;
+  }
+
+  .theme3-section-nav button:disabled .theme3-section-index {
+    background: #f0f0ed;
+    color: #b5b5b0;
+  }
+
+  .theme3-section-copy {
+    display: none;
+  }
+
+  .theme3-mobile-section-label {
+    display: none;
+  }
+
+  .theme3-workspace {
+   flex: 1 1 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+  }
+
+  .theme3-preview-pane {
+    height: 390px;
+  }
+
+  .theme3-workspace.sandbox-collapsed .theme3-preview-pane {
+    height: 340px;
+  }
+
+  .theme3-preview-pane .gb-preview-controls {
+    top: 11px;
+    right: 11px;
+    gap: 6px;
+  }
+
+  .theme3-preview-pane .gb-preview-control {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .theme3-preview-pane .gb-preview-control img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .theme3-preview-caption {
+    display: none;
+  }
+
+  .theme3-mobile-preview-label {
+    display: none;
+    padding: 12px 16px 0;
+    color: #303030;
+    pointer-events: none;
+    background: #F8F8F8;
+  }
+
+  .theme3-mobile-preview-label strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.18;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .theme3-panel-header {
+    padding: 10px 16px;
+  }
+
+  .theme3-panel-scroll {
+    padding: 0 16px 28px;
+  }
+
+  .theme3-panel-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-padding-block: 12px 80px;
+  }
+
+  .theme3-option-section {
+    scroll-margin-top: 12px;
+  }
+
+  .theme3-option-section-header {
+    padding: 12px 0 8px;
+  }
+
+  .theme3-root .gb-option-row .gb-option-slider .gb-option-track {
+    grid-auto-columns: 105px;
+    padding-bottom: 6px;
+    scrollbar-color: #5a5a5a #ececea;
+  }
+
+  .theme3-root .gb-option-row .gb-option-slider .gb-option-track::-webkit-scrollbar {
+    height: 2px !important;
+    display: block;
+  }
+
+  .theme3-root .gb-option-row .gb-option-slider .gb-option-track::-webkit-scrollbar-track {
+    background: #ececea;
+  }
+
+  .theme3-root .gb-option-row .gb-option-slider .gb-option-track::-webkit-scrollbar-thumb {
+    background: #5a5a5a;
+  }
+
+  .theme3-root .gb-card-option {
+    min-height: 82px;
+  }
+
+  .theme3-panel-footer {
+    position: relative;
+    z-index: 999;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "cta actions"
+      "status status";
+    align-items: center;
+    gap: 0px 12px;
+    padding: 10px 16px;
+  }
+
+  .theme3-panel-footer > button {
+    grid-area: cta;
+    width: auto;
+  }
+
+  .theme3-continue-status {
+    grid-area: status;
+  }
+
+  .theme3-panel-footer > .theme3-panel-footer-label {
+    display: none;
+  }
+
+  .theme3-panel-footer > .theme3-footer-actions {
+    display: flex;
+    grid-area: actions;
+    min-width: 0;
+  }
+
+  .theme3-panel-footer > .theme3-footer-actions .theme3-subtotal-block {
+    width: 100%;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .theme3-panel-footer > .theme3-footer-actions .theme3-header-btn {
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .theme3-panel-footer > .theme3-footer-build-summary {
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    z-index: 60;
+    background: #ffffff;
+    box-shadow: 0 -6px 18px rgba(28, 28, 26, 0.12);
+    border-top: 1px solid var(--theme3-line);
+    padding: 16px 16px 8px;
+    max-height: 50vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .theme3-panel-footer > .theme3-footer-build-summary:empty {
+    display: none;
+    max-height: 0;
+    border-top: 0;
+    box-shadow: none;
+  }
+
+  .theme3-options-pane {
+    overflow: visible;
+  }
+
+  .theme3-options-pane .theme3-panel-header {
+    display: none;
+  }
+
+  .theme3-root .gb-card-option {
+    min-height: 82px;
+  }
+  .theme3-summary-details-toggle{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-bottom: 12px;
+  }
+    .theme3-root--jewelry .theme3-summary-details-toggle span {
+    font-size: 10px !important;
+    font-weight: 400 !important;
+    color: #000000 !important;
+    text-transform: none !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px !important;
+
+  }
+  .theme3-panel-footer-cta{
+    display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        height: 32px;
+        padding: 0 18px;
+        border-radius: 4px;
+        background: #262626 !important;
+        border: 1px solid #262626 !important;
+        color: #ffffff !important;
+        font-family: inherit;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+        width: 108px;
+  }
+}
+
+.theme3-root .gb-card-option:disabled,
+.theme3-root .gb-text-option:disabled,
+.theme3-root .gb-metal-option:disabled,
+.theme3-root .theme3-text-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.theme3-root .theme3-engraving-controls > input:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Jewelry category switch (Necklace / Bracelet)                              */
+/* Lives at the top of the scrollable options panel — the whole necklace and  */
+/* bracelet experience is one page now, switched here instead of by URL.     */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.jewelry-category-row {
+  padding: 12px 0 0px;
+}
+
+.jewelry-category-row-title {
+  min-height: 22px;
+  padding: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #111111;
+}
+
+/* Auto-width, left-aligned buttons — same box model as .gb-metal-option's   */
+/* row, not a full-width 2-column stretch, so this reads as the same size as */
+/* every other option button (Style/Metal/Purity/etc.) instead of standing   */
+/* out as two oversized pills.                                               */
+.jewelry-category-row-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Sized to match .gb-metal-option exactly, so this row reads as part of      */
+/* the same option-button family as Metal/Chain Length/etc.                  */
+.jewelry-category-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 142px; /* matches ring configurator option buttons */
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--theme3-ink, #303030);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.jewelry-category-btn:hover:not(.active) {
+  border-color: #b0b0aa;
+}
+
+.jewelry-category-btn.active {
+  border-color: var(--theme3-ink, #303030);
+  background: #f7f7f5;
+  cursor: default;
+}
+
+.theme3-option-section-header > span {
+  color: #303030;
+  font-size: 16px;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+}
+/* Necklace / bracelet build summary: CHAIN + ADD-ONS layout.
+   Selectors carry .order-summary-row so they beat `.theme3-panel-footer span`
+   (every span in the footer bar is a 12px uppercase label) when the summary
+   opens from the mobile footer. */
+/* Values match the ring configurator's footer build summary exactly. */
+.jewelry-order-summary .order-summary-section {
+  margin-bottom: 12px;
+}
+.jewelry-order-summary .order-summary-row {
+  margin-bottom: 4px;
+}
+.jewelry-order-summary .order-summary-row .order-summary-title,
+.jewelry-order-summary .order-summary-row .order-summary-price {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.8;
+  color: #92928d;
+  text-transform: uppercase;
+  letter-spacing: normal;
+}
+/* Summary headings (CHAIN / ADD-ONS) in the same black as the option headings (STYLE, METAL...). */
+.jewelry-order-summary .order-summary-row .order-summary-title {
+  color: #111111;
+}
+.jewelry-order-summary .order-summary-desc,
+.jewelry-order-summary .order-summary-row .order-summary-desc {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.8;
+  color: #898985;
+  text-transform: none;
+}
+.jewelry-order-summary .order-summary-addon {
+  margin-bottom: 0;
+  gap: 12px;
+}
+.jewelry-order-summary .order-summary-addon .order-summary-desc:last-child {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* Mobile: the summary opens upward out of the footer. The panel's own
+   overflow:hidden clipped it at the top of the options pane (under the
+   section bar), so let it spill out while it is open. */
+@media (max-width: 640px) {
+  .theme3-configurator-panel.is-summary-open {
+    overflow: visible;
+  }
+}
+
+/* Mobile: no section icon bar for necklace / bracelet (same as the ring) -
+   the options scroller takes its space. */
+@media (max-width: 640px) {
+  .theme3-root--jewelry .theme3-section-nav {
+    display: none;
+  }
+}
+
+/* Style cards: keep the chain image and label inside the card. The grid
+   column used to size to the 100px image, so on narrow (mobile) cards the
+   image and label spilled past the card's right edge. */
+.theme3-root.theme3-root--jewelry .gb-card-option {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.theme3-root.theme3-root--jewelry .gb-card-option img {
+  width: 100px;
+  max-width: 100%;
+  height: auto;
+  max-height: 70px;
+}
+.theme3-root.theme3-root--jewelry .gb-card-option span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ─── Desktop layout matching the ring configurator (>900px) ───────────────
+   Same arrangement as `.theme3-root--ring` in RCApp.css:
+   1. The Chain Selection / Add-ons tabs sit over the options column only (one
+      segmented control), so the preview runs the full height of the builder.
+   2. The panel's top bar (NECKLACE CONFIGURATOR / SUMMARY, Share, Reset,
+      total) is hidden; the footer becomes the single action bar - step CTA
+      and Share on the left, summary toggle and total on the right, and the
+      breakdown opening above them. The footer already rendered all of this
+      for mobile; this just stops hiding it on desktop.
+   3. Reset moves to the preview, next to 360 and view (NecklaceConfigurator).
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 901px) {
+  .theme3-root--jewelry .theme3-workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: 60px minmax(0, 1fr);
+    grid-template-areas:
+      "preview nav"
+      "preview options";
+  }
+
+  .theme3-root--jewelry .theme3-preview-caption {
+    top: var(--theme3-preview-inset, 18px);
+  }
+
+  .theme3-root--jewelry .theme3-workspace .theme3-section-nav {
+    gap: 0;
+    margin: 7px 16px;
+    padding: 0;
+    border: 1px solid var(--theme3-line);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .theme3-root--jewelry .theme3-workspace .theme3-section-nav button {
+    min-height: 44px;
+    padding: 6px 12px;
+    border: 0;
+    border-right: 1px solid var(--theme3-line);
+    border-radius: 0;
+  }
+
+  .theme3-root--jewelry .theme3-workspace .theme3-section-nav button:last-of-type {
+    border-right: 0;
+  }
+
+  .theme3-root--jewelry .theme3-workspace .theme3-section-nav button.active {
+    border-right-color: var(--theme3-ink);
+  }
+
+  .theme3-root--jewelry .theme3-options-pane .theme3-panel-header {
+    display: none;
+  }
+
+  /* Header gone: two rows, scroller takes the slack, bar sizes to content. */
+  .theme3-root--jewelry .theme3-options-pane .theme3-configurator-panel {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .theme3-root--jewelry .theme3-panel-footer {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 16px 12px;
+    background: #ffffff;
+    border-top: 1px solid var(--theme3-line);
+    position: relative;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.03);
+  }
+
+  .theme3-root--jewelry .theme3-panel-footer > .theme3-footer-build-summary {
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    z-index: 60;
+    background: #ffffff;
+    box-shadow: 0 -8px 24px rgba(28, 28, 26, 0.12);
+    border-top: 1px solid var(--theme3-line);
+    padding: 16px 20px 12px;
+    max-height: 55vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .theme3-root--jewelry .theme3-panel-footer > .theme3-footer-build-summary:empty {
+    display: none;
+    max-height: 0;
+    padding: 0;
+    border-top: 0;
+    box-shadow: none;
+  }
+
+  .theme3-root--jewelry .theme3-panel-footer-label {
+    display: none;
+  }
+
+  .theme3-root--jewelry .theme3-footer-main {
+    display: flex;
+    align-items: end;
+    gap: 30px;
+    width: 100%;
+  }
+
+  .theme3-root--jewelry .theme3-summary-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  .theme3-root--jewelry .theme3-summary-details-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    line-height: 1.2;
+    transition: opacity 0.15s ease;
+    padding-bottom: 12px;
+  }
+
+  .theme3-root--jewelry .theme3-summary-details-toggle:hover {
+    opacity: 0.8;
+  }
+
+  .theme3-root--jewelry .theme3-summary-details-toggle span {
+    font-size: 10px !important;
+    font-weight: 400 !important;
+    color: #000000 !important;
+    text-transform: none !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px !important;
+  }
+
+  .theme3-root--jewelry .theme3-summary-toggle-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    color: #1c1c1a;
+  }
+
+  .theme3-root--jewelry .theme3-summary-toggle-arrow.is-expanded {
+    transform: rotate(180deg);
+  }
+
+  .theme3-root--jewelry .theme3-summary-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 3px;
+
+  }
+
+  .theme3-root--jewelry .theme3-summary-price {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    color: #1c1c1a !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  .theme3-root--jewelry .theme3-summary-tax-label {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    color: #1c1c1a !important;
+    text-transform: none !important;
+    margin-left: 2px !important;
+  }
+
+  .theme3-root--jewelry .theme3-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-shrink: 0;
+  }
+
+  .theme3-root--jewelry .theme3-panel-footer-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    height: 42px;
+    padding: 0 18px;
+    border-radius: 4px;
+    background: #262626 !important;
+    border: 1px solid #262626 !important;
+    color: #ffffff !important;
+    font-family: inherit;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    width: 130px;
+  }
+
+  .theme3-root--jewelry .theme3-panel-footer-cta:hover:not(:disabled) {
+    background: #3a3a3a !important;
+    border-color: #3a3a3a !important;
+  }
+
+  .theme3-root--jewelry .theme3-panel-footer-cta:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .theme3-root--jewelry .theme3-panel-action-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 4px;
+    background: #ffffff !important;
+    border: 1px solid #262626 !important;
+    color: #262626 !important;
+    font-family: inherit;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    width: 96px;
+  }
+
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn:hover {
+    background: #f7f7f7 !important;
+    border-color: #111111 !important;
+  }
+
+  .theme3-root--jewelry .theme3-share-toast {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1c1c1a;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 70;
+  }
+}
+
+/* The preview Reset is the desktop one; mobile keeps Reset in its footer. */
+@media (max-width: 900px) {
+  .theme3-root--jewelry .gb-preview-control--reset {
+    display: none;
+  }
+
+  .theme3-root--jewelry .theme3-footer-main {
+    display: flex;
+    align-items: end;
+    gap: 30px;
+    width: 100%;
+  }
+
+  .theme3-root--jewelry .theme3-summary-info {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .theme3-root--jewelry .theme3-summary-price {
+    font-size: 18px !important;
+  }
+
+  .theme3-root--jewelry .theme3-summary-tax-label {
+    font-size: 11px !important;
+  }
+
+  .theme3-root--jewelry .theme3-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-shrink: 0;
+  }
+
+  .theme3-root--jewelry 
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn {
+    min-height: 32px;
+    height: 32px;
+    padding: 0 14px;
+    font-size: 12px !important;
+    border-radius: 4px;
+    width: auto;
+  }
+}
+
+/* ── Option sizes matched to the ring configurator ─────────────────────────
+   Ring: style cards 120x115, metal/text option buttons 142x42, at every width. */
+.theme3-root.theme3-root--jewelry .gb-option-row .gb-option-slider .gb-option-track:has(.gb-card-option) {
+  grid-auto-columns: 120px;
+}
+.theme3-root.theme3-root--jewelry .gb-option-row .gb-option-slider .gb-option-track:has(.gb-text-option),
+.theme3-root.theme3-root--jewelry .gb-option-row .gb-option-slider .gb-option-track:has(.gb-metal-option) {
+  grid-auto-columns: 142px;
+}
+.theme3-root.theme3-root--jewelry .gb-option-track .gb-card-option {
+  min-height: 115px;
+}

@@ -1,0 +1,990 @@
+{
+  "anelladiamond": {
+    "metalPrices": {
+      "9K": 500,
+      "10K": 600,
+      "14K": 700,
+      "18K": 1000,
+      "Platinum": 1100
+    },
+    "shankPrices": {
+      "PLAIN": 0,
+      "WIDE-PLAIN": 400,
+      "KNIFE-EDGE": 0,
+      "CATHEDRAL": 0,
+      "SPLIT": 400,
+      "TWISTED": 400,
+      "CHANNEL": 800,
+      "PLATE-PRONG": 800
+    },
+    "headPrices": {
+      "4-PRONG": 0,
+      "BEZEL": 300,
+      "HIDDEN-HALO": 300,
+      "SINGLE-HALO": 600,
+      "DOUBLE-HALO": 800,
+      "OVAL": 800,
+      "TRAPEZOID": 350,
+      "HALF-MOON": 400,
+      "PEAR": 450,
+      "BAGUETTE": 500
+    },
+    "matchingBandPrices": {
+      "PLAIN": 300,
+      "CATHEDRAL": 200,
+      "KNIFE-EDGE": 250,
+      "SPLIT": 300,
+      "CHANNEL": 600,
+      "PLATE-PRONG": 600
+    },
+    "labDiamondPrices": {
+      "1": {
+        "Standard": 600,
+        "Premium": 750,
+        "High-End": 1100
+      },
+      "2": {
+        "Standard": 1500,
+        "Premium": 1700,
+        "High-End": 2400
+      },
+      "3": {
+        "Standard": 2500,
+        "Premium": 2800,
+        "High-End": 4000
+      },
+      "4": {
+        "Standard": 3600,
+        "Premium": 4000,
+        "High-End": 5800
+      },
+      "5": {
+        "Standard": 4700,
+        "Premium": 5200,
+        "High-End": 7800
+      },
+      "6": {
+        "Standard": 5700,
+        "Premium": 6500,
+        "High-End": 9800
+      },
+      "7": {
+        "Standard": 7200,
+        "Premium": 8000,
+        "High-End": 12500
+      },
+      "8": {
+        "Standard": 8500,
+        "Premium": 9600,
+        "High-End": 15500
+      },
+      "9": {
+        "Standard": 9200,
+        "Premium": 11500,
+        "High-End": 18500
+      },
+      "10": {
+        "Standard": 11800,
+        "Premium": 13500,
+        "High-End": 22000
+      }
+    },
+    "naturalDiamondPrices": {
+      "1": {
+        "Standard": 900,
+        "Premium": 1200,
+        "High-End": 1800
+      },
+      "2": {
+        "Standard": 2400,
+        "Premium": 2900,
+        "High-End": 4200
+      },
+      "3": {
+        "Standard": 4000,
+        "Premium": 4800,
+        "High-End": 7000
+      },
+      "4": {
+        "Standard": 5800,
+        "Premium": 7000,
+        "High-End": 10500
+      },
+      "5": {
+        "Standard": 7800,
+        "Premium": 9200,
+        "High-End": 14000
+      },
+      "6": {
+        "Standard": 8800,
+        "Premium": 9500,
+        "High-End": 16000
+      },
+      "7": {
+        "Standard": 10500,
+        "Premium": 11000,
+        "High-End": 18000
+      },
+      "8": {
+        "Standard": 11500,
+        "Premium": 12000,
+        "High-End": 19000
+      },
+      "9": {
+        "Standard": 12500,
+        "Premium": 14000,
+        "High-End": 25000
+      },
+      "10": {
+        "Standard": 14000,
+        "Premium": 17000,
+        "High-End": 32000
+      }
+    },
+    "coloredDiamondExtraPrices": {
+      "Blue": 0,
+      "Green": 0,
+      "Pink": 0,
+      "Purple": 0,
+      "Peach": 0,
+      "Yellow": 0,
+      "Red": 0,
+      "Orange": 0,
+      "Black": 0,
+      "Brown": 0
+    },
+    "gemstoneExtraPrices": {
+      "blue-sapphire": 0,
+      "green-emerald": 0,
+      "green-sapphire": 0,
+      "moissanite": 0,
+      "pink-sapphire": 0,
+      "red-ruby": 0,
+      "yellow-sapphire": 0
+    },
+    "engravingPrice": 0,
+    "ringSizePrices": {}
+  },
+  "bongioielli": {
+    "metalPrices": {
+      "9K": 430,
+      "10K": 516,
+      "14K": 602,
+      "18K": 860,
+      "Platinum": 946
+    },
+    "shankPrices": {
+      "PLAIN": 0,
+      "WIDE-PLAIN": 344,
+      "KNIFE-EDGE": 0,
+      "CATHEDRAL": 0,
+      "SPLIT": 344,
+      "TWISTED": 344,
+      "CHANNEL": 688,
+      "PLATE-PRONG": 688
+    },
+    "headPrices": {
+      "4-PRONG": 0,
+      "BEZEL": 258,
+      "HIDDEN-HALO": 258,
+      "SINGLE-HALO": 516,
+      "DOUBLE-HALO": 688,
+      "OVAL": 688,
+      "TRAPEZOID": 301,
+      "HALF-MOON": 344,
+      "PEAR": 387,
+      "BAGUETTE": 430
+    },
+    "matchingBandPrices": {
+      "PLAIN": 258,
+      "CATHEDRAL": 172,
+      "KNIFE-EDGE": 215,
+      "SPLIT": 258,
+      "CHANNEL": 516,
+      "PLATE-PRONG": 516
+    },
+    "labDiamondPrices": {
+      "1": {
+        "Standard": 516,
+        "Premium": 645,
+        "High-End": 946
+      },
+      "2": {
+        "Standard": 1290,
+        "Premium": 1462,
+        "High-End": 2064
+      },
+      "3": {
+        "Standard": 2150,
+        "Premium": 2408,
+        "High-End": 3440
+      },
+      "4": {
+        "Standard": 3096,
+        "Premium": 3440,
+        "High-End": 4988
+      },
+      "5": {
+        "Standard": 4042,
+        "Premium": 4472,
+        "High-End": 6708
+      },
+      "6": {
+        "Standard": 4902,
+        "Premium": 5590,
+        "High-End": 8428
+      },
+      "7": {
+        "Standard": 6192,
+        "Premium": 6880,
+        "High-End": 10750
+      },
+      "8": {
+        "Standard": 7310,
+        "Premium": 8256,
+        "High-End": 13330
+      },
+      "9": {
+        "Standard": 7912,
+        "Premium": 9890,
+        "High-End": 15910
+      },
+      "10": {
+        "Standard": 10148,
+        "Premium": 11610,
+        "High-End": 18920
+      }
+    },
+    "naturalDiamondPrices": {
+      "1": {
+        "Standard": 774,
+        "Premium": 1032,
+        "High-End": 1548
+      },
+      "2": {
+        "Standard": 2064,
+        "Premium": 2494,
+        "High-End": 3612
+      },
+      "3": {
+        "Standard": 3440,
+        "Premium": 4128,
+        "High-End": 6020
+      },
+      "4": {
+        "Standard": 4988,
+        "Premium": 6020,
+        "High-End": 9030
+      },
+      "5": {
+        "Standard": 6708,
+        "Premium": 7912,
+        "High-End": 12040
+      },
+      "6": {
+        "Standard": 7568,
+        "Premium": 8170,
+        "High-End": 13760
+      },
+      "7": {
+        "Standard": 9030,
+        "Premium": 9460,
+        "High-End": 15480
+      },
+      "8": {
+        "Standard": 9890,
+        "Premium": 10320,
+        "High-End": 16340
+      },
+      "9": {
+        "Standard": 10750,
+        "Premium": 12040,
+        "High-End": 21500
+      },
+      "10": {
+        "Standard": 12040,
+        "Premium": 14620,
+        "High-End": 27520
+      }
+    },
+    "coloredDiamondExtraPrices": {
+      "Blue": 0,
+      "Green": 0,
+      "Pink": 0,
+      "Purple": 0,
+      "Peach": 0,
+      "Yellow": 0,
+      "Red": 0,
+      "Orange": 0,
+      "Black": 0,
+      "Brown": 0
+    },
+    "gemstoneExtraPrices": {
+      "blue-sapphire": 0,
+      "green-emerald": 0,
+      "green-sapphire": 0,
+      "moissanite": 0,
+      "pink-sapphire": 0,
+      "red-ruby": 0,
+      "yellow-sapphire": 0
+    },
+    "engravingPrice": 0,
+    "ringSizePrices": {}
+  },
+  "dimendscaasi": {
+    "metalPrices": {
+      "9K": 500,
+      "10K": 600,
+      "14K": 700,
+      "18K": 1000,
+      "Platinum": 1100
+    },
+    "shankPrices": {
+      "PLAIN": 0,
+      "WIDE-PLAIN": 400,
+      "KNIFE-EDGE": 0,
+      "CATHEDRAL": 0,
+      "SPLIT": 400,
+      "TWISTED": 400,
+      "CHANNEL": 800,
+      "PLATE-PRONG": 800
+    },
+    "headPrices": {
+      "4-PRONG": 0,
+      "BEZEL": 300,
+      "HIDDEN-HALO": 300,
+      "SINGLE-HALO": 600,
+      "DOUBLE-HALO": 800,
+      "OVAL": 800,
+      "TRAPEZOID": 350,
+      "HALF-MOON": 400,
+      "PEAR": 450,
+      "BAGUETTE": 500
+    },
+    "matchingBandPrices": {
+      "PLAIN": 300,
+      "CATHEDRAL": 200,
+      "KNIFE-EDGE": 250,
+      "SPLIT": 300,
+      "CHANNEL": 600,
+      "PLATE-PRONG": 600
+    },
+    "labDiamondPrices": {
+      "1": {
+        "Standard": 600,
+        "Premium": 750,
+        "High-End": 1100
+      },
+      "2": {
+        "Standard": 1500,
+        "Premium": 1700,
+        "High-End": 2400
+      },
+      "3": {
+        "Standard": 2500,
+        "Premium": 2800,
+        "High-End": 4000
+      },
+      "4": {
+        "Standard": 3600,
+        "Premium": 4000,
+        "High-End": 5800
+      },
+      "5": {
+        "Standard": 4700,
+        "Premium": 5200,
+        "High-End": 7800
+      },
+      "6": {
+        "Standard": 5700,
+        "Premium": 6500,
+        "High-End": 9800
+      },
+      "7": {
+        "Standard": 7200,
+        "Premium": 8000,
+        "High-End": 12500
+      },
+      "8": {
+        "Standard": 8500,
+        "Premium": 9600,
+        "High-End": 15500
+      },
+      "9": {
+        "Standard": 9200,
+        "Premium": 11500,
+        "High-End": 18500
+      },
+      "10": {
+        "Standard": 11800,
+        "Premium": 13500,
+        "High-End": 22000
+      }
+    },
+    "naturalDiamondPrices": {
+      "1": {
+        "Standard": 900,
+        "Premium": 1200,
+        "High-End": 1800
+      },
+      "2": {
+        "Standard": 2400,
+        "Premium": 2900,
+        "High-End": 4200
+      },
+      "3": {
+        "Standard": 4000,
+        "Premium": 4800,
+        "High-End": 7000
+      },
+      "4": {
+        "Standard": 5800,
+        "Premium": 7000,
+        "High-End": 10500
+      },
+      "5": {
+        "Standard": 7800,
+        "Premium": 9200,
+        "High-End": 14000
+      },
+      "6": {
+        "Standard": 8800,
+        "Premium": 9500,
+        "High-End": 16000
+      },
+      "7": {
+        "Standard": 10500,
+        "Premium": 11000,
+        "High-End": 18000
+      },
+      "8": {
+        "Standard": 11500,
+        "Premium": 12000,
+        "High-End": 19000
+      },
+      "9": {
+        "Standard": 12500,
+        "Premium": 14000,
+        "High-End": 25000
+      },
+      "10": {
+        "Standard": 14000,
+        "Premium": 17000,
+        "High-End": 32000
+      }
+    },
+    "coloredDiamondExtraPrices": {
+      "Blue": 0,
+      "Green": 0,
+      "Pink": 0,
+      "Purple": 0,
+      "Peach": 0,
+      "Yellow": 0,
+      "Red": 0,
+      "Orange": 0,
+      "Black": 0,
+      "Brown": 0
+    },
+    "gemstoneExtraPrices": {
+      "blue-sapphire": 0,
+      "green-emerald": 0,
+      "green-sapphire": 0,
+      "moissanite": 0,
+      "pink-sapphire": 0,
+      "red-ruby": 0,
+      "yellow-sapphire": 0
+    },
+    "engravingPrice": 0,
+    "ringSizePrices": {}
+  },
+  "elitejewelers": {
+    "metalPrices": {
+      "9K": 500,
+      "10K": 600,
+      "14K": 700,
+      "18K": 1000,
+      "Platinum": 1100
+    },
+    "shankPrices": {
+      "PLAIN": 0,
+      "WIDE-PLAIN": 400,
+      "KNIFE-EDGE": 0,
+      "CATHEDRAL": 0,
+      "SPLIT": 400,
+      "TWISTED": 400,
+      "CHANNEL": 800,
+      "PLATE-PRONG": 800
+    },
+    "headPrices": {
+      "4-PRONG": 0,
+      "BEZEL": 300,
+      "HIDDEN-HALO": 300,
+      "SINGLE-HALO": 600,
+      "DOUBLE-HALO": 800,
+      "OVAL": 800,
+      "TRAPEZOID": 350,
+      "HALF-MOON": 400,
+      "PEAR": 450,
+      "BAGUETTE": 500
+    },
+    "matchingBandPrices": {
+      "PLAIN": 300,
+      "CATHEDRAL": 200,
+      "KNIFE-EDGE": 250,
+      "SPLIT": 300,
+      "CHANNEL": 600,
+      "PLATE-PRONG": 600
+    },
+    "labDiamondPrices": {
+      "1": {
+        "Standard": 600,
+        "Premium": 750,
+        "High-End": 1100
+      },
+      "2": {
+        "Standard": 1500,
+        "Premium": 1700,
+        "High-End": 2400
+      },
+      "3": {
+        "Standard": 2500,
+        "Premium": 2800,
+        "High-End": 4000
+      },
+      "4": {
+        "Standard": 3600,
+        "Premium": 4000,
+        "High-End": 5800
+      },
+      "5": {
+        "Standard": 4700,
+        "Premium": 5200,
+        "High-End": 7800
+      },
+      "6": {
+        "Standard": 5700,
+        "Premium": 6500,
+        "High-End": 9800
+      },
+      "7": {
+        "Standard": 7200,
+        "Premium": 8000,
+        "High-End": 12500
+      },
+      "8": {
+        "Standard": 8500,
+        "Premium": 9600,
+        "High-End": 15500
+      },
+      "9": {
+        "Standard": 9200,
+        "Premium": 11500,
+        "High-End": 18500
+      },
+      "10": {
+        "Standard": 11800,
+        "Premium": 13500,
+        "High-End": 22000
+      }
+    },
+    "naturalDiamondPrices": {
+      "1": {
+        "Standard": 900,
+        "Premium": 1200,
+        "High-End": 1800
+      },
+      "2": {
+        "Standard": 2400,
+        "Premium": 2900,
+        "High-End": 4200
+      },
+      "3": {
+        "Standard": 4000,
+        "Premium": 4800,
+        "High-End": 7000
+      },
+      "4": {
+        "Standard": 5800,
+        "Premium": 7000,
+        "High-End": 10500
+      },
+      "5": {
+        "Standard": 7800,
+        "Premium": 9200,
+        "High-End": 14000
+      },
+      "6": {
+        "Standard": 8800,
+        "Premium": 9500,
+        "High-End": 16000
+      },
+      "7": {
+        "Standard": 10500,
+        "Premium": 11000,
+        "High-End": 18000
+      },
+      "8": {
+        "Standard": 11500,
+        "Premium": 12000,
+        "High-End": 19000
+      },
+      "9": {
+        "Standard": 12500,
+        "Premium": 14000,
+        "High-End": 25000
+      },
+      "10": {
+        "Standard": 14000,
+        "Premium": 17000,
+        "High-End": 32000
+      }
+    },
+    "coloredDiamondExtraPrices": {
+      "Blue": 0,
+      "Green": 0,
+      "Pink": 0,
+      "Purple": 0,
+      "Peach": 0,
+      "Yellow": 0,
+      "Red": 0,
+      "Orange": 0,
+      "Black": 0,
+      "Brown": 0
+    },
+    "gemstoneExtraPrices": {
+      "blue-sapphire": 0,
+      "green-emerald": 0,
+      "green-sapphire": 0,
+      "moissanite": 0,
+      "pink-sapphire": 0,
+      "red-ruby": 0,
+      "yellow-sapphire": 0
+    },
+    "engravingPrice": 0,
+    "ringSizePrices": {}
+  },
+  "labgrownlove": {
+    "metalPrices": {
+      "10K": 600,
+      "14K": 650,
+      "18K": 800,
+      "Platinum": 950
+    },
+    "shankPrices": {
+      "PLAIN": 0,
+      "WIDE-PLAIN": 300,
+      "KNIFE-EDGE": 0,
+      "CATHEDRAL": 0,
+      "SPLIT": 0,
+      "TWISTED": 0,
+      "CHANNEL": 150,
+      "PLATE-PRONG": 150
+    },
+    "headPrices": {
+      "4-PRONG": 0,
+      "BEZEL": 0,
+      "HIDDEN-HALO": 100,
+      "SINGLE-HALO": 150,
+      "DOUBLE-HALO": 300,
+      "OVAL": 800,
+      "TRAPEZOID": 0,
+      "HALF-MOON": 0,
+      "PEAR": 0,
+      "BAGUETTE": 0
+    },
+    "matchingBandPrices": {
+      "PLAIN": 500,
+      "CHANNEL": 700,
+      "PLATE-PRONG": 700
+    },
+    "labDiamondPrices": {
+      "1": {
+        "Premium": 900,
+        "High-End": 1080
+      },
+      "2": {
+        "Premium": 1800,
+        "High-End": 2160
+      },
+      "3": {
+        "Premium": 2700,
+        "High-End": 3240
+      },
+      "4": {
+        "Premium": 3600,
+        "High-End": 4320
+      },
+      "5": {
+        "Premium": 4500,
+        "High-End": 5400
+      },
+      "6": {
+        "Premium": 5400,
+        "High-End": 6480
+      },
+      "7": {
+        "Premium": 6300,
+        "High-End": 7560
+      },
+      "8": {
+        "Premium": 7200,
+        "High-End": 8640
+      },
+      "9": {
+        "Premium": 8100,
+        "High-End": 9720
+      },
+      "10": {
+        "Premium": 9000,
+        "High-End": 10800
+      }
+    },
+    "naturalDiamondPrices": {
+      "1": {
+        "Premium": 5000,
+        "High-End": 6000
+      },
+      "2": {
+        "Premium": 10000,
+        "High-End": 12000
+      },
+      "3": {
+        "Premium": 30000,
+        "High-End": 36000
+      },
+      "4": {
+        "Premium": 60000,
+        "High-End": 72000
+      },
+      "5": {
+        "Premium": 100000,
+        "High-End": 120000
+      },
+      "6": {
+        "Premium": 250000,
+        "High-End": 300000
+      },
+      "7": {
+        "Premium": 500000,
+        "High-End": 600000
+      },
+      "8": {
+        "Premium": 800000,
+        "High-End": 960000
+      },
+      "9": {
+        "Premium": 1200000,
+        "High-End": 1440000
+      },
+      "10": {
+        "Premium": 2000000,
+        "High-End": 2400000
+      }
+    },
+    "coloredDiamondExtraPrices": {
+      "Blue": 400,
+      "Green": 400,
+      "Pink": 400,
+      "Purple": 400,
+      "Peach": 400,
+      "Yellow": 400,
+      "Red": 400,
+      "Orange": 400,
+      "Black": 400,
+      "Brown": 400
+    },
+    "gemstoneExtraPrices": {
+      "blue-sapphire": 400,
+      "green-emerald": 400,
+      "red-ruby": 400
+    },
+    "engravingPrice": 0,
+    "ringSizePrices": {
+      "55-56": 50,
+      "57-59": 100,
+      "60-63": 150,
+      "64-67": 200,
+      "68-70": 250
+    }
+  },
+  "default": {
+    "metalPrices": {
+      "9K": 500,
+      "10K": 600,
+      "14K": 700,
+      "18K": 1000,
+      "Platinum": 1100
+    },
+    "shankPrices": {
+      "PLAIN": 0,
+      "WIDE-PLAIN": 400,
+      "KNIFE-EDGE": 0,
+      "CATHEDRAL": 0,
+      "SPLIT": 400,
+      "TWISTED": 400,
+      "CHANNEL": 800,
+      "PLATE-PRONG": 800,
+      "FRENCH-PAVE": 0,
+      "PAVE-STONES": 0,
+      "8-STONES": 0,
+      "MULTI-ROW": 0,
+      "CHANNEL-2": 0,
+      "PLATE-PRONG-2": 0,
+      "TWISTED-2": 0,
+      "FLUTED": 0,
+      "BRAIDED": 0,
+      "CATHEDRAL-SIDE-STONE": 0,
+      "SIDE-BEZEL-STONES": 0
+    },
+    "headPrices": {
+      "4-PRONG": 0,
+      "6-PRONG": 0,
+      "BEZEL": 300,
+      "HIDDEN-HALO": 300,
+      "SINGLE-HALO": 600,
+      "DOUBLE-HALO": 800,
+      "OVAL": 800,
+      "TRAPEZOID": 350,
+      "HALF-MOON": 400,
+      "PEAR": 450,
+      "BAGUETTE": 500,
+      "TWO-STONE": 0,
+      "TULIP": 0
+    },
+    "matchingBandPrices": {
+      "PLAIN": 300,
+      "CATHEDRAL": 200,
+      "KNIFE-EDGE": 250,
+      "SPLIT": 300,
+      "CHANNEL": 350,
+      "PLATE-PRONG": 400
+    },
+    "labDiamondPrices": {
+      "1": {
+        "Standard": 600,
+        "Premium": 750,
+        "High-End": 1100
+      },
+      "2": {
+        "Standard": 1500,
+        "Premium": 1700,
+        "High-End": 2400
+      },
+      "3": {
+        "Standard": 2500,
+        "Premium": 2800,
+        "High-End": 4000
+      },
+      "4": {
+        "Standard": 3600,
+        "Premium": 4000,
+        "High-End": 5800
+      },
+      "5": {
+        "Standard": 4700,
+        "Premium": 5200,
+        "High-End": 7800
+      },
+      "6": {
+        "Standard": 5700,
+        "Premium": 6500,
+        "High-End": 9800
+      },
+      "7": {
+        "Standard": 7200,
+        "Premium": 8000,
+        "High-End": 12500
+      },
+      "8": {
+        "Standard": 8500,
+        "Premium": 9600,
+        "High-End": 15500
+      },
+      "9": {
+        "Standard": 9200,
+        "Premium": 11500,
+        "High-End": 18500
+      },
+      "10": {
+        "Standard": 11800,
+        "Premium": 13500,
+        "High-End": 22000
+      }
+    },
+    "naturalDiamondPrices": {
+      "1": {
+        "Standard": 900,
+        "Premium": 1200,
+        "High-End": 1800
+      },
+      "2": {
+        "Standard": 2400,
+        "Premium": 2900,
+        "High-End": 4200
+      },
+      "3": {
+        "Standard": 4000,
+        "Premium": 4800,
+        "High-End": 7000
+      },
+      "4": {
+        "Standard": 5800,
+        "Premium": 7000,
+        "High-End": 10500
+      },
+      "5": {
+        "Standard": 7800,
+        "Premium": 9200,
+        "High-End": 14000
+      },
+      "6": {
+        "Standard": 8800,
+        "Premium": 9500,
+        "High-End": 16000
+      },
+      "7": {
+        "Standard": 10500,
+        "Premium": 11000,
+        "High-End": 18000
+      },
+      "8": {
+        "Standard": 11500,
+        "Premium": 12000,
+        "High-End": 19000
+      },
+      "9": {
+        "Standard": 12500,
+        "Premium": 14000,
+        "High-End": 25000
+      },
+      "10": {
+        "Standard": 14000,
+        "Premium": 17000,
+        "High-End": 32000
+      }
+    },
+    "coloredDiamondExtraPrices": {
+      "Blue": 0,
+      "Green": 0,
+      "Pink": 0,
+      "Purple": 0,
+      "Peach": 0,
+      "Yellow": 0,
+      "Red": 0,
+      "Orange": 0,
+      "Black": 0,
+      "Brown": 0
+    },
+    "gemstoneExtraPrices": {
+      "blue-sapphire": 0,
+      "green-emerald": 0,
+      "green-sapphire": 0,
+      "moissanite": 0,
+      "pink-sapphire": 0,
+      "red-ruby": 0,
+      "yellow-sapphire": 0
+    },
+    "engravingPrice": 0,
+    "ringSizePrices": {}
+  }
+}

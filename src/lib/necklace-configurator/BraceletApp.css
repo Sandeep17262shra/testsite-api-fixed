@@ -1,0 +1,3554 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #e2e2e2;
+  font-family: 'DM Sans', sans-serif;
+}
+
+:root {
+  --color-purple-4F1: #4F149A;
+  --color-purple-7474: #747474;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-grey-6b6: #6B6D70;
+}
+.bg-purple-4F1 {
+  background-color: var(--color-purple-4F1);
+}
+
+.ring-configurator-app{
+  width: 100%;
+  height: 100%; 
+  display: flex;
+  padding: 10px;
+}
+
+.configurator-tool{
+  width: 100%;
+  color: #000;
+  overflow-y: scroll;
+  padding-right: 10px;
+  margin-left: 1%;
+}
+
+.loader {
+  border-top-color: transparent;
+}
+
+.configurator-tool::-webkit-scrollbar-track
+{
+	background-color: #e7e7e7;
+}
+
+.configurator-tool::-webkit-scrollbar
+{
+	width: 4px;
+	background-color: #F5F5F5;
+  border-radius: 50vh;
+}
+
+.configurator-tool::-webkit-scrollbar-thumb
+{
+	background-color: #868686;
+}
+.bg-light-grey{
+  background-color: #f8f8f8;
+}
+.configurator-dropdown {
+  max-height: 0; 
+  overflow: hidden;
+  /* padding-left: 10px; */
+  transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+}
+
+.configurator-dropdown.show {
+  max-height: min-content;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.configurator-dropdown .btn-div{
+  width: 100%;
+  height: 40px;
+  color: #000000;
+  border: 1px solid #4F149A;
+  background-color: #ffffff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.configurator-dropdown .btn-div.active{
+  background-color: #4F149A !important;
+  color: #fff !important;
+}
+
+.example-thumb {
+  height: 20px;
+  width: 20px;
+  background-color: #4F149A; /* yellow-400 */
+  border-radius: 50%;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  color:white;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.example-track {
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  background: #4F149A;
+  border-radius: 9999px;
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .ring-configurator-app{
+    flex-direction: column;
+    gap: 10px;
+  }
+  .configurator-tool{
+    display: flex;
+    width: 100%;
+    margin-left: 0;
+    gap: 10px;
+    overflow-y: unset;
+    padding-right: 0;
+  }
+  .tool-wrapper-one{
+    width: 50%;
+  }
+  .tool-wrapper-two{
+    width: 50%;
+    height: 484px;
+    overflow-y: scroll;
+    padding-right: 10px;
+  }
+  .tool-wrapper-two::-webkit-scrollbar-track
+  {
+    background-color: #e7e7e7;
+  }
+
+  .tool-wrapper-two::-webkit-scrollbar
+  {
+    width: 4px;
+    background-color: #F5F5F5;
+    border-radius: 50vh;
+  }
+
+  .tool-wrapper-two::-webkit-scrollbar-thumb
+  {
+    background-color: #868686;
+  }
+  .configurator-dropdown.capture-div.show{
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .ring-configurator-app{
+    flex-direction: column;
+    gap: 10px;
+  }
+  .configurator-tool{
+    width: 100%;
+    height: 100%;
+    overflow-y: unset;
+    padding-right: unset;
+    margin-left: unset;
+  }
+  .configure-btn button{
+    background-color: var(--color-purple-4F1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+  }
+  button.config-close-icon{
+    background: #eaeaea;
+    color: #000;
+    border-radius: 50vh;
+    top: 10px;
+    padding: 0;
+  }
+  .configurator-dropdown.capture-div.show{
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+.rotate-up {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Theme 3 presentation shell: aligns the bracelet builder with the ring
+   configurator while leaving the bracelet selection logic untouched. */
+.bracelet-theme3-shell {
+  width: 100%;
+  height: 100vh;
+  min-height: 0;
+  padding: 18px;
+  background: #f4f4f2;
+  color: #161616;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.bracelet-theme3-stepper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 5px;
+  background: #f4f4f2;
+  border: 1px solid #dededb;
+  border-radius: 9px 9px 0 0;
+}
+
+.bracelet-theme3-stepper > button {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #232323;
+  text-align: left;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.bracelet-theme3-stepper span {
+  width: 25px;
+  height: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f0f0ed;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bracelet-theme3-stepper strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bracelet-theme3-stepper .active {
+  background: #171717;
+  color: #fff;
+}
+
+.bracelet-theme3-stepper .active span {
+  background: #fff;
+  color: #171717;
+}
+
+.bracelet-theme3-content {
+  height: calc(100vh - 112px);
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid #dededb;
+  border-top: 0;
+  border-radius: 0 0 9px 9px;
+  background: #fff;
+}
+
+.bracelet-theme3-content .bracelet-main-image {
+  width: auto !important;
+  height: 100% !important;
+  min-height: 0;
+  background: #f5f5f4 !important;
+  border-right: 1px solid #dededb;
+  overflow: hidden;
+}
+
+.bracelet-theme3-content .bracelet-main-image > div[style] {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bracelet-preview-tags {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: calc(100% - 110px);
+  pointer-events: none;
+}
+
+.bracelet-preview-tags span {
+  padding: 7px 10px;
+  border: 1px solid #d9d9d6;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .92);
+  color: #333;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.bracelet-theme3-content .bracelet-preview-controls {
+  position: absolute;
+  top: 50px;
+  right: 22px;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: 6;
+  flex-direction: column;
+  padding: 0;
+  transform: none;
+}
+
+.bracelet-theme3-content .bracelet-preview-controls button,
+.bracelet-theme3-content .bracelet-preview-controls button img {
+  width: 46px;
+  height: 46px;
+}
+
+.bracelet-theme3-content .bracelet-main-image::after {
+  content: "Drag to rotate / Scroll to zoom";
+  position: absolute;
+  bottom: 52px;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  color: #8a8a86;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.bracelet-theme3-content .vto-left-filter-section-main {
+  position: relative;
+  width: auto !important;
+  height: 100% !important;
+  padding: 0px 26px !important;
+  background: #fff !important;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.bracelet-theme3-content .vto-left-filter-section-main > .mx-auto {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  width: 100%;
+}
+
+.bracelet-theme3-content .tab-main-wappar {
+  margin: 18px 0 !important;
+  padding: 4px;
+  border: 1px solid #dfdfdc;
+  border-radius: 6px;
+  background: #f7f7f5;
+}
+
+.bracelet-theme3-panel-heading {
+position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: calc(100% + 52px);
+    min-height: 82px;
+    margin: 0px -26px 0;
+    padding: 15px 26px;
+    /* border-top: 1px solid #dededb; */
+    background: #fff;
+     border-bottom: 1px solid #e2e2de;
+}
+
+.bracelet-theme3-panel-heading > div:first-child > span {
+  display: block;
+  margin-bottom: 6px;
+  color: #858585;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .03em;
+}
+
+.bracelet-theme3-panel-heading h1 {
+  margin: 0;
+  color: #151515;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.bracelet-theme3-total {
+  min-width: 164px;
+  text-align: right;
+}
+
+.bracelet-theme3-total > span {
+  display: block;
+  margin-bottom: 4px;
+  color: #888883;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.bracelet-theme3-total > strong {
+  display: block;
+  color: #171717;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.bracelet-theme3-total > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.bracelet-theme3-total button {
+  min-width: 57px;
+  height: 31px;
+  padding: 0 10px;
+  border: 1px solid #dededb;
+  border-radius: 3px;
+  background: #fff;
+  color: #171717;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bracelet-theme3-panel-heading p {
+  margin: 7px 0 0;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.bracelet-theme3-section-order {
+  margin: 0 0 20px;
+  padding: 0;
+  border: 0;
+}
+
+.bracelet-theme3-section-order span,
+.bracelet-theme3-panel-footer span {
+  display: block;
+  color: #92928d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.bracelet-theme3-section-order h2 {
+  margin: 7px 0 0;
+  color: #171717;
+  font-size: 23px;
+  font-weight: 500;
+}
+
+.bracelet-theme3-subsection-order {
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid #e2e2de;
+}
+
+.bracelet-theme3-content .tab-main-btn {
+  flex: 1;
+  min-height: 44px;
+  border: 0 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bracelet-theme3-content .tab-main-btn.active {
+  background: #171717 !important;
+  color: #fff !important;
+}
+
+.bracelet-theme3-content .tab-main-btn::after {
+  display: none !important;
+}
+
+.bracelet-theme3-content .right-sidef-filter-section {
+  display: none;
+}
+
+.bracelet-theme3-content .right-sidef-filter-section > div:first-child > button {
+  display: none;
+}
+
+.bracelet-theme3-content .summary-button-section {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  gap: 10px;
+}
+
+.bracelet-theme3-content .summary-button-section .summary-button {
+  order: 2;
+  width: 56px;
+  height: 28px;
+  border: 1px solid #dededb;
+  border-radius: 3px;
+  background: #fff !important;
+  color: #171717 !important;
+}
+
+.bracelet-theme3-content .summary-button-section .summary-button::after {
+  content: "Summary";
+  color: #171717;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bracelet-theme3-content .summary-button-section .summary-button img {
+  display: none;
+}
+
+.bracelet-theme3-content .summary-button-section .price-div {
+  order: 1;
+  width: auto;
+  height: auto;
+  display: grid;
+  justify-items: end;
+  color: #171717;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.bracelet-theme3-content .summary-button-section .price-div::before {
+  content: "PREVIEW TOTAL";
+  margin-bottom: 5px;
+  color: #888883;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.bracelet-theme3-content .summary-dropdown-section {
+  top: 48px;
+  border: 1px solid #e2e2de;
+  border-radius: 4px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, .1);
+}
+
+.bracelet-theme3-content .mobile-overflow-scroll {
+  padding-top: 0;
+  width: 100%;
+  max-width: none;
+  flex: 1 1 0;
+  min-height: 0;
+  height: 0;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+.bracelet-theme3-summary-card {
+  width: 100%;
+  margin: 22px 0 8px;
+  padding: 26px 28px;
+  border: 1px solid #dededb;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.bracelet-theme3-summary-card > span {
+  color: #92928d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.bracelet-theme3-summary-card h2 {
+  margin: 7px 0 24px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.bracelet-theme3-summary-section {
+  margin-top: 20px;
+}
+
+.bracelet-theme3-summary-section-heading,
+.bracelet-theme3-summary-total-row,
+.bracelet-theme3-summary-card dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.bracelet-theme3-summary-section-heading {
+  padding-bottom: 10px;
+  font-size: 13px;
+}
+
+.bracelet-theme3-summary-card dl {
+  margin: 0;
+}
+
+.bracelet-theme3-summary-card dl > div {
+  padding: 10px 0;
+  border-top: 1px solid #e8e8e5;
+  font-size: 13px;
+}
+
+.bracelet-theme3-summary-card dt {
+  color: #92928d;
+  font-weight: 800;
+}
+
+.bracelet-theme3-summary-card dd {
+  max-width: 60%;
+  margin: 0;
+  color: #202020;
+  font-weight: 700;
+  text-align: right;
+}
+
+.bracelet-theme3-summary-total-row {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #252525;
+  font-size: 14px;
+}
+
+.bracelet-theme3-cart-button {
+  width: 100%;
+  height: 46px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 3px;
+  background: #181818;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bracelet-theme3-panel-footer {
+position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: calc(100% + 52px);
+  min-height: 64px;           /* was 82px */
+  margin: 0px -26px 0;       /* was 26px -26px 0 */
+  padding: 10px 26px;         /* was 15px 26px */
+  border-top: 1px solid #dededb;
+  background: #fff;
+}
+
+.bracelet-theme3-panel-footer strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+.bracelet-theme3-panel-footer button {
+  min-width: 150px;
+  height: 36px;                /* was 43px */
+  border: 0;
+  border-radius: 3px;
+  background: #171717;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bracelet-theme3-content .tab-content {
+  padding: 4px 0 18px !important;
+  border: 0;
+  border-bottom: 1px solid #e2e2df;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.bracelet-theme3-content .font-heading {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.bracelet-theme3-content .style-square-btn,
+.bracelet-theme3-content .style-round-btn,
+.bracelet-theme3-content .purity-square-btn {
+  border-color: #dededb;
+  box-shadow: none;
+}
+
+.bracelet-theme3-content .diamond-shape-section {
+  width: 100%;
+  display: grid !important;
+  grid-template-columns: 24px repeat(3, minmax(0, 1fr)) 24px;
+  gap: 8px !important;
+  align-items: center;
+}
+
+.bracelet-theme3-content .diamond-shape-section > .arrow-btn {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  border: 1px solid #bfbfba;
+  border-radius: 50%;
+}
+
+.bracelet-theme3-content .diamond-shape-section > .style-square-btn,
+.bracelet-theme3-content .diamond-shape-section > .style-round-btn,
+.bracelet-theme3-content .diamond-shape-section > .purity-square-btn {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  height: 88px;
+  margin: 0;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+}
+
+.bracelet-theme3-content .diamond-shape-section > .style-round-btn,
+.bracelet-theme3-content .diamond-shape-section > .purity-square-btn {
+  height: 58px;
+}
+
+.bracelet-metal-purity-title {
+  margin: 26px 0 0;
+  color: #92928d;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.bracelet-theme3-content .bracelet-metal-selector {
+  grid-template-columns: repeat(4, 144px);
+  justify-content: start;
+  gap: 12px !important;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e2e2de;
+}
+
+.bracelet-theme3-content .bracelet-metal-selector > .style-round-btn {
+  height: 112px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+}
+
+.bracelet-theme3-content .bracelet-metal-selector > .style-round-btn:first-of-type {
+  grid-column: auto;
+}
+
+.bracelet-metal-dot {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #dededb;
+  border-radius: 50%;
+}
+
+.bracelet-metal-selector strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.bracelet-metal-selector small {
+  color: #777;
+  font-size: 12px;
+}
+
+.bracelet-theme3-content .bracelet-purity-selector {
+  grid-template-columns: repeat(3, 144px);
+  justify-content: start;
+  gap: 12px !important;
+  padding-bottom: 4px;
+}
+
+.bracelet-theme3-content .bracelet-purity-selector > .purity-square-btn {
+  height: 60px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.bracelet-theme3-content .bracelet-purity-selector > .purity-square-btn:first-of-type {
+  grid-column: auto;
+}
+
+.bracelet-theme3-content .bracelet-style-selector {
+  grid-template-columns: repeat(3, 120px);
+  justify-content: start;
+  gap: 12px !important;
+}
+
+.bracelet-theme3-content .bracelet-style-selector > .style-square-btn:first-of-type {
+  grid-column: auto;
+}
+
+.bracelet-theme3-content .charm-metal-selector {
+  margin-bottom: 18px;
+}
+
+@media screen and (max-width: 900px) {
+  .bracelet-theme3-content .bracelet-metal-selector,
+  .bracelet-theme3-content .bracelet-purity-selector {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .bracelet-theme3-content .bracelet-metal-selector > .style-round-btn,
+  .bracelet-theme3-content .bracelet-purity-selector > .purity-square-btn {
+    min-width: 0;
+  }
+}
+
+.bracelet-theme3-content .diamond-shape-section > .style-square-btn.active-border,
+.bracelet-theme3-content .diamond-shape-section > .style-round-btn.active-border,
+.bracelet-theme3-content .diamond-shape-section > .purity-square-btn.active {
+  border: 2px solid #171717;
+  background: #f1f1ef;
+}
+
+.bracelet-theme3-content .diamond-shape-section > .style-square-btn:first-of-type,
+.bracelet-theme3-content .diamond-shape-section > .style-round-btn:first-of-type,
+.bracelet-theme3-content .diamond-shape-section > .purity-square-btn:first-of-type {
+  grid-column: 2;
+}
+
+/* Keep ring-style metal and karat pickers compact and on one carousel row.
+   These rules intentionally come after the generic picker layout above. */
+.bracelet-theme3-content .bracelet-metal-selector {
+  grid-template-columns: repeat(4, 116px) !important;
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: 10px !important;
+}
+
+.bracelet-theme3-content .bracelet-metal-selector > .style-round-btn,
+.bracelet-theme3-content .bracelet-metal-selector > .style-round-btn:first-of-type {
+  width: 116px !important;
+  min-width: 116px !important;
+  height: 78px !important;
+  grid-column: auto !important;
+}
+
+.bracelet-theme3-content .bracelet-purity-selector {
+  grid-template-columns: repeat(3, 116px) !important;
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: 10px !important;
+}
+
+.bracelet-theme3-content .bracelet-purity-selector > .purity-square-btn,
+.bracelet-theme3-content .bracelet-purity-selector > .purity-square-btn:first-of-type {
+  width: 116px !important;
+  min-width: 116px !important;
+  height: 52px !important;
+  grid-column: auto !important;
+}
+
+/* Reuse the compact metal-card rhythm for bracelet and charm selections. */
+.bracelet-theme3-content .bracelet-style-selector {
+  grid-template-columns: repeat(3, 116px) !important;
+  gap: 10px !important;
+}
+
+.bracelet-theme3-content .bracelet-style-selector > .style-square-btn,
+.bracelet-theme3-content .bracelet-style-selector > .style-square-btn:first-of-type {
+  width: 116px !important;
+  min-width: 116px !important;
+  height: 90px !important;
+  grid-column: auto !important;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+}
+
+/* Ring Theme 3 option-row rhythm. Every row keeps its navigation controls in
+   place, including when there are too few choices to scroll. This prevents
+   the first option from jumping into the arrow column. */
+.bracelet-theme3-content .bracelet-style-selector,
+.bracelet-theme3-content .bracelet-metal-selector:not(.charm-metal-selector),
+.bracelet-theme3-content .bracelet-purity-selector {
+  display: grid !important;
+  grid-template-columns: 24px repeat(4, minmax(0, 1fr)) 24px !important;
+  grid-auto-flow: row;
+  align-items: center;
+  gap: 8px !important;
+  justify-content: stretch;
+}
+
+.bracelet-theme3-content .bracelet-style-selector > .arrow-btn,
+.bracelet-theme3-content .bracelet-metal-selector:not(.charm-metal-selector) > .arrow-btn,
+.bracelet-theme3-content .bracelet-purity-selector > .arrow-btn {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #bfbfba;
+  border-radius: 50%;
+  background: #fff;
+  color: #171717;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  line-height: 1;
+}
+
+.bracelet-theme3-content .bracelet-style-selector > .arrow-btn:last-child,
+.bracelet-theme3-content .bracelet-metal-selector:not(.charm-metal-selector) > .arrow-btn:last-child,
+.bracelet-theme3-content .bracelet-purity-selector > .arrow-btn:last-child {
+  grid-column: -2;
+}
+
+.bracelet-theme3-content .bracelet-style-selector > .arrow-btn:disabled,
+.bracelet-theme3-content .bracelet-metal-selector:not(.charm-metal-selector) > .arrow-btn:disabled,
+.bracelet-theme3-content .bracelet-purity-selector > .arrow-btn:disabled {
+  display: inline-flex !important;
+  cursor: default;
+  opacity: .25;
+}
+
+.bracelet-theme3-content .bracelet-style-selector > .style-square-btn,
+.bracelet-theme3-content .bracelet-style-selector > .style-square-btn:first-of-type,
+.bracelet-theme3-content .bracelet-metal-selector:not(.charm-metal-selector) > .style-round-btn,
+.bracelet-theme3-content .bracelet-metal-selector:not(.charm-metal-selector) > .style-round-btn:first-of-type,
+.bracelet-theme3-content .bracelet-purity-selector > .purity-square-btn,
+.bracelet-theme3-content .bracelet-purity-selector > .purity-square-btn:first-of-type {
+  width: 100% !important;
+  min-width: 0 !important;
+  grid-column: auto !important;
+}
+
+.bracelet-theme3-content .bracelet-theme3-option-heading > span:first-child,
+.bracelet-theme3-content .bracelet-theme3-option-heading > div:first-child > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bracelet-theme3-content .bracelet-theme3-option-heading > span:first-child::before,
+.bracelet-theme3-content .bracelet-theme3-option-heading > div:first-child > span:first-child::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #b48442;
+}
+
+.bracelet-theme3-content .charm-card-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 116px) !important;
+  justify-content: start;
+  gap: 10px !important;
+}
+
+.bracelet-theme3-content .charm-card-grid > .style-square-btn {
+  width: 116px !important;
+  min-width: 116px !important;
+  height: 90px !important;
+  aspect-ratio: auto !important;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+}
+
+/* Image selectors need room for the product artwork; text-only choices (such
+   as initials) use the compact option-card height. */
+.bracelet-theme3-content .style-square-btn:not(:has(img)) {
+  height: 42px !important;
+  min-height: 42px !important;
+}
+
+/* Match the Ring Theme 3 option-card scale across every bracelet picker. */
+.bracelet-theme3-content .style-square-btn:has(img),
+.bracelet-theme3-content .selected-charm-slot:has(img) {
+  height: 94px !important;
+  min-height: 94px !important;
+}
+
+.bracelet-theme3-content .style-round-btn {
+  height: 78px !important;
+  min-height: 78px !important;
+}
+
+.bracelet-theme3-content .purity-square-btn{
+  height: 42px !important;
+  min-height: 42px !important;
+}
+
+.bracelet-theme3-content .selected-charm-card-grid .selected-charm-slot {
+  width: 116px;
+  height: 90px;
+  min-width: 116px;
+  margin: 0;
+  border: 1px solid #e2e2de;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.bracelet-theme3-content .selected-charm-card-grid .selected-charm-slot.active-slot {
+  border: 2px solid #171717;
+  background: #f1f1ef;
+}
+
+.bracelet-theme3-content .selected-charm-card-grid .selected-charm-slot img {
+  max-width: 66px;
+  max-height: 66px;
+  object-fit: contain;
+}
+
+.bracelet-theme3-content .carat-dropdown .select-div {
+  height: 42px;
+  border-color: #dededb;
+  border-radius: 4px;
+}
+
+.bracelet-theme3-content .bottom-btn {
+  right: 26px;
+  bottom: 26px;
+}
+
+@media screen and (max-width: 767px) {
+  .bracelet-theme3-shell {
+    padding: 0;
+  }
+
+  .bracelet-theme3-stepper {
+    position: relative;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 0;
+  }
+
+  .bracelet-theme3-stepper > button {
+    min-height: 52px;
+    padding: 0 10px;
+  }
+
+  .bracelet-theme3-stepper > button:last-child {
+    display: none;
+  }
+
+  .bracelet-theme3-content {
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .bracelet-theme3-content .bracelet-main-image {
+    min-height: 54vh;
+  }
+
+  .bracelet-theme3-content .bracelet-main-image::after {
+    bottom: 14px;
+  }
+
+  .bracelet-theme3-content .vto-left-filter-section-main {
+    height: auto !important;
+    padding: 16px !important;
+  }
+
+  .bracelet-theme3-panel-heading {
+    min-height: auto;
+  }
+
+  .bracelet-theme3-panel-heading h1 {
+    font-size: 22px;
+  }
+}
+
+
+/* new css starts*/
+
+.round-btn{
+  background-color: var(--color-white);
+  border-radius: 50%;
+  border: none;
+  width:38px;
+  height: 38px;
+  position: relative;
+}
+.round-btn.active{
+  border-radius: 40px;
+  width: 113px;
+  height: 38px;
+  background-color: #000;
+  color: var(--color-white);
+  padding: 10px 19px;
+  border: 0;
+  font-size: 14px;
+  transition: none;
+}
+.round-btn img{position: absolute;}
+.round-btn.active img{position: relative;}
+
+.close-cross{
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  padding: 0;
+  font-size: 25px;
+  top: 20px;
+  right: 20px;
+  background-color: var(--color-white);
+}
+.confirm-popup{
+  width: 400px;
+  padding: 40px;
+}
+
+.style-round-btn, .carat-btn, .metal-btn{
+  border-radius: 50%;
+  width: 50px;
+  max-width: 50px;
+  min-width: 50px;
+  height: 50px;
+  background-color: var(--color-white);
+  margin-right: 15px;
+  outline: none;
+  position: relative;
+  border-color: #d3d3d3; 
+  padding: 0 !important;
+  color: #000;
+  font-size: 14px;
+}
+
+
+
+
+.carat-btn{
+  color: #6B6D70 !important;
+}
+
+.style-round-btn img{
+  position: relative;
+}
+
+.style-round-btn img[alt="WIDE PLAIN"]{
+  width: 45px;
+  height: 45px;
+}
+
+.popup-info{
+  display: none;
+  width: 190px;
+  left: 30px;
+  top:0;
+  position: absolute;
+  background-color: #fff;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #6B6D70;
+  border: 1px solid #D3D3D3;
+  z-index: 9;
+}
+.popup-btn:hover .popup-info{
+  display: block;
+}
+
+.font-select-btns{
+  border-radius: 12px;
+}
+.font-select-btn{
+  background-color: unset;
+  font-size: 14px;
+  color: #6B6D70;
+  border: 1px solid #D3D3D3;
+  border-radius: 0px;
+  padding: 6px 15px;
+}
+.band-btn{
+  padding: 2px 20px;
+}
+  .font-select-btn:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+  }
+  .font-select-btn:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+.symbols{
+  background: url('/public/images/engraving-sprite.png') no-repeat;
+  width: 21px;
+	height: 22px;
+  display: block;
+}
+.symbol-1{
+ background-position: -31px -86px;
+}
+.symbol-2{
+ background-position: -71px -86px;
+}
+.symbol-3{
+ background-position: -112px -86px;
+}
+.symbol-4{
+ background-position: -152px -86px;
+}
+.symbol-5{
+ background-position: -195px -87px;
+}
+.symbol-6{
+ background-position: -238px -87px;
+}
+.symbol-7{
+ background-position: -279px -88px;
+}
+.symbol-8{
+ background-position: -320px -87px;
+}
+.symbol-9{
+ background-position: -365px -88px;
+}
+.symbol-10{
+ background-position: -404px -88px;
+}
+.symbol-11{
+ background-position: -446px -86px;
+}
+.symbol-12{
+ background-position: -488px -86px;
+}
+.symbol-13{
+ background-position: -31px -131px;
+}
+.symbol-14{
+ background-position: -74px -133px;
+}
+.symbol-15{
+ background-position: -114px -130px;
+}
+.symbol-16{
+ background-position: -160px -134px;
+}
+.symbol-btn{
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  border-radius: 0px;
+  border: 0px;
+  background-color: transparent;
+}
+
+.symbol-btn span{
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  font-size: 16px;
+}
+
+button:focus{
+  outline: none;
+}
+.arrow-btn{
+  padding: 0px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  width: 25px;
+  max-width: 25px;
+  min-width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.style-block .style-round-btn.active-border{
+  border: 2px solid #000000;
+  outline: none;
+}
+
+.active-border{
+  border: 2px solid #000000;
+  outline: none;
+}
+
+
+
+.flex--center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bg-dark-grey{
+  background-color: var(--color-purple-7474);
+  opacity: 90%;
+}
+.font-heading{
+  color: var(--color-black);
+  font-size: 16px;
+  font-weight: 500;
+}
+.font-sub-heading{
+  color: var(--color-black);
+  font-size: 14px;
+  font-weight: 500;
+}
+.engraving-input{
+  width: 100%;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-black);
+}
+.font-6b6-700{
+  font-weight: 700 !important;
+}
+.font-6b6{
+  color: var(--color-grey-6b6);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.scroll-section{
+  width: 100%;
+  overflow: auto;
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+.scroll-section::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.diamond-shape-section .shape-btn  img{
+  width: 32px;
+  height: 32px;
+}
+
+.lab-natural-diamond button img{
+  width: 21px;
+}
+
+.carat-dropdown .select-div{
+  width: 100%;
+  height: 29px;
+  border-radius: 10px;
+  border: 1px solid #000;
+  color: #6B6D70 !important;
+  padding: 5px;
+  padding-right: 10px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.carat-dropdown .carat-dropdown-div{
+  margin-top: 35px;
+  border-radius: 10px;
+  border: 1px solid #000;
+  color: #6B6D70 !important;
+  padding: 5px;
+  font-size: 14px;
+  position: absolute;
+  bottom: 35px;
+}
+
+.carat-dropdown .carat-dropdown-div ul{
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.carat-dropdown .carat-dropdown-div ul li{
+  font-size: 14px;
+  color: #6B6D70 !important;
+}
+
+.carat-dropdown ul::-webkit-scrollbar {
+  width: 5px;        
+   padding-right: 12px;
+   margin-right: 50px; 
+}
+
+.carat-dropdown ul::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+.carat-dropdown ul::-webkit-scrollbar-thumb {
+  background: #888;     
+  border-radius: 50vh;
+
+}
+
+.carat-dropdown ul::-webkit-scrollbar-thumb:hover {
+  border-radius: 50vh;
+  background: #555;     
+}
+
+
+.carat-dropdown ul li{
+  height: 29px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #0000001F;
+}
+
+.carat-dropdown ul li:last-child{
+  border-bottom: none !important;
+}
+
+.carat-dropdown ul li:hover{
+  background-color: #E7E7E7 !important;
+}
+
+.scrollbar-none{
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.Select-font-icon button{
+  width: 70px;
+  height: 25px;
+  padding: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Select-font-icon button img{
+  width: 40px;
+}
+
+.powered-by-keyideas{
+  position: absolute;
+  top: 0px !important;
+  width: 134px;
+  height: 25px;
+  top: 25px;
+  left: 50%;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%);
+}
+
+.right-sidef-filter-section .font-10{
+  font-size: 10px !important;
+}
+
+.right-sidef-filter-section{
+  position: absolute;
+  right: 0px;
+  top: 0px;
+    padding: 20px 30px;
+  z-index: 9;
+}
+
+.summary-button-section{
+  width: 116px;
+  height: 38px;
+  border-radius: 50vh;
+  background-color: white;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.summary-button-section .price-div{
+  width: 100px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-button-section .summary-button{
+  width: 38px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50vh;
+  color: #fff !important;
+      background-color: #575757;
+}
+
+.summary-button-section .summary-button img{
+  width: 17.84px;
+  max-width: 18px;
+  height: 20px;
+}
+
+
+
+.size-option-section button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #000;
+  font-weight: 400;
+}
+
+.summary-dropdown-section{
+  position: absolute;
+  width: 270px;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  padding: 18px;
+  top: 50px;
+  right: 0;
+  display: none;
+  box-shadow: 0px 4px 24px 0px #00000014;
+
+}
+
+.summary-dropdown-section.show{
+  display: initial !important;
+}
+
+.left-bracelet-section-main .summary-dropdown-section h4{
+  text-transform: uppercase;
+}
+
+.summary-dropdown-section h4{
+  font-size: 14px;
+  color: #000;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summary-dropdown-section ul{
+  margin-bottom: 10px;
+}
+
+.summary-dropdown-section ul li{
+  font-size: 14px;
+  color: #000;
+  font-weight: 400;
+  margin-bottom: 1px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.size-guide-btn{
+  background-color: transparent;
+  /* color: #000; */
+  padding: 0;
+  position: unset;
+}
+
+
+
+@media screen and (max-width: 640px) {
+    .right-sidef-filter-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        display: flex;
+        align-items: center;
+        justify-content: center !important;
+        position: fixed;
+        left: 0;        /* ← ADD THIS */
+        right: 0;       /* ← ADD THIS */
+        box-sizing: border-box;  /* ← ADD THIS */
+    }
+  .right-sidef-filter-section{
+  right: 0px;
+  top: 0px;
+  padding: 24px;
+  z-index: 9;
+  padding-top: 50px;
+}
+  .ring-filter-section-main{
+    padding-top: 70px;
+    height: 65%;
+  }
+  
+  .left-filter-section-main{
+    height: 45%;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+  }
+  
+
+  
+  .mobile-overflow-scroll{
+    overflow: scroll;
+    height: 25vh;
+  }
+
+  .left-bracelet-section-main{
+    height: 33vh !important;
+  }
+
+  .left-bracelet-section-main .mobile-overflow-scroll{
+    overflow: scroll;
+    height: 33vh;
+    scrollbar-width: none;
+  }
+
+  .left-bracelet-section-main .mobile-overflow-scroll .tab-content{
+    margin-bottom: 0 !important;
+  }
+
+  
+  .summary-button-section{
+    width: 125px;
+  }
+  
+  .summary-button-section .summary-button{
+    width: 38px !important;
+    max-width: 38px;
+    min-width: 38px;
+    padding: 0;
+  }
+  
+  .summary-button-section .summary-button span{
+    display: none;
+  }
+  
+  .style-round-btn, .carat-btn, .metal-btn{
+    width: 100%;
+    overflow: auto;
+  }
+  
+
+  
+  .diamond-shape-section .arrow-btn{
+    display: none !important;
+  }
+  .confirm-popup{
+    width: 350px;
+    padding: 20px;
+  }
+      .summary-dropdown-section {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        transform: none;
+        border-radius: 0;
+        padding-top: 80px;
+    }
+
+}
+
+ .ring-filter-section-main{
+    background-color: #E2E2E2 !important;
+  }
+
+
+@media screen and (min-width: 1024px) {
+  .left-filter-section-main{
+    min-width: 415px;
+    max-width: 415px
+  }
+
+  .ring-filter-section-main{
+    width: calc(90% - 430px);
+  }
+
+  .vto-left-filter-section-main{
+    padding-left: 30px;
+    padding-top: 20px;
+}
+
+
+}
+
+
+@media (min-width: 767px) and (max-width: 1023px) {
+
+  .left-filter-section-main{
+    min-width: 320px;
+    max-width: 320px
+  }
+
+  .ring-filter-section-main{
+    width: calc(100% - 320px);
+  }
+
+  .vto-left-filter-section-main{
+  }
+
+  .style-round-btn, .carat-btn, .metal-btn{
+    width: 32px;
+    max-width: 32px;
+    min-width: 32px;
+    height: 32px;
+    margin-right: 8px !important;
+  }
+  
+
+}
+
+.style-round-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5; /* optional: gives a visual disabled effect */
+  pointer-events: auto; /* ensures cursor change works on disabled buttons */
+}
+
+/* new css ends */
+
+
+.main-filter-section .color-box{
+  width: 24px;
+  height: 20px;
+}
+
+.skintone-slider{
+  width: 100%;
+}
+
+.skintone-slider input {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #E1AE9B 0%, #493229 100%) !important;
+  outline: none;
+  cursor: pointer;
+}
+
+.skintone-slider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  margin-top: 0px; 
+}
+
+.skintone-slider input::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}
+
+.top-zoom-btn-section{
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 9;
+  display: flex;
+  gap: 30px;
+}
+
+.top-zoom-btn-section .zoom-btn{
+  display: flex;
+  width: 80px;
+  height: 38px;
+  border-radius: 50vh;
+  background-color: #fff;
+}
+
+.top-zoom-btn-section .zoom-btn span{
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.top-zoom-btn-section .zoom-btn span:first-child{
+  border-right: 1px solid #656263;
+}
+
+.top-zoom-btn-section .cross-btn{
+  width: 38px;
+  height: 38px;
+  border-radius: 50vh;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #1B1B1B;
+  cursor: pointer;
+}
+
+.mobile-tab-section{
+  display: none;
+}
+
+.more-info-main .inner-more-info-section {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  color: #000;
+}
+
+/* Show state */
+.more-info-main .show .inner-more-info-section {
+  max-height: 1000px;  
+}
+
+
+.more-info-main .inner-more-info-section p{
+  color: #6B6D70;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.more-info-main .inner-more-info-section img{
+  width: auto;
+}
+
+.main-hand-image img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.more-diamond-image {
+  height: 150px;
+  width: 200px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+
+.more-diamond-image img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.more-diamond-image .more-diamond-content{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: self-start;
+  font-size: 14px;
+  padding-left: 20px;
+}
+
+.main-hand-image{
+
+  margin: none;
+  overflow: hidden;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+
+}
+
+.main-hand-image .inner-main-hand{
+  max-width: 550px;
+  width: 550px;
+  min-width: 550px;
+  height: 600px;
+  position: relative;
+}
+
+.main-hand-image .inner-main-hand .hand-image{
+  width: 100%;
+  height: 100%;
+}
+
+.main-hand-image .ring-circle{
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  z-index: 9;
+  top: 31%;
+  left: 33%;
+}
+
+.main-hand-image .diamond-effect{
+  transform: scale(0.7);
+  opacity: 0.3;
+  margin-left: 0.5px;
+}
+
+.main-hand-image .ring-diamond{
+  scale: 0.8;
+  margin-top: -1px;
+}
+
+.reset-confirm-popup{
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: start;
+  justify-content: end;
+  z-index: 9999999999999;
+  position: fixed;
+  top: 80px;
+  left: 0px;
+  right: 50px;
+}
+
+.reset-confirm-popup.show{
+  display: flex;
+}
+
+.reset-confirm-popup div{
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+  margin-right: 25px;
+}
+
+.reset-confirm-popup div p{
+  font-weight: 400;
+  font-size: 17px;
+  margin: 0;
+  color: #000;
+}
+
+.reset-confirm-popup div .confirm-btn{
+  width: 200px;
+  height: 44px;
+  background-color: #575757;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+      font-family: inherit;
+  font-weight: 500;
+  font-size: 17px;
+  color: #fff;
+
+}
+
+.reset-confirm-popup div .cross-btn{
+  width: 18px;
+  height: 18px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000000;
+  padding: 0;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  
+}
+
+.ring-circle-image{
+  /* transform: rotate(2deg); */
+}
+
+.vto-powered-by-keyideas{
+  position: absolute;
+  top: 0px !important;
+  width: 134px;
+  height: 25px;
+  top: 25px;
+  left: 50%;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%);
+}
+
+.vto-powered-by-keyideas img{
+  width: 100%;
+}
+
+.carat-dropdown .carat-dropdown-div{
+  display: none;
+}
+
+.carat-dropdown .carat-dropdown-div.show{
+  display: flex;
+}
+
+.carat-dropdown .carat-dropdown-div ul{
+  width: 100%;
+}
+
+.remove-button{
+  color: #6B6D70;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+
+.remove-button img{
+  width: 8px;
+  height: auto;
+  object-fit: contain !important;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+  .reset-confirm-popup.show{
+  display: flex;
+  top: 0;
+}
+.reset-confirm-popup {
+
+        align-items: center;
+        justify-content: center;
+        margin-right: 0px !important;
+        width: 100vw !important;
+        padding-left: 0px !important;
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+        padding-top: 0px !important;
+        margin-top: 0px !important;
+        width: 350px;
+
+        margin-right: 0px !important;
+    }
+
+.reset-confirm-popup div {
+        width: 350px;
+        margin-right: 0px !important;
+        z-index:2;
+    }
+  .mobile-tab-section{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+    width: auto;
+    position: absolute;
+    top: -51px;
+  }
+
+  .inner-mobile-tab-section{
+    display: flex;
+    gap: 7px;
+  }
+
+  .main-filter-section .rounded-lg{
+    margin-bottom: 0 !important;
+  }
+
+  .mobile-tab-section .tab-btn{
+    width: 38px;
+    height: 38px;
+    background-color: #fff;
+    border: 1px solid #C3C3C3;
+    border-radius: 50vh;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-tab-section .tab-btn.active{
+    background-color: #000 !important;
+  }
+
+  .mobile-tab-section .tab-btn.active img{
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(243deg) brightness(104%) contrast(101%) !important;
+  }
+
+  .left-bracelet-section-main .mobile-tab-section .tab-btn img{
+    width: 30px;
+    height: 30px;
+  }
+
+  .left-bracelet-section-main .mobile-overflow-scroll .tab-content{
+    display: none;
+  }
+
+  .left-bracelet-section-main .mobile-overflow-scroll .tab-content.show{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bracelet-reset-button{
+    position: fixed;
+    bottom: 268px;
+    right: 18px;
+    z-index: 9;
+  }
+
+  .bracelet-main-image{
+    height: 90% !important;
+  }
+
+  .mobile-tab-section .tab-btn img{
+    width: 15px;
+    height: 15px;
+  }
+
+  .mobile-tab-section .zoom-item-button{
+    display: flex;
+    width: 80px;
+    height: 38px;
+    border-radius: 50vh;
+    background-color: #fff;
+  }
+
+  .mobile-tab-section .zoom-item-button span{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .mobile-tab-section .zoom-item-button span:first-child{
+    border-right: 1px solid #656263;
+  }
+
+  .top-zoom-btn-section{
+    top: 25px;
+    z-index: 1;
+  }
+
+  .top-zoom-btn-section .zoom-btn{
+    position: absolute;
+    bottom: 143px;
+    z-index: 1;
+    right: 18px;
+    width: 38px;
+    height: 75px;
+    flex-direction: column-reverse;
+  }
+
+  .top-zoom-btn-section .zoom-btn span{
+    width: 100%;
+  }
+
+  .top-zoom-btn-section .zoom-btn span:first-child{
+    border-right: none;
+    border-left: 1px solid #656263;
+    transform: rotate(90deg);
+  }
+
+  .top-zoom-btn-section .cross-btn{
+    position: absolute;
+    top: 20px;
+    right: 18px;
+  }
+
+  .filter-show-tab{
+    display: none;
+  }
+
+  .filter-show-tab.show{
+    display: flex;
+    flex-direction: column;
+    height: 115px;
+    padding: 15px;
+  }
+
+  .diamond-shape-section {
+    margin: 0;
+    padding: 0;
+  }
+
+  .vto-left-filter-section-main{
+    height: 120px;
+    padding-top: 0px;
+    position: absolute;
+    bottom: 10px;
+    z-index: 2;
+    background-color: transparent !important;
+    overflow: initial !important;
+  }
+
+  .more-info-main{
+    position: relative;
+  }
+
+  .more-info-main .show{
+    position: absolute;
+    background-color: #fff;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 99999999;
+  }
+
+  .more-info-main .show .inner-more-info-section{
+    max-height: none;
+  }
+
+  .more-info-main .inner-more-info-section{
+    display: flex !important;
+    flex-direction: column;
+    overflow: hidden;
+    max-height: 40px;
+  }
+
+  .more-info-main .inner-more-info-section p{
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+  }
+
+  .more-info-main .show .inner-more-info-section p{
+    display: flex;
+    -webkit-line-clamp: initial;    
+    overflow: initial;
+  }
+
+  .top-zoom-btn-section .zoom-btn{
+    /* position: absolute;
+    right: 9px;
+    bottom: 50px; */
+  }
+
+  .main-hand-image .inner-main-hand {
+    max-width: 450px;
+    width: 450px;
+    min-width: 450px;
+    height: 730px;
+    position: relative;
+  }
+  
+  .main-hand-image{
+    height: 100%;
+    align-items: end;
+    justify-content: start;
+    padding-left: 0px;
+    overflow: hidden;
+    top: -180px;
+    margin-left: 0rem !important;
+  }
+
+
+
+  .main-hand-image .ring-circle {
+    position: absolute;
+    width: 87px;
+    height: 87px;
+    z-index: 9;
+    top: 31%;
+    left: 24.7%;
+  }
+
+  .carat-dropdown .carat-dropdown-div.show{
+    display: flex;
+    position: absolute;
+    bottom: 40px;
+  }
+
+  .carat-dropdown .select-div{
+    margin-top: 10px;
+  }
+
+  .top-zoom-btn-section{
+    position: initial;
+  }
+
+
+}
+ .shape-btn:hover{
+  border: 2px solid #D3D3D3;
+}
+
+
+.style-square-btn {
+  width: 86px !important;
+  height: 86px !important;
+  background-color: #ffffff;
+  border: 2px solid #D3D3D3;
+  border-radius: 12px; /* matches Figma */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+}
+
+.square-btn-center img {
+  bottom: unset !important;
+  width: 70px !important;
+  height: 70px !important;
+}
+.style-square-btn img {
+  bottom: 0px;
+  width: 65px;
+  height: 65px;
+  border-radius: 0 !important;
+}
+
+.share-tooltip {
+    min-width: 80px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+.style-square-btn.active-border {
+  border-color: #000000;
+}
+
+.purity-square-btn {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #D3D3D3;
+  border-radius: 50%;   /* square with soft corners */
+  background-color: #fff;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.purity-square-btn.active,
+.purity-square-btn:hover {
+  border: 1.5px solid #000;
+  color: #000;
+}
+
+/* Initial letters use the same compact footprint as placed charm slots. */
+.initial-letter-btn {
+  width: 86px !important;
+  height: 86px !important;
+  min-width: 46px !important;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0px;
+}
+
+/* A single row of initials that can be dragged horizontally without a visible scrollbar. */
+.initial-letter-scroll {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  touch-action: pan-x;
+  user-select: none;
+}
+
+.initial-letter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.initial-letter-scroll:active {
+  cursor: grabbing;
+}
+
+.initial-letter-scroll .initial-letter-btn {
+  flex: 0 0 auto;
+}
+
+.carat-dropdown .select-div{
+  width: 100%;
+  height: 29px;
+  border-radius: 10px;
+  border: 1px solid #000;
+  color: #6B6D70 !important;
+  padding: 5px;
+  padding-right: 10px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.carat-dropdown .carat-dropdown-div {
+  margin-top: -275px;
+  border-radius: 5px; 
+  border: 1px solid #000;
+  color: #6B6D70 !important;
+  padding: 5px 0; 
+  font-size: 14px;
+  width: 100%; 
+  box-sizing: border-box; 
+}
+
+
+
+.carat-dropdown .carat-dropdown-div ul{
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.carat-dropdown .carat-dropdown-div ul li{
+  font-size: 14px;
+  color: #6B6D70 !important;
+}
+
+.carat-dropdown ul::-webkit-scrollbar {
+  width: 5px;        
+   padding-right: 12px;
+   margin-right: 50px; 
+}
+
+.carat-dropdown ul::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+.carat-dropdown ul::-webkit-scrollbar-thumb {
+  background: #888;     
+  border-radius: 50vh;
+
+}
+
+.carat-dropdown ul::-webkit-scrollbar-thumb:hover {
+  border-radius: 50vh;
+  background: #555;     
+}
+
+
+.carat-dropdown ul li{
+  height: 29px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #0000001F;
+}
+
+.carat-dropdown ul li:last-child{
+  border-bottom: none !important;
+}
+
+.carat-dropdown ul li:hover{
+  background-color: #E7E7E7 !important;
+}
+
+.cart-btn-summary{
+  background-color: #575757;
+  color: #fff !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 0px;
+  font-size: 12px;
+  display: flex;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.mobile-overflow-scroll {
+      overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 100px);
+    scrollbar-width: none;
+}
+.diamond-shape-section .shape-btn img{
+  width: 50px;
+  /* height: 50px; */
+}
+.diamond-shape-section .shape-btn img.colored{
+  width: 32px;
+}
+ .diamond-shape-section{
+    overflow: scroll;
+    padding-bottom: 8px;
+    overflow: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;  
+  }
+
+  .diamond-shape-section::-webkit-scrollbar {
+    display: none; 
+  } 
+
+   .diamond-shape-section .arrow-btn{
+    display: none !important;
+   }
+@media screen and (max-width: 767px) {
+      .bottom-btn {
+                position: absolute;
+        top: -160px;
+        width: fit-content;
+        transform: translateX(80%);
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+        left: 73vw;
+    }
+}
+@media screen and (max-width: 640px) {
+ 
+
+  .summary-dropdown-section-keyideas{
+    top: 40px;
+    transform: translateX(30%);
+
+  } 
+  
+  .mobile-overflow-scroll {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .diamond-shape-section {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+  }
+    .bracelet-necklace{
+    width: max-content;
+  }
+
+  .diamond-shape-section > * {
+    flex-shrink: 0;
+  }
+.bottom-btn {
+    position: absolute;
+    /* bottom: 100% !important; */
+    width: auto;
+    height: 26px;
+    left: 50%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column !important;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%);
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 50vh;
+    color: #000;
+    padding: 2px 20px;
+    cursor: pointer;
+    text-align: center;
+    top: 71% !important;
+    /* bottom: 0% !important; */
+    left: 91% !important;
+}
+.bracelet-necklace {
+    position: absolute;
+    top: 220px !important;
+  }
+}
+.tab-main-btn {
+  flex: 1;
+  height: 38px;
+  background-color: #ffffff;
+  border: none;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+  cursor: pointer;
+  position: relative;
+  border-radius: unset;
+}
+.tab-main-btn.active {
+  background-color: #575757;
+  color: #ffffff;
+  z-index: 2;
+}
+
+.tab-main-btn:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+      top: 32px;
+    width: 15px;
+    height: 36px;
+    background-color: #ffffff;
+    border-left: 1px solid #575757;
+    border-radius: 0 0 1px 0 !important;
+    border-style: solid;
+    border-top: 2px solid #575757;
+    transform: translateY(-95%) rotate(171deg) skew(14deg, -61deg);
+    z-index: 3;
+}
+.tab-main-btn img {
+  width: 16px;
+  height: 16px;
+}
+.tab-main-btn.active:not(:last-child)::after {
+  background-color: #575757;
+}
+.tab-main-wappar{
+  border-radius: 10px !important;
+    overflow: hidden;
+        border: 1px grey solid;
+}
+
+
+@media (min-width: 767px) {
+    .mobile-overflow-scroll div.shadow {
+        margin-right: 5px;
+    }
+}
+.mobile-overflow-scroll div.shadow {
+    box-shadow: rgba(0, 0, 0, 0.15) 2px 2px 4px;
+}
+.bracelet-necklace{
+  position: absolute;
+  top: 30px;
+  width: auto;
+  height: 26px;
+  left: 50%;
+  z-index: 9;
+  display: flex;
+  flex-direction:row;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 50vh;
+  color: #000;
+  padding: 2px 20px;
+  cursor: pointer;
+  text-align: center;
+}
+.bracelet-necklace button{
+  padding: 0px;
+    background-color: #fff;
+  border-radius: 50vh;
+  color: #000;
+  box-shadow: 2px 2px 4px 0px #00000026;
+      min-width: fit-content;
+            display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.arrow-icon {
+  font-size: 20px;
+  line-height: 1;          
+  display: inline-block;    
+  vertical-align: middle;   
+  margin-left: 5px;         
+}
+
+.bottom-btn{
+  position: absolute;
+    bottom: 15px !important;
+    width: auto;
+    height: 26px;
+    left: 50%;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%);
+    font-size: 10px;
+    font-weight: 600;
+    gap: 8px;
+    border-radius: 50vh;
+    color: #000;
+    padding: 2px 20px;
+    cursor: pointer;
+    text-align: center;
+}
+.bottom-btn button, .bottom-btn button img{
+ padding: unset;
+ height: 45px;
+ z-index: 1;
+
+ background-color: unset !important;
+ width: 45px;
+ border: none !important;
+}
+
+@media screen and (min-width: 1024px) {
+    .bracelet-main-image{
+        width: calc(90% - 430px);
+    }
+}
+@keyframes blink {
+  0%, 100% { box-shadow: 0 0 0 rgba(118, 70, 215, 0); }
+  50% { box-shadow: 0 0 10px rgba(118, 70, 215, 0.8); }
+}
+
+.blink-shadow {
+  animation: blink 2s ease-in-out 1; 
+}
+.summary-button-section.blink-shadow{
+  animation: shadow-blink 1s infinite;
+  transition: all 0.3s ease-in-out;
+}
+@keyframes shadow-blink {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.35);
+  }
+}
+.edit-section-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #575757;
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.edit-section-link:hover {
+  color: #000;
+}
+.selected-charms-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.selected-charm-slot {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  flex-shrink: 0;
+      border-radius: 4px;
+}
+
+.selected-charm-slot img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 0 !important;
+}
+
+.initial-charm-slot-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.selected-charm-slot.add-slot {
+  border-style: dashed;
+  border-color: #000;
+  color: #6B6D70;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.selected-charm-slot.add-slot:hover {
+  border-color: #000;
+  color: #000;
+}
+
+.selected-charm-slot .remove-slot-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  color: #000;
+}
+
+.selected-charm-slot .remove-slot-btn:hover {
+  background: #000;
+  color: #fff;
+}
+.selected-charm-slot {
+  cursor: pointer;
+}
+.selected-charm-slot.active-slot {
+  border: 2px solid #000;
+
+}
+.charm-detail-section {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #E7E7E7;
+  margin-left: 0px;
+}
+
+.charm-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.charm-more-details-toggle {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.more-details-btn {
+  margin-bottom: 8px;
+}
+
+.charm-more-details-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding-top: 4px;
+}
+
+
+
+.design-summary-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 64px;
+  background-color: #fff;
+  padding: 0 16px;
+}
+
+.design-summary-toggle {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.design-summary-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.design-summary-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  letter-spacing: 0.3px;
+}
+
+.design-summary-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+}
+
+.design-summary-cart-btn {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 0px;
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.design-summary-cart-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Popup panel — expands below the bar, in normal flow */
+
+
+.summary-popup-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 0;
+  max-height: 280px;
+}
+
+.summary-popup-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #E7E7E7;
+}
+
+.summary-popup-row:last-child {
+  border-bottom: none;
+}
+
+.summary-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  margin: 0;
+}
+
+.summary-item-sub {
+  font-size: 12px;
+  color: #6B6D70;
+  margin: 4px 0 0;
+}
+
+.summary-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.summary-item-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+}
+
+.summary-remove-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: #6B6D70;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.summary-remove-link:hover {
+  color: #000;
+}
+
+.summary-popup-footer {
+  border-top: 1px solid #E7E7E7;
+  padding: 14px 20px 20px;
+}
+
+.summary-popup-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 14px;
+}
+
+.summary-popup-addcart {
+  width: 100%;
+  height: 44px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.summary-popup-addcart:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.chain-option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+}
+
+.chain-option {
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: #6b6d70;
+  padding: 0 0 4px;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+  line-height: 1.3;
+}
+
+.chain-option:hover,
+.chain-option.is-selected {
+  border-bottom-color: #000;
+  color: #000;
+}
+.design-summary-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.design-summary-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.design-summary-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  background-color: #fff;
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 6px 20px 6px 6px;
+}
+
+.design-summary-toggle {
+  background-color: #F0F0F0;
+  border: none;
+  border-radius: 0%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.design-summary-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.design-summary-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  letter-spacing: 0.3px;
+}
+
+.design-summary-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #000;
+}
+
+.design-summary-cart-btn {
+  background-color: #000000;
+  color: #fff;
+  border: none;
+  border-radius: 0vh;
+  height: 56px;
+  padding: 0 14px;
+  border: 1px solid #4c4c4c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.design-summary-cart-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Popup panel — fixed, slides up from viewport bottom to the bar's position */
+.summary-popup-panel {
+  position: fixed;
+  height: 460px;
+  width: 460px;
+  bottom: 200px;
+  max-height: 60vh;
+  background-color: #fff;
+  box-shadow: 0px -4px 24px 0px #00000014;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  opacity: 0;
+  z-index: 998;
+  transition: transform 0.35s ease-in-out, opacity 0.35s ease-in-out;
+  pointer-events: none;
+}
+
+.summary-popup-panel.show {
+      height: 460px;
+    width: 460px;
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.summary-popup-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px 0;
+}
+
+.summary-popup-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #E7E7E7;
+}
+
+.summary-popup-row:last-child {
+  border-bottom: none;
+}
+
+.summary-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  margin: 0;
+}
+
+.summary-item-sub {
+  font-size: 12px;
+  color: #6B6D70;
+  margin: 4px 0 0;
+}
+
+.summary-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.summary-item-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+}
+
+.summary-remove-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: #6B6D70;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.summary-remove-link:hover {
+  color: #000;
+}
+
+.summary-popup-footer {
+  border-top: 1px solid #E7E7E7;
+  padding: 14px 24px 20px;
+}
+
+.summary-popup-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 14px;
+}
+
+.summary-popup-addcart {
+  width: 100%;
+  height: 48px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.summary-popup-addcart:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media screen and (max-width: 1024px) {
+    .mobile-chain-detail {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 16px;
+      background: #fff;
+      text-align: center;
+    }
+
+    .mobile-chain-detail .edit-section-link {
+      margin-top: 12px;
+    }
+
+    .left-bracelet-section-main .Chain-detail-block {
+      display: none;
+    }
+
+    .bracelet-image{
+      width: 100vw !important;
+      height: 50vh !important;
+      top: 0;
+    }
+    .bracelet-image div{
+      width: 100vw !important;
+      height: 50vh !important;
+    }
+    .Bracelet-full-frame{
+      display: flex;
+      flex-direction: column;
+      overflow: scroll;
+        scrollbar-width: none;
+    }
+
+  .vto-left-filter-section-main{
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 50vh;
+    margin-top: 100px;
+    overflow: unset;
+    margin-bottom: 100px;
+  }
+  .summary-popup-panel.show {
+    width: calc(100% - 40px);
+    left: 0;
+    margin: 20px;
+  }
+  .summary-popup-panel {
+  position: fixed;
+  height: 460px;
+  width: calc(100% - 40px);
+  bottom: 200px;
+  max-height: 60vh;
+  background-color: #fff;
+  box-shadow: 0px -4px 24px 0px #00000014;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  opacity: 0;
+  z-index: 998;
+  transition: transform 0.35s ease-in-out, opacity 0.35s ease-in-out;
+  pointer-events: none;
+}
+.Chain-detail-block{
+  /* Keep this at the top of the detail panel, but let it scroll with its content. */
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 100%;
+  align-items: center;
+  padding-left: 0;
+}
+.design-summary-wrapper {
+    position: fixed;
+    width: 100%;
+    /* margin-top: 20px; */
+    bottom: 30px;
+    left: 0;
+}
+}
+
+@media screen and (min-width: 1025px) {
+  .mobile-chain-detail {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+    .bracelet-image {
+        width: 100vw !important;
+        height: 50vh !important;
+        margin-top: 0px;
+        top: 0;
+    }
+}
+.cnfm-btn{
+  background-color: #575757;
+}
+
+/* Charm rows are carousels, never grids. This comes last to override the
+   general option-grid styles used elsewhere in the configurator. */
+.bracelet-theme3-content .charm-carousel-shell {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 24px;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+}
+
+.bracelet-theme3-content .charm-carousel-shell::before,
+.bracelet-theme3-content .charm-carousel-shell::after {
+  display: none;
+}
+
+.bracelet-theme3-content .charm-carousel {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  align-items: center;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  grid-column: 2;
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  padding: 2px 0 10px !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  touch-action: pan-x;
+  user-select: none;
+}
+
+.bracelet-theme3-content .charm-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.bracelet-theme3-content .charm-carousel:active {
+  cursor: grabbing;
+}
+
+.bracelet-theme3-content .charm-carousel > .style-square-btn,
+.bracelet-theme3-content .charm-carousel > .selected-charm-slot {
+  flex: 0 0 116px !important;
+  width: 116px !important;
+  min-width: 116px !important;
+  height: 90px !important;
+  margin: 0 !important;
+}
+
+/* Selected charms use the same arrow gutters as the option carousel. The
+   previous 2px padding left the first active card underneath the fade mask. */
+.bracelet-theme3-content .selected-charm-carousel-shell .charm-carousel {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.bracelet-theme3-content .charm-carousel-arrow {
+  position: static;
+  grid-row: 1;
+  width: 24px !important;
+  min-width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  transform: none;
+  border: 1px solid #bfbfba !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+}
+
+.bracelet-theme3-content .charm-carousel-arrow.previous { grid-column: 1; }
+.bracelet-theme3-content .charm-carousel-arrow.next { grid-column: 3; }
+
+.bracelet-theme3-content .charm-carousel-arrow > span {
+  display: block;
+  font-size: 21px;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+/* 3D charms have no metal variants. Keep the control in its fixed position
+   but make each swatch visibly unavailable and non-interactive. */
+.bracelet-theme3-content .charm-metal-control.is-unavailable .style-round-btn:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+
+.bracelet-theme3-content .birthstone-carousel > .style-square-btn {
+  flex: 0 0 90px !important;
+  width: 90px !important;
+  min-width: 90px !important;
+  height: 90px !important;
+}
+
+.bracelet-theme3-content .birthstone-carousel > .style-square-btn img {
+  width: 64px !important;
+  height: 64px !important;
+  object-fit: contain;
+}
+
+/* Keep the final carousel overrides aligned with Ring Theme 3 card heights. */
+.bracelet-theme3-content .charm-carousel > .style-square-btn:has(img),
+.bracelet-theme3-content .charm-carousel > .selected-charm-slot:has(img),
+.bracelet-theme3-content .birthstone-carousel > .style-square-btn:has(img) {
+  height: 94px !important;
+  min-height: 94px !important;
+}
+
+.bracelet-theme3-content .charm-carousel > .style-square-btn:not(:has(img)){
+  height: 42px !important;
+  min-height: 42px !important;
+}
+.bracelet-theme3-content .charm-carousel > .style-round-btn {
+  flex: 0 0 116px !important;
+  width: 116px !important;
+  min-width: 116px !important;
+  height: 78px !important;
+  margin: 0 !important;
+}
+
+/* Model-only preview mode */
+.theme3-root.preview-model-only {
+  padding: 0 !important;
+  background: #ffffff !important;
+}
+
+.theme3-root.preview-model-only .theme3-builder {
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 0 !important;
+  display: block !important;
+  background: #ffffff !important;
+}
+
+.theme3-root.preview-model-only .theme3-workspace {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.theme3-root.preview-model-only .theme3-preview-pane.model-only {
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+}
+
+.preview-model-only .gb-preview-controls {
+  top: auto !important;
+  right: auto !important;
+  bottom: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+/* ── 2D charm cards ─────────────────────────────────────────────────────────
+   Option-card artwork is 100px square by default (NecklaceApp.css), which
+   suits the chain thumbnails and the 3D charm renders. The 2D charm artwork
+   is drawn much tighter in its own frame, so at 100px it reads oversized
+   next to them - it gets 70px here instead.
+
+   NecklaceApp.css is imported AFTER this file, so this needs one extra class
+   of specificity (.gb-option-row--charm-2d) to win rather than relying on
+   source order. */
+.theme3-root .gb-option-row--charm-2d .gb-card-option img {
+  width: 70px;
+  height: 70px;
+}

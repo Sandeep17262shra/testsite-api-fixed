@@ -1,0 +1,12 @@
+{
+    "diamondPrice":  600,
+    "ringPrice": 0,
+    "carat": 1,
+    "maxCarat": 3.0,
+    "perCarat": 50,
+    "naturalPriceAddon": 500,
+    "metalPrice": 700,
+    "ringHeadStylePrice": 0,
+    "ringSideSettingPrice": 0,
+    "matchingBandPrice": 300
+}
