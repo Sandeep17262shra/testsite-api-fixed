@@ -175,15 +175,19 @@
     "name": "Three Stone",
     "compatible_shanks": [
       "S001",
-      "S003",
-      "S008"
+      "S003"
     ],
     "compatible_shapes": [
       "SH01",
       "SH02",
+      "SH03",
       "SH04",
+      "SH05",
       "SH06",
-      "SH07"
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10"
     ],
     "compatible_bands": [
       "B001",

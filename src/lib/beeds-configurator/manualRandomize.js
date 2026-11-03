@@ -1,4 +1,8 @@
-import { getValidCharmGaps, pickNearestValidCharmGap } from "./beadRingDrag";
+import {
+  getCharmAssetsFromItems,
+  getValidCharmGaps,
+  pickNearestValidCharmGap,
+} from "./beadRingDrag";
 
 /** Empty-string manual build: show randomize after this many beads on the string. */
 export const MANUAL_RANDOMIZE_MIN_BEADS = 10;
@@ -31,9 +35,7 @@ function shuffleArray(values) {
 
 /** Bead/spacer sequence the charm gap indices are measured against. */
 function getRingSegmentEntries(manualItems) {
-  return manualItems
-    .filter((item) => item.type === "bead" || item.type === "spacer")
-    .map((item) => ({ type: item.type }));
+  return manualItems.filter((item) => item.type === "bead" || item.type === "spacer");
 }
 
 /**
@@ -73,6 +75,7 @@ function buildCharmGapStep(manualItems) {
   }
 
   const wanted = pickSpreadCharmGaps(segmentCount, charms.length);
+  const charmAssets = getCharmAssetsFromItems(charms);
   const occupied = new Set();
   const gaps = [];
 
@@ -81,7 +84,8 @@ function buildCharmGapStep(manualItems) {
       wanted[i],
       segmentCount,
       occupied,
-      segmentEntries
+      segmentEntries,
+      { charmAssets }
     );
     if (ringGap == null) {
       return;
@@ -89,6 +93,11 @@ function buildCharmGapStep(manualItems) {
     occupied.add(ringGap);
     gaps.push({ charmId: charm.id, ringGap });
   });
+
+  // A charm left out would keep its old gap and could land on top of a re-dealt one.
+  if (gaps.length < charms.length) {
+    return null;
+  }
 
   const moved = gaps.some(
     ({ charmId, ringGap }) =>

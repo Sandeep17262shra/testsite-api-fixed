@@ -81,7 +81,7 @@ export const NAME_PENDANT_MAX_LENGTH = 12;
 // Negative is correct here: these are connected script faces whose glyphs are
 // drawn to overlap slightly and join up.
 export const NAME_PENDANT_FONTS = [
-    { id: "dancing",    label: "Dancing",    sample: "R", url: "/fonts/Dancing Script_Bold.json",  letterSpacingEm: -0.091 },
+    { id: "dancing",    label: "Dancing",    sample: "R", url: "/fonts/Dancing Script_Bold.json",  letterSpacingEm: -0.4 },
     { id: "kingsman",   label: "Kingsman",   sample: "K", url: "/fonts/Kingsman Demo_Regular.json", letterSpacingEm: -0.091 },
     { id: "yellowtail", label: "Yellowtail", sample: "Y", url: "/fonts/Yellowtail_Regular.json",    letterSpacingEm: -0.091 },
 ];

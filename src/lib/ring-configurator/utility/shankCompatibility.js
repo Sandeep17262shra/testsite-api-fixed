@@ -16,22 +16,22 @@ const RULES_BY_STORE = {
   elitejewelers: elitejewelersRules,
   labgrownlove: labgrownloveRules,
   diamondwise: diamondwiseRules,
-  // The pricing-test store does not have its own compatibility catalogue.
-  // Use the default model rules (which include Moval / SH11) rather than the
-  // more restrictive Jewelith rules.
-  "jewelith-pricing-test": defaultRules,
   jewelith: jewelithRules,
 };
 
 const getHeadRule = (parentUrl, head) => {
   let headId = getProductIdByRawLabel("head", head) ?? (typeof head === "string" && head.startsWith("H") ? head : undefined);
   if (headId === "H004") headId = "H007";
-  const storeRules = RULES_BY_STORE[getStoreKey(parentUrl)];
-  // H000 is opt-in: only present where the H000 entry exists and has compatible shanks (e.g. diamondwise, default)
+  const storeKey = getStoreKey(parentUrl);
+  // No parentUrl (e.g. localhost/dev) → default.json
+  // Known store → that store's rules
+  // Unknown parentUrl (new store, no match) → jewelith.json
+  const storeRules = !parentUrl
+    ? defaultRules
+    : (RULES_BY_STORE[storeKey] !== defaultRules ? RULES_BY_STORE[storeKey] : jewelithRules);
+  // H000 is opt-in: only present where the H000 entry exists and has compatible shanks
   if (head === "NO-HEAD" || headId === "H000") {
-    const storeKey = getStoreKey(parentUrl);
-    const rules = storeKey === "default" ? defaultRules : storeRules;
-    const rule = rules?.find((r) => r.head_id === "H000");
+    const rule = storeRules?.find((r) => r.head_id === "H000");
     return rule && Array.isArray(rule.compatible_shanks) && rule.compatible_shanks.length > 0 ? rule : null;
   }
   return storeRules?.find((rule) => rule.head_id === headId) ?? defaultRules?.find((rule) => rule.head_id === headId);
@@ -42,18 +42,22 @@ export const hasNoHeadCompatibility = (parentUrl) =>
 
 export const isHeadCompatible = (parentUrl, shank, head) => {
   const rule = getHeadRule(parentUrl, head);
+  if (!rule) return true;
   const shankId = getProductIdByRawLabel("shank", shank);
-  return Boolean(rule && shankId && rule.compatible_shanks.includes(shankId));
+  return Boolean(shankId && rule.compatible_shanks.includes(shankId));
 };
 
 export const isShapeCompatible = (parentUrl, head, shape) => {
   const rule = getHeadRule(parentUrl, head);
+  if (!rule) return true;
+  if (rule?.head_id === "H008") return true;
   const shapeId = getProductIdByRawLabel("shape", shape);
-  return Boolean(rule && shapeId && rule.compatible_shapes.includes(shapeId));
+  return Boolean(shapeId && rule.compatible_shapes.includes(shapeId));
 };
 
 export const isMatchingBandCompatible = (parentUrl, head, matchingBand) => {
   const rule = getHeadRule(parentUrl, head);
+  if (!rule) return true;
   const bandId = getProductIdByRawLabel("matchingBand", matchingBand);
-  return Boolean(rule && bandId && (rule.compatible_bands || []).includes(bandId));
+  return Boolean(bandId && (rule.compatible_bands || []).includes(bandId));
 };

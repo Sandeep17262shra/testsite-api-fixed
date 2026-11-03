@@ -163,6 +163,9 @@ const SHANK_KEYWORDS = {
   CHANNEL: ["channel shank", "channel band", "channel setting", "channel matching band", "channel matching bands", "pave band", "pavé band", "micro pave", "micro pavé"],
   "PLATE-PRONG": ["plate prong", "plateprong", "plate prong matching band", "plate prong matching bands"],
   PLAIN: ["plain shank", "plain band", "plain matching band", "plain matching bands", "simple band", "solitaire shank", "solitaire band", "plain solitaire shank"],
+  "BAGUETTE-SIDE-STONE": ["baguette shank", "baguette side stone", "baguette side stones", "baguette band"],
+  "PEAR-SIDE-STONE": ["pear shank", "pear side stone", "pear side stones", "pear band"],
+  "HALF-MOON-SIDE-STONE": ["half moon shank", "half moon side stone", "half moon side stones", "half moon band", "halfmoon shank", "halfmoon"],
 };
 
 const GEMSTONE_PATTERNS = [
@@ -1680,7 +1683,8 @@ const calculateRingTotals = (parentUrl, candidate) => {
     matchingBandPrice,
     engravingPrice,
     headPrice,
-    shankTotal: stylePrice + metalPrice + matchingBandPrice + engravingPrice,
+    shankTotal: stylePrice + matchingBandPrice + engravingPrice,
+    headTotal: headPrice + metalPrice,
     finalRingPrice: stylePrice + metalPrice + matchingBandPrice + engravingPrice + headPrice,
   };
 };
@@ -1760,7 +1764,7 @@ const buildCandidate = (parentUrl, settings, baseState, intent, overrides = {}) 
     ...candidate,
     stoneTotal,
     ringTotals,
-    total: ringTotals.shankTotal + ringTotals.headPrice + stoneTotal,
+    total: ringTotals.shankTotal + ringTotals.headTotal + stoneTotal,
   };
 };
 

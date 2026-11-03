@@ -180,6 +180,12 @@ export const buildJewelryFrameSrc = (app, { type, includeConfig } = {}) => {
         const parentUrl = resolveShellParentUrl();
         if (parentUrl) url.searchParams.set("parentUrl", parentUrl);
     }
+    if (!url.searchParams.get("shop") && typeof window !== "undefined") {
+        const configShop = window.__parentConfig?.shop;
+        if (configShop) {
+            url.searchParams.set("shop", String(configShop).trim().toLowerCase());
+        }
+    }
 
     return `${url.pathname}${url.search}`;
 };

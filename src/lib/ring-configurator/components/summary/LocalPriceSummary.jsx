@@ -11,6 +11,7 @@ import {
   getSummaryTaxLabel,
 } from "../../utility/Parentconfig";
 import { getDiamondWiseDesignById, getDiamondWiseDesignByShankId } from "../../data/diamondwiseDesigns";
+import { getSideStoneCarat } from "../../utility/storePriceHelper";
 
 const toTitleCase = (value = "") =>
   String(value)
@@ -68,6 +69,8 @@ function LocalPriceSummary() {
     engravingFont,
     glInstance,
     diamondWiseDesignId,
+    twoStoneLeft,
+    twoStoneRight,
   } = useContext(RingContext);
   const {
     shankTotal,
@@ -81,12 +84,16 @@ function LocalPriceSummary() {
     intensityPrice,
   } = useContext(SectionContext);
 
+  const isTwoStoneRing = ringHead === "TWO-STONE" || ringHead === "two-stone";
+
   const total = useMemo(
     () =>
       Number(shankTotal || 0) +
-      (ringHead === "NO-HEAD" ? 0 : Number(headTotal || 0) + Number(stoneTotal || 0)) +
+      (ringHead === "NO-HEAD"
+        ? 0
+        : Number(headTotal || 0) + Number(stoneTotal || 0) * (isTwoStoneRing ? 2 : 1)) +
       Number(otherTotal || 0),
-    [shankTotal, headTotal, stoneTotal, otherTotal, ringHead]
+    [shankTotal, headTotal, stoneTotal, otherTotal, ringHead, isTwoStoneRing]
   );
   const summaryTaxLabel = getSummaryTaxLabel(parent);
 
@@ -144,8 +151,15 @@ function LocalPriceSummary() {
         : `(Clarity: ${selectedDetail.clarity} | Intensity: ${selectedDetail.intensity})`
       : "";
 
+  const withSideStoneCarat = (style, carat) =>
+    carat > 0 ? `${style} · ${carat.toFixed(2)}ctw` : style;
+  const withTitleSideStoneCarat = (style, carat) =>
+    carat > 0 ? `${style} (${carat.toFixed(2)}ctw)` : style;
+  const shankSideStoneCarat = getSideStoneCarat(parent, "shank", ringShank);
+  const headSideStoneCarat = getSideStoneCarat(parent, "head", ringHead);
+
   const shankData = {
-    Style: formatString(ringShank),
+    Style: withSideStoneCarat(formatString(ringShank), shankSideStoneCarat),
     "Side Setting": ringSideSetting === "PLAIN" ? "None" : formatString(ringSideSetting),
     "Matching Band": ringBand,
     Metal: readableColor === "Platinum" ? readableColor : `${metal} ${readableColor}`,
@@ -155,8 +169,17 @@ function LocalPriceSummary() {
     size_option: `(${String(countryShortName || "").replaceAll(" -", ",")})`,
   };
 
+  const THREE_STONE_HEADS_LIST = ["OVAL", "TRAPEZOID", "HALF-MOON", "PEAR", "BAGUETTE"];
+  const headStyleLabel = ringHead === "4-PRONG"
+    ? "Plain"
+    : ringHead === "TWO-STONE" || ringHead === "two-stone"
+      ? "Two Stone"
+      : (THREE_STONE_HEADS_LIST.includes(String(ringHead || "").toUpperCase()) || ringHead === "three-stone")
+        ? "Three Stone"
+        : formatString(ringHead);
+
   const headData = {
-    Style: ringHead === "4-PRONG" ? "Plain" : formatString(ringHead),
+    Style: withSideStoneCarat(headStyleLabel, headSideStoneCarat),
     "Bi-metal": isEnabled ? "Yes" : "No",
   };
 
@@ -165,8 +188,8 @@ function LocalPriceSummary() {
       .replace(/-/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase());
 
-  const stoneData = {
-    Shape: capitalize(shape) || "N/A",
+
+  const stoneCommonData = {
     Carat: Number.isInteger(Number(diamondSize)) ? `${Number(diamondSize).toFixed(1)}` : `${diamondSize}`,
     ...(colorType === "fancycolored"
       ? {
@@ -181,6 +204,25 @@ function LocalPriceSummary() {
       ? `${selectedQuality.quality} (${selectedQuality.type})`
       : diamondType || "N/A",
   };
+
+  // For two-stone rings, expose two separate stone data objects (one per stone).
+  // For all other rings keep the original single stoneData shape.
+  const stoneData = isTwoStoneRing
+    ? {
+        Shape: capitalize(shape || twoStoneLeft) || "Round",
+        ...stoneCommonData,
+      }
+    : {
+        Shape: capitalize(shape) || "N/A",
+        ...stoneCommonData,
+      };
+
+  const stone2Data = isTwoStoneRing
+    ? {
+        Shape: capitalize(twoStoneRight) || "Pear",
+        ...stoneCommonData,
+      }
+    : null;
 
   const resolveStorefrontUrl = () => {
     const resolvedParentUrl =
@@ -340,6 +382,20 @@ function LocalPriceSummary() {
       : (dwHeadLabel && dwShankLabel)
         ? `${dwHeadLabel} head with ${dwShankLabel} shank`
         : (dwHeadLabel || dwShankLabel);
+    const titleShankLabel = withTitleSideStoneCarat(
+      toTitleCase(ringShank),
+      shankSideStoneCarat
+    );
+    const titleHeadLabel = withTitleSideStoneCarat(
+      ringHead === "NO-HEAD"
+        ? ""
+        : (THREE_STONE_HEADS_LIST.includes(String(ringHead || "").toUpperCase()) || ringHead === "three-stone")
+          ? "Three Stone"
+          : ringHead === "4-PRONG"
+            ? "4 Prongs"
+            : toTitleCase(ringHead),
+      headSideStoneCarat
+    );
     const title = selectedDiamondWiseDesign
       ? [
           dwDesignName,
@@ -351,8 +407,8 @@ function LocalPriceSummary() {
           "ring",
         ].filter(Boolean).join(" ")
       : [
-          toTitleCase(ringShank),
-          ringHead === "NO-HEAD" ? null : ringHead === "4-PRONG" ? "4 Prongs" : toTitleCase(ringHead),
+          titleShankLabel,
+          titleHeadLabel || null,
           ringHead === "NO-HEAD" ? null : `${Number(diamondSize || 0).toFixed(2)} ct`,
           ringHead === "NO-HEAD" ? null : toTitleCase(shape),
           ringHead === "NO-HEAD" ? null : stoneColorLabel,
@@ -466,32 +522,93 @@ function LocalPriceSummary() {
                 ))}
               </ul>
 
-              <h4>
-                <span>STONE</span>
-                <span>{formatStoreCurrency(stoneTotal, parent)}</span>
-              </h4>
-              <ul>
-                {Object.entries(stoneData).map(([label, value]) => (
-                  <React.Fragment key={label}>
-                    <li>
-                      <span>{label}</span>
-                      <span>
-                        {label.toLowerCase() === "clarity"
-                          ? String(value).toUpperCase()
-                          : String(value)
-                              .split(" ")
-                              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                              .join(" ")}
-                      </span>
-                    </li>
-                    {label.toLowerCase() === "quality" && qualityDetailsText ? (
-                      <li className="stone-quality-details">
-                        <span className="text-right">{qualityDetailsText}</span>
-                      </li>
-                    ) : null}
-                  </React.Fragment>
-                ))}
-              </ul>
+              {/* Stone section — split into two entries for Two Stone rings */}
+              {isTwoStoneRing ? (
+                <>
+                  <h4>
+                    <span>Stone 1</span>
+                    <span>{formatStoreCurrency(stoneTotal, parent)}</span>
+                  </h4>
+                  <ul>
+                    {Object.entries(stoneData).map(([label, value]) => (
+                      <React.Fragment key={label}>
+                        <li>
+                          <span>{label}</span>
+                          <span>
+                            {label.toLowerCase() === "clarity"
+                              ? String(value).toUpperCase()
+                              : String(value)
+                                  .split(" ")
+                                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                  .join(" ")}
+                          </span>
+                        </li>
+                        {label.toLowerCase() === "quality" && qualityDetailsText ? (
+                          <li className="stone-quality-details">
+                            <span className="text-right">{qualityDetailsText}</span>
+                          </li>
+                        ) : null}
+                      </React.Fragment>
+                    ))}
+                  </ul>
+
+                  <h4>
+                    <span>Stone 2</span>
+                    <span>{formatStoreCurrency(stoneTotal, parent)}</span>
+                  </h4>
+                  <ul>
+                    {Object.entries(stone2Data).map(([label, value]) => (
+                      <React.Fragment key={label}>
+                        <li>
+                          <span>{label}</span>
+                          <span>
+                            {label.toLowerCase() === "clarity"
+                              ? String(value).toUpperCase()
+                              : String(value)
+                                  .split(" ")
+                                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                  .join(" ")}
+                          </span>
+                        </li>
+                        {label.toLowerCase() === "quality" && qualityDetailsText ? (
+                          <li className="stone-quality-details">
+                            <span className="text-right">{qualityDetailsText}</span>
+                          </li>
+                        ) : null}
+                      </React.Fragment>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <h4>
+                    <span>STONE</span>
+                    <span>{formatStoreCurrency(stoneTotal, parent)}</span>
+                  </h4>
+                  <ul>
+                    {Object.entries(stoneData).map(([label, value]) => (
+                      <React.Fragment key={label}>
+                        <li>
+                          <span>{label}</span>
+                          <span>
+                            {label.toLowerCase() === "clarity"
+                              ? String(value).toUpperCase()
+                              : String(value)
+                                  .split(" ")
+                                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                  .join(" ")}
+                          </span>
+                        </li>
+                        {label.toLowerCase() === "quality" && qualityDetailsText ? (
+                          <li className="stone-quality-details">
+                            <span className="text-right">{qualityDetailsText}</span>
+                          </li>
+                        ) : null}
+                      </React.Fragment>
+                    ))}
+                  </ul>
+                </>
+              )}
             </>
           )}
 

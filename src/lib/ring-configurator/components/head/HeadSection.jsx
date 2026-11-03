@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { useClickSound } from "../../hooks/useClickSound";
 import apiData from '../../data/api-data.json';
 import initialPrice from '../../data/data.json';
 import { applyFilterWithLoader } from "../../utility/applyFilterWithLoader";
@@ -15,11 +16,12 @@ import {
   getCurrencySign,
 } from "../../utility/Parentconfig";
 import { getHeadPrice, filterAvailableOptions } from "../../utility/storePriceHelper";
+import { isJDemo364ParentUrl } from "../../priceConfig";
 
 const metalItems = apiData.ring.color;
 
 function HeadSection() {
-
+    const { playClick } = useClickSound();
     const [currentIndex, setCurrentIndex] = useState(0);
     
     // ═══════════════════════════════════════════════════════════
@@ -46,6 +48,7 @@ function HeadSection() {
         // haloStyle, setHaloStyle,
         threestone, setThreestone,
         headPrice, setHeadPrice,
+        metalPrice,
         shapeList, setShapeList
     } = useContext(SectionContext);
     const { setShape, shape } = useContext(DiamondContext);
@@ -56,11 +59,18 @@ function HeadSection() {
     // ═══════════════════════════════════════════════════════════
     // FILTER AVAILABLE OPTIONS
     // ═══════════════════════════════════════════════════════════
-    const availableHeadStyles = filterAvailableOptions(
-        [
-            "plain", "bezel", "hidden-halo", "single-halo", "double-halo", "three-stone",
+    const baseHeadStyles = isJDemo364ParentUrl(parent)
+        ? [
             ...DIAMONDWISE_DESIGNS.map((design) => design.headId),
-        ],
+            "plain", "bezel", "hidden-halo", "hidden-halo-2", "single-halo", "double-halo", "three-stone", "tulip", "two-stone", "claw-set",
+        ]
+        : [
+            "plain", "bezel", "hidden-halo", "hidden-halo-2", "single-halo", "double-halo", "three-stone", "tulip", "two-stone", "claw-set",
+            ...DIAMONDWISE_DESIGNS.map((design) => design.headId),
+        ];
+
+    const availableHeadStyles = filterAvailableOptions(
+        baseHeadStyles,
         parent,
         'headStyles'
     );
@@ -102,6 +112,7 @@ function HeadSection() {
     };
 
     const handleHeadColorChange = (color) => {
+        playClick();
         applyFilterWithLoader(setLoader, () => {
             setHeadColor(color);
         });
@@ -148,6 +159,14 @@ function HeadSection() {
             tempRingHeadStyleForCalc =  'DOUBLE-HALO'
         }else if(hoveredStyle === "hidden-halo"){
             tempRingHeadStyleForCalc =  'HIDDEN-HALO'
+        }else if(hoveredStyle === "hidden-halo-2"){
+            tempRingHeadStyleForCalc =  'HIDDEN-HALO-2'
+        }else if(hoveredStyle === "tulip"){
+            tempRingHeadStyleForCalc =  'TULIP'
+        }else if(hoveredStyle === "two-stone"){
+            tempRingHeadStyleForCalc =  'TWO-STONE'
+        }else if(hoveredStyle === "claw-set"){
+            tempRingHeadStyleForCalc =  'CLAW-SET'
         }
 
         // Determine the 'ringHeadStyle' value for the currently selected item
@@ -170,6 +189,14 @@ function HeadSection() {
             currentRingHeadStyleForCalc =  'DOUBLE-HALO'
         }else if(headStyle === "hidden-halo"){
             currentRingHeadStyleForCalc =  'HIDDEN-HALO'
+        }else if(headStyle === "hidden-halo-2"){
+            currentRingHeadStyleForCalc =  'HIDDEN-HALO-2'
+        }else if(headStyle === "tulip"){
+            currentRingHeadStyleForCalc =  'TULIP'
+        }else if(headStyle === "two-stone"){
+            currentRingHeadStyleForCalc =  'TWO-STONE'
+        }else if(headStyle === "claw-set"){
+            currentRingHeadStyleForCalc =  'CLAW-SET'
         }
 
         // Calculate current selected head's price based on actual current state
@@ -221,6 +248,7 @@ function HeadSection() {
     // MAIN HEAD CHANGE LOGIC - CORRECTED
     // ═══════════════════════════════════════════════════════════
     const handleHeadChange = (newHeadStyle) => {
+        playClick();
         setHoverHeadPrice(null);
         setHoveredHeadStyleName(null);
         setHoveredHaloStyleName(null);
@@ -276,6 +304,22 @@ function HeadSection() {
                 newRingHeadForState = "HIDDEN-HALO"; 
                 //newHaloStyle = "hidden-halo"; 
                 ringHeadStyleForCalc = "HIDDEN-HALO"; 
+                newShape = "round";
+            }else if(newHeadStyle === "hidden-halo-2"){
+                newRingHeadForState = "HIDDEN-HALO-2";
+                ringHeadStyleForCalc = "HIDDEN-HALO-2";
+                newShape = "round";
+            }else if(newHeadStyle === "tulip"){
+                newRingHeadForState = "TULIP";
+                ringHeadStyleForCalc = "TULIP";
+                newShape = "round";
+            }else if(newHeadStyle === "two-stone"){
+                newRingHeadForState = "TWO-STONE";
+                ringHeadStyleForCalc = "TWO-STONE";
+                newShape = "round";
+            }else if(newHeadStyle === "claw-set"){
+                newRingHeadForState = "CLAW-SET";
+                ringHeadStyleForCalc = "CLAW-SET";
                 newShape = "round";
             }
 
@@ -376,6 +420,7 @@ function HeadSection() {
     };
 
     const handleHeadChangeSub = (newSubHead, mappedHead = null) => {
+        playClick();
         setHoverHeadPrice(null);
         setHoveredHeadStyleName(null);
         setHoveredHaloStyleName(null);
@@ -401,20 +446,10 @@ function HeadSection() {
                 ringHeadStyleForCalc = newSubHead.toUpperCase();
                 newShape = "round";
             } else if (effectiveHeadStyle === "three-stone") {
-                actualRingHeadForState = newSubHead.toUpperCase(); // Temporarily set ringHead to the sub-style name for calc
+                actualRingHeadForState = newSubHead.toUpperCase();
                 newThreestone = newSubHead;
-                ringHeadStyleForCalc = newSubHead.toUpperCase(); // Pass sub-style directly to calc
-                if (newSubHead === "oval") {
-                     newShape = "oval";
-                } else if (newSubHead === "trapezoid") {
-                     newShape = "princess";
-                } else if (newSubHead === "half-moon") {
-                     newShape = "round";
-                } else if (newSubHead === "pear") {
-                     newShape = "round";
-                } else if (newSubHead === "baguette") {
-                     newShape = "round";
-                }
+                ringHeadStyleForCalc = newSubHead.toUpperCase();
+                // Center stone shape stays independent of the side stone selection
             }
 
             setRingHead(actualRingHeadForState); // Update main ring head state
@@ -457,9 +492,9 @@ function HeadSection() {
     }, [parent, ringHead]);
 
     useEffect(() => {
-        const head_ttl = headPrice;
+        const head_ttl = headPrice + metalPrice;
         setHeadTotal(head_ttl);
-    }, [headPrice]);
+    }, [headPrice, metalPrice]);
 
 
     const visibleItems = isMobile
@@ -492,8 +527,8 @@ function HeadSection() {
 	  if (config && config.ringHead) {
 		const rawHead = config.ringHead.trim().toLowerCase();
 
-		const threeStoneHeads = ["oval", "trapezoid", "half-moon", "pear", "baguette"];
-		const haloHeads = ["hidden-halo", "single-halo", "double-halo"];
+		const threeStoneHeads = ["oval", "trapezoid", "pear", "baguette", "round"];
+		const haloHeads = ["hidden-halo", "hidden-halo-2", "single-halo", "double-halo"];
 		const bezelHeads = ["bezel"];
 		const plainHeads = ["4-prong", "4-prongs", "6-prong", "6-prongs"];
 
@@ -612,7 +647,7 @@ function HeadSection() {
                     <img
                         src={isEnabled ? `/images/toggle-black.svg` : `/images/toggle-grey.svg`}
                         alt="Toggle"
-                        onClick={()=>biMetalSwitch(!isEnabled)}
+                        onClick={() => { playClick(); biMetalSwitch(!isEnabled); }}
                     />
                     </span>
                     <span className="font-normal font-6b6">

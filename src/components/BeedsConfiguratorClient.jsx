@@ -1,18 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import ContextProvider from "@/lib/beeds-configurator/contexts/ContextProvider";
+import { preloadCriticalBeadsConfiguratorImages } from "@/lib/beeds-configurator/beadAssetPreload";
 import BeedsConfigurator from "@/lib/beeds-configurator/BeedsConfigurator";
 
+if (typeof window !== "undefined") {
+  preloadCriticalBeadsConfiguratorImages();
+}
+
 export default function BeedsConfiguratorClient() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   return (
     <ContextProvider>
       <BeedsConfigurator />

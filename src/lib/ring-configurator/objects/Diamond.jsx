@@ -195,15 +195,15 @@ const SHAPE_POSITIONS = {
   },
   moval: {
     position: [0, 4.5, 0],
-    scale: (size) => [size+0.7, size+0.4, size + 0.6]
+    scale: (size) => [size+0.5, size+0.5, size + 0.55]
   },
   radiant: {
-    position: [0, 4.4, 0],
-    scale: (size) => [size + 0.23, size+0.2, size + 0.22]
+    position: [0.3, 4.4, 0],
+    scale: (size) => [size + 0.25, size+0.2, size + 0.25]
   },
   pear: {
     position: [0, 4.5, -0.1],
-    scale: (size) => [size, size, size ]
+    scale: (size) => [size-0.02, size-0.05, size+0.02 ]
   },
   emerald: {
     position: [0, 4.5, 0],
@@ -214,7 +214,7 @@ const SHAPE_POSITIONS = {
     scale: (size) => [size + 0.02, size+0.05 , size-0.01]
   },
   heart: {
-    position: [0, 4.7, -0.2],
+    position: [0, 4.7, -0.3],
     scale: (size) => [size - 0.03, size+0.04, size - 0.03]
   },
   asscher: {
@@ -223,7 +223,30 @@ const SHAPE_POSITIONS = {
   },
 };
 
-const headThreeStone = ["OVAL", "TRAPEZOID", "BAGUETTE", "PEAR", "HALF-MOON"];
+const headThreeStone = ["OVAL", "TRAPEZOID", "BAGUETTE", "PEAR", "HALF-MOON", "ROUND"];
+
+// Per-shape position for the hero diamond in a three-stone ring.
+// Supports either a single Y number (defaults x=0, z=0) or a full [x, y, z] array
+// so you can tune height (Y) and front/back alignment (Z) per stone shape.
+const THREE_STONE_DIAMOND_POS = {
+  round:    4.30,
+  oval:     4.20,
+  moval:    4.50,
+  pear:     4.20,
+  princess: 4.30,
+  cushion:  4.50,
+  emerald:  4.20,
+  radiant:  4.50,
+  marquise: 4.45,
+  heart:    [0, 4.6, 0.13],
+  asscher:  4.50,
+};
+
+const getThreeStoneDiamondPos = (shape) => {
+  const val = THREE_STONE_DIAMOND_POS[shape] ?? 4.20;
+  if (Array.isArray(val)) return [...val];
+  return [0, val, 0];
+};
 
 // How far a heart sits above the head's stone anchor in a prong head. 0.05 is
 // the gap the old hardcoded 4.55 had over the un-boosted anchor of 4.50, so at
@@ -251,9 +274,9 @@ const GEMSTONE_COLORS = {
   "green-emerald": "#4AE2A1",
   "green-sapphire": "#00AB55",
   "moissanite": "#ffffff",
-  "pink-sapphire": "#D1008F",
+  "pink-sapphire": "#F8B5D6",
   "red-ruby": "#B71C1C",
-  "yellow-sapphire": "#FFA94D",
+  "yellow-sapphire": "#D4AF37",
 };
 
 // Extend Three.js with OBJLoader and GLTFLoader
@@ -295,12 +318,13 @@ const FadeMeshDiamond = React.memo(forwardRef(({ geometry, position, scale, mate
   // left the heart sitting low in the basket with its point pushed through the
   // underside. Reading the anchor off basePosition keeps the same seating the
   // stone had before the head-height change, at every carat.
-  const heartProngPos = [-0.01, basePosition[1] + HEART_PRONG_ANCHOR_OFFSET_Y, -0.14];
+  const heartProngPos = [0.01, basePosition[1] + HEART_PRONG_ANCHOR_OFFSET_Y, 0.14];
   // HALO's own basket already anchors the seat correctly via
   // getHeadStoneAnchorY/shapeDataForHalo (see Head.jsx) - the heartProngPos
   // lift below is tuned for the classic 4-PRONG/6-PRONG basket only and
   // floats the heart stone visibly above the halo ring if applied here too.
-  const rawPos = headThreeStone.includes(headType) ? [0, 4.2, 0] : shape === "heart" ? (ringHead === "BEZEL" ? [0, 4.6, -0] : ringHead === "HALO" ? basePosition : heartProngPos) : (shape === "radiant" && ringHead === "4-PRONG") ? [-0.01, 4.65, 0] : basePosition;
+  const threeStonePos = getThreeStoneDiamondPos(shape);
+  const rawPos = headThreeStone.includes(headType) ? threeStonePos : shape === "heart" ? (ringHead === "BEZEL" ? [0, 4.57, 0.1] : ringHead === "HALO" ? basePosition : heartProngPos) : (shape === "radiant" && ringHead === "4-PRONG") ? [-0.01, 4.65, 0] : basePosition;
   const finalPosition = [rawPos[0], rawPos[1] + diamondYOffset, rawPos[2]];
 
   return (
@@ -311,7 +335,7 @@ const FadeMeshDiamond = React.memo(forwardRef(({ geometry, position, scale, mate
       scale={shape === "emerald" ? [calculatedSize + 0.02, calculatedSize+0.03, calculatedSize + 0.06] : scale(calculatedSize)}
       castShadow
       receiveShadow
-      rotation={[0, 0, 0]}
+      rotation={shape === "heart" ? [0, Math.PI, 0] : [0, 0, 0]}
     >
       <MeshRefractionMaterial
         {...materialProps}

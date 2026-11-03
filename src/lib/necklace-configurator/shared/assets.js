@@ -5,8 +5,8 @@
 
 // Array of paths to the bracelet GLB models.
 export const BRACELETS = [
-     { path: "/pc-assets/pendant_models//BRACELET15.glb", name: "Clip", price: 3600 },
-     { path: "/pc-assets/pendant_models//BRACELET16.glb", name: "Plain", price: 3200 },
+     { path: "/pc-assets/pendant_models//BRACELET15.glb", name: "Plain", price: 3600 },
+     { path: "/pc-assets/pendant_models//BRACELET16.glb", name: "Clip", price: 3200 },
      { path: "/pc-assets/pendant_models//BRACELET17.glb", name: "Milgrain", price: 3600 },
      { path: "/pc-assets/pendant_models//BRACELET18.glb", name: "Link", price: 3600 },
      // Removed: GLB chain models (BRACELET13/14) are no longer used.
@@ -103,11 +103,10 @@ export const STONE_COLOR_SWATCHES = [
 // Append to CHARMS[]:
 export const CHARMS = [
   { path: "/bc-assets/gemstone/BIRTHSTONE.glb", name: "Birthstone", price: 50, type: "birthstone" },
-  { path: "/bc-assets/gemstone/D1.glb", name: "Round Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/round.webp" },
-  { path: "/bc-assets/gemstone/D2.glb", name: "Pear Diamond",  price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/pear.webp" },
-  { path: "/bc-assets/gemstone/D3.glb", name: "Oval Diamond",  price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/oval.webp" },
-  { path: "/bc-assets/gemstone/princess.glb", name: "Princess Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/princess.webp" },
-  { path: "/bc-assets/gemstone/cushion.glb", name: "Cushion Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/cushion.webp" },
+  { path: "/bc-assets/gemstone/D1.glb", name: "Round Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/round.png" },
+  { path: "/bc-assets/gemstone/D3.glb", name: "Oval Diamond",  price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/oval.png" },
+  { path: "/bc-assets/gemstone/princess.glb", name: "Princess Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/princess.png" },
+  { path: "/bc-assets/gemstone/cushion.glb", name: "Cushion Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/cushion.png" },
 ];
 
 // Rendered birthstone/diamond faces live in metal-specific folders. Platinum
@@ -502,7 +501,7 @@ export const BRACELET_STYLES = [
     // { path: "/bc-assets/bracelet_models/BRACELET11.glb", name: "Wave Band", price: 3000 },
      // Same order as the necklace chains: round first, then the elongated (cable) links.
      { path: GENERATED_NAME_CHAIN_ROUND_PATH, name: "Round", price: 3400 },
-     { path: GENERATED_NAME_CHAIN_PATH, name: "Cable", price: 3400 },
+     { path: GENERATED_NAME_CHAIN_PATH, name: "Clip", price: 3400 },
      { path: GENERATED_NAME_CHAIN_OVAL_PATH, name: "Oval", price: 3450 },
      { path: GENERATED_NAME_CHAIN_SQUARE_PATH, name: "Square", price: 3450 },
      // Removed: GLB chain models (BRACELET13/14) are no longer used.
@@ -522,7 +521,7 @@ export const BRACELET_CHAIN_CARD_IMAGE_BY_PATH = {
     [GENERATED_NAME_CHAIN_ROUND_PATH]: "/pc-assets/images/pendant_3.webp",  // was name-chain-round.webp
     [GENERATED_NAME_CHAIN_PATH]: "/pc-assets/images/pendant_4.webp",        // was name-chain-cable.webp
     [GENERATED_NAME_CHAIN_OVAL_PATH]: "/pc-assets/images/pendant_5.webp",   // was name-chain-oval.webp
-    [GENERATED_NAME_CHAIN_SQUARE_PATH]: "/pc-assets/images/pendant_6.webp", // had no icon
+    [GENERATED_NAME_CHAIN_SQUARE_PATH]: "/pc-assets/images/pendant_6.png?v2", // had no icon
 };
 
 // ── Name pendant ──────────────────────────────────────────────────────────
@@ -544,12 +543,12 @@ export const NAME_PENDANT_MAX_LENGTH = 12;
 // TextGeometry's own letterSpacing is absolute, so a value tuned at one size
 // crushes the glyphs together at a smaller one - which is why this is stored
 // as a ratio and multiplied by NAME_CHAIN_CONFIG.textSize at render time.
-// The numbers below are the necklace's tuning (-0.10 at size 1.1) expressed
+// The numbers below are the necklace's tuning (-0.15 at size 1.1) expressed
 // as a ratio, so both configurators letter-space identically.
 // Negative is correct here: these are connected script faces whose glyphs are
 // drawn to overlap slightly and join up.
 export const NAME_PENDANT_FONTS = [
-    { id: "dancing",    label: "Dancing",    sample: "R", url: "/fonts/Dancing Script_Bold.json",  letterSpacingEm: -0.091 },
+    { id: "dancing",    label: "Dancing",    sample: "R", url: "/fonts/Dancing Script_Bold.json",  letterSpacingEm: -0.14 },
     { id: "kingsman",   label: "Kingsman",   sample: "K", url: "/fonts/Kingsman Demo_Regular.json", letterSpacingEm: -0.091 },
     { id: "yellowtail", label: "Yellowtail", sample: "Y", url: "/fonts/Yellowtail_Regular.json",    letterSpacingEm: -0.091 },
 ];
@@ -570,7 +569,7 @@ export const BRACELET_CHARMS = [
     { path: "/bc-assets/bracelet_models/CHARMS2.glb", name: "Elegant Floral", price: 60 },
     { path: "/bc-assets/bracelet_models/CHARMS3.glb", name: "Starfish", price: 70 },
     { path: "/bc-assets/bracelet_models/CHARMS4.glb", name: "Modern Star", price: 80 },
-    { path: "/bc-assets/bracelet_models/CHARMS5.glb", name: "Sphere Locket", price: 90 },
+    { path: "/bc-assets/bracelet_models/CHARMS5.glb", name: "Evil Eye", price: 90 },
     { path: "/bc-assets/bracelet_models/CHARMS6.glb", name: "Silken Tassel", price: 100 },
     { path: "/bc-assets/bracelet_models/CHARMS7.glb", name: "Classic Heart", price: 110 },
     { path: "/bc-assets/bracelet_models/CHARMS8.glb", name: "Gladiator Helmet", price: 120 },
@@ -590,11 +589,10 @@ export const BRACELET_CHARMS = [
     { path: "/bc-assets/bracelet_models/CHARMS22.png", name: "Leo", price: 50 },
     { path: "/bc-assets/bracelet_models/CHARMS23.png", name: "Taurus", price: 50 },
     { path: "/bc-assets/gemstone/BIRTHSTONE.glb", name: "Birthstone", price: 50, type: "birthstone" },
-    { path: "/bc-assets/gemstone/D1.glb", name: "Round Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/round.webp" },
-    { path: "/bc-assets/gemstone/D2.glb", name: "Pear Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/pear.webp" },
-    { path: "/bc-assets/gemstone/D3.glb", name: "Oval Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/oval.webp" },
-    { path: "/bc-assets/gemstone/princess.glb", name: "Princess Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/princess.webp" },
-    { path: "/bc-assets/gemstone/cushion.glb", name: "Cushion Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/cushion.webp" },
+    { path: "/bc-assets/gemstone/D1.glb", name: "Round Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/round.png" },
+    { path: "/bc-assets/gemstone/D3.glb", name: "Oval Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/oval.png" },
+    { path: "/bc-assets/gemstone/princess.glb", name: "Princess Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/princess.png" },
+    { path: "/bc-assets/gemstone/cushion.glb", name: "Cushion Diamond", price: 50, type: "diamond", preview: "/bc-assets/images/diamonds/cushion.png" },
 ];
 export const BRACELET_STONE_COLOR_SWATCHES = [
     { key: "GAR", label: "Garnet (Jan)",      hex: "#C8102E", image: "/bc-assets/images/birthstones/garnet-jan.webp" },

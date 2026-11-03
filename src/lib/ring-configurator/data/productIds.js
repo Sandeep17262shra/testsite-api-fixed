@@ -12,17 +12,41 @@
  * looked up against the app's real option values.
  *
  * ID prefixes:
+ *   M  = Metal / purity  (M001, M002, ...)
  *   H  = Head             (H001, H002, ...)
  *   S  = Shank/Band       (S001, S002, ...)
  *   B  = Matching Band    (B001, B002, ...)
  *   SH = Shape            (SH01, SH02, ...)
  *   CD = Colored Diamond  (CD01, CD02, ...)
  *   GS = Gemstone         (GS01, GS02, ...)
+ *   SS = Side Stone       (SS001, SS002, ...)
  *
  * Source of truth for the option names: data/api-data.json (ring.head,
  * ring.shank, diamond.shape), priceConfig.js (headStyles, shankStyles,
  * matchingBandStyles) and utility/storeCustomization.js (diamondShapes).
  */
+
+// ---- Metals ----------------------------------------------------------
+// Metal names are presentation data from the catalogue.  These stable IDs
+// identify the finish and purity even if a merchant renames (for example)
+// "Rose Gold 14K" to "RG 14K".
+export const METAL_IDS = {
+  whiteGold9K: { id: "M001", rawLabel: "White Gold 9K", metal: "White Gold", purity: "9K" },
+  yellowGold9K: { id: "M002", rawLabel: "Yellow Gold 9K", metal: "Yellow Gold", purity: "9K" },
+  roseGold9K: { id: "M003", rawLabel: "Rose Gold 9K", metal: "Rose Gold", purity: "9K" },
+  whiteGold10K: { id: "M004", rawLabel: "White Gold 10K", metal: "White Gold", purity: "10K" },
+  yellowGold10K: { id: "M005", rawLabel: "Yellow Gold 10K", metal: "Yellow Gold", purity: "10K" },
+  roseGold10K: { id: "M006", rawLabel: "Rose Gold 10K", metal: "Rose Gold", purity: "10K" },
+  whiteGold14K: { id: "M007", rawLabel: "White Gold 14K", metal: "White Gold", purity: "14K" },
+  yellowGold14K: { id: "M008", rawLabel: "Yellow Gold 14K", metal: "Yellow Gold", purity: "14K" },
+  roseGold14K: { id: "M009", rawLabel: "Rose Gold 14K", metal: "Rose Gold", purity: "14K" },
+  whiteGold18K: { id: "M010", rawLabel: "White Gold 18K", metal: "White Gold", purity: "18K" },
+  yellowGold18K: { id: "M011", rawLabel: "Yellow Gold 18K", metal: "Yellow Gold", purity: "18K" },
+  roseGold18K: { id: "M012", rawLabel: "Rose Gold 18K", metal: "Rose Gold", purity: "18K" },
+  platinum: { id: "M013", rawLabel: "Platinum", metal: "Platinum", purity: "Platinum" },
+  titanium: { id: "M014", rawLabel: "Titanium", metal: "Titanium", purity: "Titanium" },
+  sterlingSilver: { id: "M015", rawLabel: "Sterling Silver", metal: "Sterling Silver", purity: "Sterling Silver" },
+};
 
 // ---- Heads -----------------------------------------------------------
 export const HEAD_IDS = {
@@ -49,10 +73,8 @@ export const HEAD_IDS = {
   elanora: { id: "H013", rawLabel: "dw-mar-ma-019-head" },
   aurelie: { id: "H014", rawLabel: "dw-LR1046-head" },
   isadora: { id: "H015", rawLabel: "dw-JAN027-head" },
-  trapezoid: { id: "H016", rawLabel: "TRAPEZOID" },
-  halfMoon: { id: "H017", rawLabel: "HALF-MOON" },
-  pearHead: { id: "H018", rawLabel: "PEAR" },
-  baguette: { id: "H019", rawLabel: "BAGUETTE" },
+  clawSet: { id: "H020", rawLabel: "CLAW-SET" },
+  hiddenHalo2: { id: "H021", rawLabel: "HIDDEN-HALO-2" },
 };
 
 // ---- Shanks / Bands ----------------------------------------------------
@@ -74,6 +96,9 @@ export const SHANK_IDS = {
   twisted2: { id: "S015", rawLabel: "TWISTED-2" },
   fluted: { id: "S016", rawLabel: "FLUTED" },
   braided: { id: "S017", rawLabel: "BRAIDED" },
+  baguetteSideStone: { id: "S023", rawLabel: "BAGUETTE-SIDE-STONE" },
+  pearSideStone: { id: "S024", rawLabel: "PEAR-SIDE-STONE" },
+  halfMoonSideStone: { id: "S025", rawLabel: "HALF-MOON-SIDE-STONE" },
   // DiamondWise shanks — same 5 fixed designs as HEAD_IDS above, named the
   // same way (their shank always comes paired with their own head).
   amelie: { id: "S018", rawLabel: "dw-jul-ma-02-shank" },
@@ -133,8 +158,18 @@ export const GEMSTONE_IDS = {
   yellowSapphire: { id: "GS07", rawLabel: "yellow-sapphire" },
 };
 
+// ---- Side Stones (Three Stone Settings) --------------------------------
+export const SIDESTONE_IDS = {
+  oval: { id: "SS001", rawLabel: "oval", name: "Oval" },
+  round: { id: "SS002", rawLabel: "round", name: "Round" },
+  pear: { id: "SS003", rawLabel: "pear", name: "Pear" },
+  emerald: { id: "SS004", rawLabel: "emerald", name: "Emerald" },
+  princess: { id: "SS005", rawLabel: "princess", name: "Princess" },
+};
+
 // ---- Grouped export ------------------------------------------------------
 export const PRODUCT_IDS = {
+  metal: METAL_IDS,
   head: HEAD_IDS,
   shank: SHANK_IDS,
   matchingBand: MATCHING_BAND_IDS,
@@ -142,6 +177,10 @@ export const PRODUCT_IDS = {
   coloredDiamond: COLORED_DIAMOND_IDS,
   colored_diamond: COLORED_DIAMOND_IDS,
   gemstone: GEMSTONE_IDS,
+  sidestone: SIDESTONE_IDS,
+  sideStone: SIDESTONE_IDS,
+  side_stone: SIDESTONE_IDS,
+  sideStones: SIDESTONE_IDS,
 };
 
 // ---- Reverse lookups (id -> entry) ----------------------------------------
@@ -149,11 +188,13 @@ const invertById = (map) =>
   Object.fromEntries(Object.entries(map).map(([key, entry]) => [entry.id, { key, ...entry }]));
 
 export const HEAD_BY_ID = invertById(HEAD_IDS);
+export const METAL_BY_ID = invertById(METAL_IDS);
 export const SHANK_BY_ID = invertById(SHANK_IDS);
 export const MATCHING_BAND_BY_ID = invertById(MATCHING_BAND_IDS);
 export const SHAPE_BY_ID = invertById(SHAPE_IDS);
 export const COLORED_DIAMOND_BY_ID = invertById(COLORED_DIAMOND_IDS);
 export const GEMSTONE_BY_ID = invertById(GEMSTONE_IDS);
+export const SIDESTONE_BY_ID = invertById(SIDESTONE_IDS);
 
 // ---- Reverse lookups (rawLabel -> camelCase key) ---------------------------
 const invertByRawLabel = (map) =>
@@ -165,6 +206,7 @@ export const MATCHING_BAND_KEY_BY_RAW_LABEL = invertByRawLabel(MATCHING_BAND_IDS
 export const SHAPE_KEY_BY_RAW_LABEL = invertByRawLabel(SHAPE_IDS);
 export const COLORED_DIAMOND_KEY_BY_RAW_LABEL = invertByRawLabel(COLORED_DIAMOND_IDS);
 export const GEMSTONE_KEY_BY_RAW_LABEL = invertByRawLabel(GEMSTONE_IDS);
+export const SIDESTONE_KEY_BY_RAW_LABEL = invertByRawLabel(SIDESTONE_IDS);
 
 // ---- Helpers --------------------------------------------------------------
 /**
@@ -177,6 +219,16 @@ export function getProductId(category, key) {
   return PRODUCT_IDS[category]?.[key]?.id;
 }
 
+/** Resolve the stable catalogue ID for a metal finish + purity pair. */
+export function getMetalProductId(metal, purity) {
+  const normalizedMetal = String(metal || "").trim().toLowerCase();
+  const normalizedPurity = String(purity || "").trim().toUpperCase();
+  return Object.values(METAL_IDS).find((entry) =>
+    entry.metal.toLowerCase() === normalizedMetal &&
+    String(entry.purity).toUpperCase() === normalizedPurity
+  )?.id;
+}
+
 const HEAD_RAW_LABEL_ALIASES = {
   "HALF-MOON": "H008",
   "TRAPEZOID": "H008",
@@ -187,6 +239,11 @@ const HEAD_RAW_LABEL_ALIASES = {
   "Three Stone": "H008",
   "THREE STONE": "H008",
   "OVAL": "H008",
+  "Oval": "H008",
+  "oval": "H008",
+  "ROUND": "H008",
+  "Round": "H008",
+  "round": "H008",
   "SINGLE-HALO": "H007",
   "Single Halo": "H007",
   "SINGLE HALO": "H007",
@@ -196,11 +253,32 @@ const HEAD_RAW_LABEL_ALIASES = {
   "halo": "H007",
   "H004": "H007",
   "H007": "H007",
+  "two-stone": "H010",
+  "TWO-STONE": "H010",
+  "Two Stone": "H010",
+  "TWO STONE": "H010",
+  "claw-set": "H020",
+  "CLAW-SET": "H020",
+  "Claw Set": "H020",
+  "CLAW SET": "H020",
+  "hidden-halo-2": "H021",
+  "HIDDEN-HALO-2": "H021",
+  "Hidden Halo 2": "H021",
+  "HIDDEN HALO 2": "H021",
 };
 
 const SHANK_RAW_LABEL_ALIASES = {
   PAVE: "S002",
   "PLATE PRONG": "S002",
+  "BAGUETTE-SIDE-STONE": "S023",
+  BAGUETTE: "S023",
+  "BAGUETTE-SHANK": "S023",
+  "PEAR-SIDE-STONE": "S024",
+  PEAR: "S024",
+  "PEAR-SHANK": "S024",
+  "HALF-MOON-SIDE-STONE": "S025",
+  "HALF-MOON": "S025",
+  "HALF-MOON-SHANK": "S025",
 };
 
 const MATCHING_BAND_RAW_LABEL_ALIASES = {
@@ -208,10 +286,39 @@ const MATCHING_BAND_RAW_LABEL_ALIASES = {
   "PLATE PRONG": "B006",
 };
 
+const SIDESTONE_RAW_LABEL_ALIASES = {
+  oval: "SS001",
+  OVAL: "SS001",
+  Oval: "SS001",
+  SS001: "SS001",
+  round: "SS002",
+  ROUND: "SS002",
+  Round: "SS002",
+  SS002: "SS002",
+  pear: "SS003",
+  PEAR: "SS003",
+  Pear: "SS003",
+  SS003: "SS003",
+  baguette: "SS004",
+  BAGUETTE: "SS004",
+  Baguette: "SS004",
+  emerald: "SS004",
+  EMERALD: "SS004",
+  Emerald: "SS004",
+  SS004: "SS004",
+  trapezoid: "SS005",
+  TRAPEZOID: "SS005",
+  Trapezoid: "SS005",
+  princess: "SS005",
+  PRINCESS: "SS005",
+  Princess: "SS005",
+  SS005: "SS005",
+};
+
 /**
  * Get a product ID by category + the raw label used elsewhere in the app
  * (e.g. "HIDDEN-HALO" instead of "hiddenHalo").
- * @param {"head"|"shank"|"matchingBand"|"shape"|"coloredDiamond"|"gemstone"} category
+ * @param {"head"|"shank"|"matchingBand"|"shape"|"coloredDiamond"|"gemstone"|"sidestone"} category
  * @param {string} rawLabel
  * @returns {string|undefined}
  */
@@ -235,6 +342,16 @@ export function getProductIdByRawLabel(category, rawLabel) {
     if (MATCHING_BAND_RAW_LABEL_ALIASES[upper]) return MATCHING_BAND_RAW_LABEL_ALIASES[upper];
     if (MATCHING_BAND_BY_ID[rawLabel]) return rawLabel;
   }
+  if (category === "sidestone" || category === "sideStone" || category === "side_stone" || category === "sideStones") {
+    if (SIDESTONE_RAW_LABEL_ALIASES[rawLabel]) return SIDESTONE_RAW_LABEL_ALIASES[rawLabel];
+    const upper = String(rawLabel).toUpperCase();
+    if (SIDESTONE_RAW_LABEL_ALIASES[upper]) return SIDESTONE_RAW_LABEL_ALIASES[upper];
+    if (SIDESTONE_BY_ID[rawLabel]) return rawLabel;
+    const match = Object.values(SIDESTONE_IDS).find(
+      (entry) => entry.rawLabel.toLowerCase() === String(rawLabel).toLowerCase() || entry.name.toLowerCase() === String(rawLabel).toLowerCase()
+    );
+    if (match) return match.id;
+  }
   if (category === "coloredDiamond" || category === "colored_diamond") {
     if (COLORED_DIAMOND_BY_ID[rawLabel]) return rawLabel;
     const match = Object.values(COLORED_DIAMOND_IDS).find(
@@ -254,6 +371,10 @@ export function getProductIdByRawLabel(category, rawLabel) {
   for (const key in map) {
     if (map[key].rawLabel === rawLabel) return map[key].id;
   }
+  const upper = String(rawLabel).toUpperCase();
+  for (const key in map) {
+    if (map[key].rawLabel?.toUpperCase() === upper) return map[key].id;
+  }
   return undefined;
 }
 
@@ -265,9 +386,11 @@ export function getProductIdByRawLabel(category, rawLabel) {
  */
 export function getProductById(id) {
   if (!id) return undefined;
+  if (id.startsWith("M")) return METAL_BY_ID[id];
   if (id.startsWith("CD")) return COLORED_DIAMOND_BY_ID[id];
   if (id.startsWith("GS")) return GEMSTONE_BY_ID[id];
   if (id.startsWith("SH")) return SHAPE_BY_ID[id];
+  if (id.startsWith("SS")) return SIDESTONE_BY_ID[id];
   const prefix = id[0];
   if (prefix === "H") return HEAD_BY_ID[id];
   if (prefix === "S") return SHANK_BY_ID[id];

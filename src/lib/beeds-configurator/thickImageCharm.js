@@ -326,6 +326,10 @@ export function useThickCharmAssets(imagePath, charmHeight, charmDepth, bodyColo
       }
 
       const { cx: offX, cy: offY } = centroid(outerWorld);
+      const outlineStride = Math.max(1, Math.floor(outerWorld.length / 64));
+      const outline = outerWorld
+        .filter((_, index) => index % outlineStride === 0)
+        .map(({ wx, wy }) => ({ x: wx - offX, y: wy - offY }));
 
       let bodyGeo;
       try {
@@ -372,7 +376,7 @@ export function useThickCharmAssets(imagePath, charmHeight, charmDepth, bodyColo
         toneMapped: false,
       });
 
-      setAssets({ bodyGeo, bodyMat, faceMat, backFaceMat, faceTex, backFaceTex, W, H, offX, offY });
+      setAssets({ bodyGeo, bodyMat, faceMat, backFaceMat, faceTex, backFaceTex, W, H, offX, offY, outline });
     };
 
     img.onerror = () => {

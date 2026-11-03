@@ -25,6 +25,11 @@ button {
 /* ────────────────────────────────────────────────────────────────────────── */
 
 .theme3-root {
+  --appearance-primary: #262626;
+  --appearance-primary-text: #ffffff;
+  --appearance-secondary: #e2e2de;
+  --appearance-secondary-text: #262626;
+  --appearance-hover-primary: #898985;
   --theme3-ink: #303030;
   --theme3-muted: #6d6d6a;
   --theme3-line: #d9d9d5;
@@ -92,8 +97,8 @@ button {
 }
 
 .theme3-section-nav button.active {
-    background: var(--theme3-ink);
-  color: #ffffff;
+    background: var(--appearance-primary, var(--theme3-ink));
+    color: var(--appearance-primary-text, #ffffff);
 }
 
 .theme3-section-nav button:disabled {
@@ -258,10 +263,10 @@ button {
 }
 
 .gb-preview-control {
-  min-width: 44px;
-  min-height: 44px;
-  width: 44px;
-  height: 44px;
+  min-width: 48px;
+  min-height: 48px;
+  width: 48px;
+  height: 48px;
   padding: 2px;
   border: 1px solid rgba(23, 23, 23, 0.12);
   border-radius: 50vh;
@@ -280,9 +285,19 @@ button {
   border-color: rgba(23, 23, 23, 0.25);
 }
 
+.gb-preview-control--sound:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
 .gb-preview-control.active {
-  border-color: #111111;
-  background: #ffffff;
+  background: var(--theme3-ink, #303030);
+  border-color: var(--theme3-ink, #303030);
+  color: #ffffff;
+}
+
+.gb-preview-control.active svg,
+.gb-preview-control.active span {
+  color: #ffffff;
 }
 
 .gb-preview-control img {
@@ -507,12 +522,12 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0 8px;
+  padding: 12px 0 0px;
 }
 
 .theme3-option-section-header h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.15;
   color: #303030;
@@ -614,6 +629,12 @@ button {
   row-gap: 10px;
 }
 
+/* Small charm collections (such as the four diamond options) should fill one
+   horizontal row instead of being split across two rows. */
+.theme3-root .gb-option-row--two-line .gb-option-track:not(:has(> :nth-child(6))) {
+  grid-template-rows: minmax(0, 1fr);
+}
+
 .theme3-root .theme3-initial-grid .gb-card-option {
   min-width: 0;
   width: 100%;
@@ -663,7 +684,7 @@ button {
   place-items: center;
   gap: 5px;
   padding: 10px 8px;
-  border: 1px solid #e2e2de;
+  border: 1px solid var(--appearance-secondary, #e2e2de);
   border-radius: 5px;
   background: #ffffff;
   color: var(--theme3-ink);
@@ -671,12 +692,12 @@ button {
   transition: border-color 0.15s, background-color 0.15s;
 }
 
-.theme3-root .gb-stone-card-option:hover {
-  border-color: #b0b0aa;
+.theme3-root .gb-stone-card-option:hover:not(.active):not(:disabled) {
+  border-color: var(--appearance-hover-primary, #b0b0aa);
 }
 
 .theme3-root .gb-stone-card-option.active {
-  border-color: var(--theme3-ink);
+  border-color: var(--appearance-primary, var(--theme3-ink));
   background: #f8f8f8;
   box-shadow: none;
 }
@@ -782,26 +803,22 @@ button {
   text-transform: uppercase;
 }
 
-.theme3-engraving-controls > label small {
+.theme3-root:not(.theme3-has-body-typography) .theme3-engraving-controls > label small {
   color: var(--theme3-muted);
   font-size: 10px;
   font-weight: 400;
 }
 
-.theme3-engraving-controls input {
-  width: 100%;
-  min-height: 44px;
-  padding: 0 14px;
+/* Text fields: borders/colors from RCApp appearance contract when store is loaded. */
+.theme3-root.theme3-root--jewelry:not([class*="theme3-has-"]) .theme3-engraving-controls input,
+.theme3-root.theme3-root--jewelry:not([class*="theme3-has-"]) .theme3-input-wrap > input {
   border: 1px solid #d4d4cf;
-  border-radius: 5px;
-  background: #ffffff;
   color: var(--theme3-ink);
-  font: inherit;
   font-size: 13px;
-  outline: none;
 }
 
-.theme3-engraving-controls input:focus {
+.theme3-root.theme3-root--jewelry:not([class*="theme3-has-"]) .theme3-engraving-controls input:focus,
+.theme3-root.theme3-root--jewelry:not([class*="theme3-has-"]) .theme3-input-wrap > input:focus {
   border-color: var(--theme3-ink);
   box-shadow: 0 0 0 2px rgba(23, 23, 23, 0.1);
 }
@@ -851,9 +868,13 @@ button {
   transition: all 0.15s;
 }
 
+.necklace-charm-category-btn:hover:not(.active):not(:disabled) {
+  border-color: var(--appearance-hover-primary, var(--appearance-primary, #303030));
+}
+
 .necklace-charm-category-btn.active {
-  background: #303030;
-  border-color: #303030;
+  background: var(--appearance-primary, #303030);
+  border-color: var(--appearance-primary, #303030);
 }
 
 .necklace-charm-category-label {
@@ -1137,6 +1158,7 @@ button {
   display: flex;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: none !important;
 }
 
 /* Responsive adjustments */
@@ -1302,10 +1324,10 @@ button {
   }
 
   .theme3-preview-pane .gb-preview-control {
-    min-width: 40px;
-    min-height: 40px;
-    width: 40px;
-    height: 40px;
+    min-width: 48px;
+    min-height: 48px;
+    width: 48px;
+    height: 48px;
   }
 
   .theme3-preview-pane .gb-preview-control img {
@@ -1463,7 +1485,7 @@ button {
     gap: 5px;
     padding-bottom: 12px;
   }
-    .theme3-root--jewelry .theme3-summary-details-toggle span {
+    .theme3-root--jewelry:not(.theme3-has-link-typography) .theme3-summary-details-toggle span {
     font-size: 10px !important;
     font-weight: 400 !important;
     color: #000000 !important;
@@ -1516,6 +1538,55 @@ button {
   padding: 12px 0 0px;
 }
 
+.theme3-panel-scroll--flush-top,
+.beeds-configurator-root .theme3-panel-scroll--flush-top {
+  padding-top: 16px;
+}
+
+.theme3-jewelry-section-header {
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.theme3-jewelry-section-header span {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: #303030;
+}
+
+.jewelry-category-row--compact {
+  padding-top: 0;
+}
+
+.jewelry-category-row--compact .jewelry-category-row-title {
+  display: none;
+}
+
+.theme3-root [data-theme3-section="bracelet"],
+.beeds-configurator-root [data-theme3-section="jewelry"] {
+  padding-top: 0;
+}
+
+.beeds-configurator-root .jewelry-category-row--compact {
+  margin-bottom: 4px;
+}
+
+.beeds-configurator-root .beads-gb-option-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.beeds-configurator-root .beads-option-row-price {
+  flex-shrink: 0;
+}
+
 .jewelry-category-row-title {
   min-height: 22px;
   padding: 0 0 12px;
@@ -1545,7 +1616,7 @@ button {
   min-width: 142px; /* matches ring configurator option buttons */
   min-height: 42px;
   padding: 8px 14px;
-  border: 1px solid #e2e2de;
+  border: 1px solid var(--appearance-secondary, #e2e2de);
   border-radius: 5px;
   background: #ffffff;
   color: var(--theme3-ink, #303030);
@@ -1556,18 +1627,33 @@ button {
 }
 
 .jewelry-category-btn:hover:not(.active) {
-  border-color: #b0b0aa;
+  border-color: var(--appearance-hover-primary, #b0b0aa);
 }
 
 .jewelry-category-btn.active {
-  border-color: var(--theme3-ink, #303030);
+  border-color: var(--appearance-primary, var(--theme3-ink, #303030));
   background: #f7f7f5;
+  color: var(--theme3-ink, #303030);
   cursor: default;
 }
 
-.theme3-option-section-header > span {
+/* Jewelry label = heading tokens; category tabs = button tokens (see RCApp label-inherit note). */
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--jewelry, .theme3-root--beads)
+  .theme3-jewelry-section-header
+  .theme3-section-heading {
+  text-transform: uppercase;
+}
+
+.theme3-root.theme3-has-button-typography:is(.theme3-root--jewelry, .theme3-root--beads) .jewelry-category-btn,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--jewelry, .theme3-root--beads)
+  .jewelry-category-btn.theme3-option-box-label {
+  font-size: var(--typography-button-font-size, 12px) !important;
+  color: var(--typography-button-primary-text-color, var(--theme3-ink, #303030)) !important;
+}
+
+.theme3-option-section-header > span:not(.theme3-section-heading):not(.theme3-section-header-price) {
   color: #303030;
-  font-size: 16px;
+  font-size: 12px ;
   font-weight: 700 !important;
   text-transform: uppercase;
 }
@@ -1656,15 +1742,20 @@ button {
       and Share on the left, summary toggle and total on the right, and the
       breakdown opening above them. The footer already rendered all of this
       for mobile; this just stops hiding it on desktop.
-   3. Reset moves to the preview, next to 360 and view (NecklaceConfigurator).
+   3. Reset lives beside Share in the footer, matching the ring configurator.
    ─────────────────────────────────────────────────────────────────────────── */
 @media (min-width: 901px) {
+  /* Section tabs were removed from the shell; do not reserve the old nav row. */
+  .theme3-workspace:not(:has(.theme3-section-nav)) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "preview options";
+  }
+
   .theme3-root--jewelry .theme3-workspace {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: 60px minmax(0, 1fr);
-    grid-template-areas:
-      "preview nav"
-      "preview options";
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "preview options";
   }
 
   .theme3-root--jewelry .theme3-preview-caption {
@@ -1777,7 +1868,7 @@ button {
     opacity: 0.8;
   }
 
-  .theme3-root--jewelry .theme3-summary-details-toggle span {
+  .theme3-root--jewelry:not(.theme3-has-link-typography) .theme3-summary-details-toggle span {
     font-size: 10px !important;
     font-weight: 400 !important;
     color: #000000 !important;
@@ -1836,9 +1927,9 @@ button {
     height: 42px;
     padding: 0 18px;
     border-radius: 4px;
-    background: #262626 !important;
-    border: 1px solid #262626 !important;
-    color: #ffffff !important;
+    background: var(--appearance-primary, #262626) !important;
+    border: 1px solid var(--appearance-primary, #262626) !important;
+    color: var(--appearance-primary-text, #ffffff) !important;
     font-family: inherit;
     font-size: 12px !important;
     font-weight: 500 !important;
@@ -1846,11 +1937,6 @@ button {
     white-space: nowrap;
     transition: background-color 0.15s ease, border-color 0.15s ease;
     width: 130px;
-  }
-
-  .theme3-root--jewelry .theme3-panel-footer-cta:hover:not(:disabled) {
-    background: #3a3a3a !important;
-    border-color: #3a3a3a !important;
   }
 
   .theme3-root--jewelry .theme3-panel-footer-cta:disabled {
@@ -1861,9 +1947,14 @@ button {
   .theme3-root--jewelry .theme3-panel-action-wrapper {
     position: relative;
     display: inline-flex;
+    gap: 12px;
+    /* The opened price breakdown sits at z-index 60. Keep Share and its
+       confirmation toast above it so the feedback remains visible. */
+    z-index: 61;
   }
 
-  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn {
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn,
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-reset-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1872,7 +1963,7 @@ button {
     padding: 0 16px;
     border-radius: 4px;
     background: #ffffff !important;
-    border: 1px solid #262626 !important;
+    border: 1px solid var(--appearance-primary, #262626) !important;
     color: #262626 !important;
     font-family: inherit;
     font-size: 12px !important;
@@ -1883,9 +1974,10 @@ button {
     width: 96px;
   }
 
-  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn:hover {
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn:hover,
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-reset-btn:hover {
     background: #f7f7f7 !important;
-    border-color: #111111 !important;
+    border-color: var(--appearance-hover-primary, var(--appearance-primary, #262626)) !important;
   }
 
   .theme3-root--jewelry .theme3-share-toast {
@@ -1960,4 +2052,28 @@ button {
 }
 .theme3-root.theme3-root--jewelry .gb-option-track .gb-card-option {
   min-height: 115px;
+
+}
+.initial-charm-block{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* RCApp.css is global (app/layout.js) and paints inactive pills with
+   --appearance-secondary (#e2e2de) on the label — unreadable on white.
+   Jewelry keeps dark ink for purity, length, and font pills. */
+.theme3-root.theme3-root--jewelry:not(.theme3-has-button-typography) .gb-text-option:not(:disabled),
+.theme3-root.theme3-root--jewelry:not(.theme3-has-button-typography) .gb-text-option:not(.active):not(:disabled),
+.theme3-root.theme3-root--jewelry:not(.theme3-has-button-typography) .gb-text-option.active {
+  color: var(--theme3-ink) !important;
+}
+
+.theme3-root.theme3-root--jewelry .gb-text-option:not(.active):not(:disabled) {
+  border-color: #e2e2de;
+}
+
+.theme3-root.theme3-root--jewelry .gb-text-option.active {
+  border-color: var(--theme3-ink);
+  background: #f8f8f8;
 }

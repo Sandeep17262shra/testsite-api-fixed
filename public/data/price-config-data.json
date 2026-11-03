@@ -834,7 +834,10 @@
       "FLUTED": 0,
       "BRAIDED": 0,
       "CATHEDRAL-SIDE-STONE": 0,
-      "SIDE-BEZEL-STONES": 0
+      "SIDE-BEZEL-STONES": 0,
+      "BAGUETTE-SIDE-STONE": 0,
+      "PEAR-SIDE-STONE": 0,
+      "HALF-MOON-SIDE-STONE": 0
     },
     "headPrices": {
       "4-PRONG": 0,

@@ -13,21 +13,54 @@ import { JEWELRY_TYPE_SWITCH_MESSAGE } from "@/lib/jewelry-shell/jewelryCategory
 
 export const BraceletContext = createContext({});
 
+export const NECKLACE_STORAGE_KEY = "necklace_configurator_state";
+export const BRACELET_STORAGE_KEY = "bracelet_configurator_state";
+
 export const BraceletProvider = ({ children, initialType }) => {
 
-  // ── Restore from a shared URL ─────────────────────────────────────────────
+  // ── Restore from a shared URL or session storage ──────────────────────────
   const getConfigFromURL = () => {
     if (typeof window === "undefined") return null;
 
     const params = new URLSearchParams(window.location.search);
-    const encodedConfig = params.get("config");
-    if (!encodedConfig) return null;
-    try {
-      return JSON.parse(Base64.decode(encodedConfig));
-    } catch (e) {
-      console.error("Failed to decode shared config:", e);
-      return null;
+    let encodedConfig = params.get("config");
+
+    if (!encodedConfig && window.self !== window.top && document.referrer) {
+      try {
+        const refUrl = new URL(document.referrer);
+        encodedConfig = refUrl.searchParams.get("config");
+      } catch {}
     }
+
+    if (encodedConfig) {
+      try {
+        return JSON.parse(Base64.decode(encodedConfig));
+      } catch (e) {
+        console.error("Failed to decode shared config:", e);
+        return null;
+      }
+    }
+
+    // No config in URL -> restore session state from sessionStorage (same as ring configurator)
+    try {
+      const queryType = params.get("type");
+      let storedCategory = null;
+      try {
+        storedCategory = sessionStorage.getItem("jewelry-shell:category");
+      } catch {}
+
+      const isBracelet =
+        queryType === "bracelet" ||
+        initialType === "bracelet" ||
+        storedCategory === "bracelet" ||
+        (getTempInitialParentCategory() === "bracelet");
+
+      const key = isBracelet ? BRACELET_STORAGE_KEY : NECKLACE_STORAGE_KEY;
+      const stored = sessionStorage.getItem(key);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+
+    return null;
   };
   const config = getConfigFromURL();
 
@@ -65,13 +98,28 @@ export const BraceletProvider = ({ children, initialType }) => {
   const [jewelryType, setJewelryTypeState] = useState(initialJewelryType);
 
   // Remember chain selections for each jewelry type
+  const storedNecklace = typeof window !== "undefined" ? (() => {
+    try { return JSON.parse(sessionStorage.getItem(NECKLACE_STORAGE_KEY) || "null"); } catch { return null; }
+  })() : null;
+  const storedBracelet = typeof window !== "undefined" ? (() => {
+    try { return JSON.parse(sessionStorage.getItem(BRACELET_STORAGE_KEY) || "null"); } catch { return null; }
+  })() : null;
+
   const necklaceChainRef = useRef({
-    index: initialJewelryType === "necklace" ? (config?.selectedBracelet ?? 0) : 0,
-    path: initialJewelryType === "necklace" ? (config?.braceletPath ?? BRACELETS[0]?.path) : (BRACELETS[0]?.path || ""),
+    index: initialJewelryType === "necklace"
+      ? (config?.selectedBracelet ?? 0)
+      : (storedNecklace?.selectedBracelet ?? 0),
+    path: initialJewelryType === "necklace"
+      ? (config?.braceletPath ?? BRACELETS[0]?.path)
+      : ((storedNecklace?.braceletPath ?? BRACELETS[0]?.path) || ""),
   });
   const braceletChainRef = useRef({
-    index: initialJewelryType === "bracelet" ? (config?.selectedBracelet ?? 0) : 0,
-    path: initialJewelryType === "bracelet" ? (config?.braceletPath ?? DEFAULT_BRACELET_CHAIN_PATH) : DEFAULT_BRACELET_CHAIN_PATH,
+    index: initialJewelryType === "bracelet"
+      ? (config?.selectedBracelet ?? 0)
+      : (storedBracelet?.selectedBracelet ?? 0),
+    path: initialJewelryType === "bracelet"
+      ? (config?.braceletPath ?? DEFAULT_BRACELET_CHAIN_PATH)
+      : (storedBracelet?.braceletPath ?? DEFAULT_BRACELET_CHAIN_PATH),
   });
 
   // ── State — all initialised from URL config when present ─────────────────
@@ -108,7 +156,9 @@ export const BraceletProvider = ({ children, initialType }) => {
   // Necklace-only: the clasp-end "pendant" charm.
   const [pendantCharm, setPendantCharm] = useState(config?.pendantCharm ?? DEFAULT_PENDANT_CHARM);
   // Necklace-only: 16"/18" chain length.
-  const [chainLength, setChainLength] = useState(DEFAULT_CHAIN_LENGTH);
+  const [chainLength, setChainLength] = useState(
+    config?.chainLength != null ? String(config.chainLength) : DEFAULT_CHAIN_LENGTH
+  );
   const [namePendant, setNamePendant] = useState(
     // Bracelet also opens as a plain chain (no "Name" plate) — same as reset.
     config?.namePendant ?? (initialJewelryType === "bracelet"
@@ -117,14 +167,14 @@ export const BraceletProvider = ({ children, initialType }) => {
   );
 
   // Shared UI states between necklace and bracelet
-  const [customizeType, setCustomizeType] = useState('charms');
-  const [activeCharmCategory, setActiveCharmCategory] = useState('birthstones');
-  const [stoneColor, setStoneColor] = useState(STONE_COLOR_SWATCHES[0].hex);
+  const [customizeType, setCustomizeType] = useState(config?.customizeType ?? 'charms');
+  const [activeCharmCategory, setActiveCharmCategory] = useState(config?.activeCharmCategory ?? 'birthstones');
+  const [stoneColor, setStoneColor] = useState(config?.stoneColor ?? STONE_COLOR_SWATCHES[0].hex);
   const [selectedDiamondPath, setSelectedDiamondPath] = useState(
-    CHARMS.find((c) => c.type === "diamond")?.path || "/bc-assets/gemstone/D1.glb"
+    config?.selectedDiamondPath ?? (CHARMS.find((c) => c.type === "diamond")?.path || "/bc-assets/gemstone/D1.glb")
   );
-  const [initialLetter, setInitialLetter] = useState("A");
-  const [activeCharmSlot, setActiveCharmSlot] = useState(0);
+  const [initialLetter, setInitialLetter] = useState(config?.initialLetter ?? "A");
+  const [activeCharmSlot, setActiveCharmSlot] = useState(config?.activeCharmSlot ?? 0);
 
   // Metal colours kept in context so share/cart can encode them.
   const initialMetalHex = config?.braceletMetal ?? (initialJewelryType === "bracelet" ? BRACELET_DEFAULT_METAL : NECKLACE_DEFAULT_METAL);
@@ -135,28 +185,42 @@ export const BraceletProvider = ({ children, initialType }) => {
     config?.charmMetal ?? initialMetalHex
   );
 
-  // Bracelet-only: purity / size selectors and their line-item prices.
-  const [braceletPurity, setBraceletPurity] = useState(config?.braceletPurity ?? "9K");
+  // Bracelet & Necklace purity / size selectors and their line-item prices.
+  const initialMetalHexNormalized = String(initialMetalHex).toLowerCase();
+  const isNoPurityInit =
+    initialMetalHexNormalized === "#a8a8a6" ||
+    initialMetalHexNormalized === "#e5e4e2" ||
+    initialMetalHexNormalized === "#c0c0c0" ||
+    initialMetalHexNormalized === "#b8b8b8";
+  const initialPurity = config?.braceletPurity ?? config?.purity ?? "9K";
+  const defaultPurityPrice = isNoPurityInit
+    ? 0
+    : (initialPurity === "18K" ? 300 : initialPurity === "14K" ? 200 : 100);
+  const [braceletPurity, setBraceletPurity] = useState(initialPurity);
   const [currentMetalPrice, setCurrentMetalPrice] = useState(config?.currentMetalPrice ?? 100);
-  const [currentPurityPrice, setCurrentPurityPrice] = useState(config?.currentPurityPrice ?? 100);
+  const [currentPurityPrice, setCurrentPurityPrice] = useState(config?.currentPurityPrice ?? defaultPurityPrice);
   const [braceletSize, setBraceletSize] = useState(config?.braceletSize ?? "5");
   const [currentBraceletSizePrice, setCurrentBraceletSizePrice] = useState(config?.currentBraceletSizePrice ?? 30);
   // Bracelet-only: GLB load spinner.
   const [loader, setLoader] = useState(true);
 
   const initialMaterialProps = initialJewelryType === "bracelet" ? BRACELET_MATERIAL_PROPS : NECKLACE_MATERIAL_PROPS;
-  const [materialPropsBracelet, setMaterialPropsBracelet] = useState({
-    color: initialMetalHex,
-    ...initialMaterialProps,
-  });
+  const [materialPropsBracelet, setMaterialPropsBracelet] = useState(
+    config?.materialPropsBracelet ?? {
+      color: initialMetalHex,
+      ...initialMaterialProps,
+    }
+  );
   const [texture, setTexture] = useState(null);
   const [highlightedIndex, setHighlightedIndex] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [materialProps, setMaterialProps] = useState({
-    color: initialPendantMetalHex,
-    ...initialMaterialProps,
-  });
-  const [cameraView, setCameraView] = useState("");
+  const [materialProps, setMaterialProps] = useState(
+    config?.materialProps ?? {
+      color: initialPendantMetalHex,
+      ...initialMaterialProps,
+    }
+  );
+  const [cameraView, setCameraView] = useState(config?.cameraView ?? "");
   const [capture, setCapture] = useState(false);
   const [resetObj, setResetObj] = useState(initialJewelryType === "bracelet" ? BRACELET_RESET_OBJ : NECKLACE_RESET_OBJ);
   const [showResetPopup, setShowResetPopup] = useState(false);
@@ -207,12 +271,12 @@ export const BraceletProvider = ({ children, initialType }) => {
 
     if (isTargetBracelet) {
       setCurrentMetalPrice(targetMetal.price || 100);
-      if (targetMetal.alt === "Platinum") {
-        setBraceletPurity("9K");
-        setCurrentPurityPrice(0);
-      } else if (currentPurityPrice === 0) {
-        setCurrentPurityPrice(100);
-      }
+    }
+    if (targetMetal.alt === "Platinum" || targetMetal.alt === "Silver 925") {
+      setBraceletPurity("9K");
+      setCurrentPurityPrice(0);
+    } else if (currentPurityPrice === 0) {
+      setCurrentPurityPrice(100);
     }
 
     // 2. Sync Name Pendant / Name Bracelet:
@@ -326,6 +390,72 @@ export const BraceletProvider = ({ children, initialType }) => {
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
   }, []);
+
+  // Persist necklace/bracelet state to sessionStorage whenever any setting changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const isPreview = new URLSearchParams(window.location.search).get("preview") === "model-only";
+      if (isPreview) return;
+
+      const key = jewelryType === "bracelet" ? BRACELET_STORAGE_KEY : NECKLACE_STORAGE_KEY;
+      const stateToStore = {
+        type: jewelryType === "bracelet" ? "bracelet" : "pendant",
+        jewelryType,
+        selectedBracelet,
+        braceletPath,
+        braceletMetal,
+        charmMetal,
+        pendantMetalHex,
+        braceletPurity,
+        currentPurityPrice,
+        currentMetalPrice,
+        braceletSize,
+        currentBraceletSizePrice,
+        chainLength,
+        namePendant,
+        pendantCharm,
+        charms,
+        cameraView,
+        customizeType,
+        activeCharmCategory,
+        stoneColor,
+        selectedDiamondPath,
+        initialLetter,
+        activeCharmSlot,
+        materialPropsBracelet,
+        materialProps,
+      };
+      sessionStorage.setItem(key, JSON.stringify(stateToStore));
+    } catch (e) {
+      // ignore
+    }
+  }, [
+    jewelryType,
+    selectedBracelet,
+    braceletPath,
+    braceletMetal,
+    charmMetal,
+    pendantMetalHex,
+    braceletPurity,
+    currentPurityPrice,
+    currentMetalPrice,
+    braceletSize,
+    currentBraceletSizePrice,
+    chainLength,
+    namePendant,
+    pendantCharm,
+    charms,
+    cameraView,
+    customizeType,
+    activeCharmCategory,
+    stoneColor,
+    selectedDiamondPath,
+    initialLetter,
+    activeCharmSlot,
+    materialPropsBracelet,
+    materialProps,
+  ]);
 
   return (
     <BraceletContext.Provider value={{

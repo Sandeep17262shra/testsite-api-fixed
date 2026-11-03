@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState, useRef } from "react";
+import { useClickSound } from "../../hooks/useClickSound";
 import { RingContext } from "../../contexts/RingContext";
 import SizeGuideDetails from "./SizeGuideDetails";
 import { SectionContext } from "../../contexts/SectionContext";
@@ -7,6 +8,7 @@ import { getStorePriceConfig } from "../../priceConfig";
 import { getCurrencySign, getCurrencyRate, getRingSizeType  } from "../../utility/Parentconfig";
 
 function OtherSection() {
+    const { playClick } = useClickSound();
     const [shapeIndex, setShapeIndex] = useState(0);
     const [openDropdown, setOpenDropdown] = useState(null);
     const shapesToShow = 5;
@@ -168,6 +170,7 @@ useEffect(() => {
     }, [rSizes, ringSize, setRingSize]);
 
     const handleSizeOption = (option) => {
+        playClick();
         const selected = ringSize3.find(item => item.label === option);
         setLongName(selected?.longName || '');
         setCountryShortName(selected?.shortName || '');
@@ -175,6 +178,7 @@ useEffect(() => {
     }
 
     const handleRingSize = (size) => {
+        playClick();
         setRingSize(size);
         
         setOpenDropdown(null);

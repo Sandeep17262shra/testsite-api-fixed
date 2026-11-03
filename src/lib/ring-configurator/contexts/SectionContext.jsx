@@ -21,7 +21,7 @@ import { isDiamondWiseParentUrl, isPriceConfigReady } from "../priceConfig";
 
 const LS_KEY = "ring_configurator_state";
 
-const getConfigFromURLOrStorage = (storeParentUrl) => {
+const getConfigFromURLOrStorage = () => {
   if (typeof window === "undefined") return null;
   const params = new URLSearchParams(window.location.search);
   let encodedConfig = params.get("config");
@@ -36,10 +36,7 @@ const getConfigFromURLOrStorage = (storeParentUrl) => {
   if (!encodedConfig) {
     try {
       const stored = sessionStorage.getItem(LS_KEY);
-      if (stored) {
-        const savedConfig = JSON.parse(stored);
-        if (savedConfig._storeParentUrl === storeParentUrl) return savedConfig;
-      }
+      if (stored) return JSON.parse(stored);
     } catch {}
     return null;
   }
@@ -57,10 +54,14 @@ const deriveHeadStyle = (config) => {
   if (!config?.ringHead) return "plain";
   const raw = config.ringHead.trim().toUpperCase();
   if (raw === "DOUBLE-HALO") return "double-halo";
-  if (raw === "SINGLE-HALO") return "single-halo";
+  if (raw === "SINGLE-HALO" || raw === "HALO") return "halo";
   if (raw === "HIDDEN-HALO") return "hidden-halo";
+  if (raw === "HIDDEN-HALO-2") return "hidden-halo-2";
   if (raw === "BEZEL") return "bezel";
-  if (["OVAL", "TRAPEZOID", "HALF-MOON", "PEAR", "BAGUETTE"].includes(raw)) return "three-stone";
+  if (raw === "TULIP") return "tulip";
+  if (raw === "TWO-STONE") return "two-stone";
+  if (raw === "CLAW-SET") return "claw-set";
+  if (["OVAL", "TRAPEZOID", "HALF-MOON", "PEAR", "BAGUETTE", "ROUND"].includes(raw)) return "three-stone";
   return "plain";
 };
 
@@ -159,7 +160,7 @@ export const SectionProvider = ({ children }) => {
   const initialCarat = getDefaultCarat(currentParent);
   const initialDiamondPrice = getDiamondPrice(currentParent, initialCarat, initialQuality, "Lab") || initialPrice.diamondPrice;
 
-  const config = getConfigFromURLOrStorage(currentParent);
+  const config = getConfigFromURLOrStorage();
   const initialHeadStyle = deriveHeadStyle(config);
   const initialPlatinum = config?.platinum ?? (config?.metal === "Platinum" || config?.ringColor === "#dbdbdb" || false);
   const initialThreestone = config?.threestone || "";
@@ -199,8 +200,10 @@ export const SectionProvider = ({ children }) => {
     calcInitDiamondPrice = calcInitDiamondPrice + getColoredDiamondExtraPrice(currentParent, config?.fancyDiamond || "Blue") + Math.round(calcInitIntensityPrice);
   }
 
-  const [shankTotal, setShankTotal] = useState(() => calcInitShankPrice + calcInitMetalPrice + calcInitMatchingBandPrice + calcInitEngravingPrice);
-  const [headTotal, setHeadTotal] = useState(() => calcInitHeadPrice);
+  // Metal is part of the setting/head price, not the shank subtotal. This
+  // keeps the price breakdown aligned with the head metal selection.
+  const [shankTotal, setShankTotal] = useState(() => calcInitShankPrice + calcInitMatchingBandPrice + calcInitEngravingPrice);
+  const [headTotal, setHeadTotal] = useState(() => calcInitHeadPrice + calcInitMetalPrice);
   const [stoneTotal, setStoneTotal] = useState(() => calcInitDiamondPrice);
   const [otherTotal, setOtherTotal] = useState(initialSectionState.otherTotal);
 
@@ -230,14 +233,13 @@ export const SectionProvider = ({ children }) => {
       const existing = JSON.parse(sessionStorage.getItem(LS_KEY) || "{}");
       sessionStorage.setItem(LS_KEY, JSON.stringify({
         ...existing,
-        _storeParentUrl: currentParent,
         headStyle,
         platinum,
         threestone,
         shapeList,
       }));
     } catch {}
-  }, [currentParent, headStyle, platinum, threestone, shapeList]);
+  }, [headStyle, platinum, threestone, shapeList]);
 
   // Stone Section
   const [stoneThreestone, setStoneThreestone] = useState("lab-diamond");
@@ -262,7 +264,7 @@ export const SectionProvider = ({ children }) => {
 
   useEffect(() => {
     if (!currentParent) return;
-    const cfg = getConfigFromURLOrStorage(currentParent);
+    const cfg = getConfigFromURLOrStorage();
     const isDw = isDiamondWiseParentUrl(currentParent);
     const currMetal = cfg?.platinum ? "Platinum" : (cfg?.metal || (platinum ? "Platinum" : "14K"));
     const currShank = cfg?.ringShank || (isDw ? "dw-jul-ma-02-shank" : "PLAIN");
@@ -306,8 +308,8 @@ export const SectionProvider = ({ children }) => {
     setCaratP(nextDiamondPrice);
     setActiveDiamondType(nextDiamondPrice);
     setStoneTotal(nextDiamondPrice);
-    setShankTotal(nextShankPrice + nextMetalPrice + nextMatchingBandPrice + nextEngravingPrice);
-    setHeadTotal(nextHeadPrice);
+    setShankTotal(nextShankPrice + nextMatchingBandPrice + nextEngravingPrice);
+    setHeadTotal(nextHeadPrice + nextMetalPrice);
   }, [currentParent, priceConfigVersion]);
 
   return (

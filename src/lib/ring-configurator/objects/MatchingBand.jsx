@@ -268,64 +268,235 @@ function MatchingBand() {
     const ringShank = displayed.ringShank;
     if (!meshes) return null;
 
+    // ─── Calibrated baseline scales (Preserves original model shape from Pic 1) ──
+    const BASELINE_PAVE = {
+        plain001: [0.40, 0.40, 0.45],
+        metal002: [0.33, 0.33, 0.33],
+        diamond:  [0.335, 0.335, 0.335],
+    };
+
+    const PROMINENT_PAVE = {
+        plain001: [0.45, 0.45, 0.49],
+        metal002: [0.37, 0.37, 0.37],
+        diamond:  [0.380, 0.380, 0.380],
+    };
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // SIDE-BAND CONFIGURATION TABLE
+    //
+    // HOW TO EDIT:
+    // 1. Position [X, Y, Z]:
+    //    - X: Left / Right offset (0 is centered)
+    //    - Y: Height / vertical position along the main band
+    //    - Z: Front / Back distance from the main band
+    //
+    // 2. Size (Scale):
+    //    - 'size': Multiplier (default 1.0). Set to 1.05 to make 5% bigger, 0.95 for 5% smaller.
+    //      All parts (band, prongs, diamonds) scale together, so the model shape is NEVER distorted.
+    //    - 'scale': [X, Y, Z] optional explicit scale for plain bands.
+    // ──────────────────────────────────────────────────────────────────────────
+    const BAND_CONFIG = {
+        "PLAIN": {
+            "PLAIN":        { position: [0, 0.75, 0.5], scale: [0.40, 0.40, 0.44] },
+            "CHANNEL":      { position: [0, 0.7,  0.5], scale: [0.33, 0.33, 0.33] },
+            "PLATE-PRONG":  { position: [0, 0.7,  0.5], size: 1.0 },
+            default:        { position: [0, 0.7,  0.5], size: 1.0 },
+        },
+        "KNIFE-EDGE": {
+            "PLAIN":        { position: [0, 0.4, 0.7],  scale: [0.45, 0.45, 0.45] },
+            "CHANNEL":      { position: [0, 0.4, 0.8],  scale: [0.37, 0.37, 0.37] },
+            "PLATE-PRONG":  { position: [0, 0.3, 0.7],  scaleProfile: "prominent", size: 1.0 },
+            default:        { position: [0, 0.3, 0.7],  size: 1.0 },
+        },
+        "CATHEDRAL": {
+            "PLAIN":        { position: [0, 0.4, 0.6],  scale: [0.47, 0.47, 0.47] },
+            "CHANNEL":      { position: [0, 0.4, 0.7],  scale: [0.37, 0.37, 0.37] },
+            "PLATE-PRONG":  { position: [0, 0.4, 0.6],  scaleProfile: "prominent", size: 1.0 },
+            default:        { position: [0, 0.2, 0.6],  size: 1.0 },
+        },
+        "SPLIT": {
+            "PLAIN":        { position: [0, 0.6, 0.65], scale: [0.40, 0.41, 0.44] },
+            "CHANNEL":      { position: [0, 0.6, 0.65], scale: [0.33, 0.33, 0.33] },
+            "PLATE-PRONG":  { position: [0, 0.6, 0.65], size: 1.0 },
+            default:        { position: [0, 0.6, 0.65], size: 1.0 },
+        },
+        // ── New & Additional Shanks ──
+        "WIDE-PLAIN": {
+            "PLAIN":        { position: [0, 0.4, 1],  scale: [0.47, 0.47, 0.47] },
+            "CHANNEL":      { position: [0, 0.4, 1],  scale: [0.39, 0.39, 0.39] },
+            "PLATE-PRONG":  { position: [0, 0.4, 1],  size: 1.18 },
+            default:        { position: [0, 0.6, 1],  size: 1.0 },
+        },
+        "CHANNEL": {
+            "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.4, 0.4, 0.4] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.34, 0.34, 0.34] },
+            "PLATE-PRONG":  { position: [0, 0.7, 0.55],  size: 1.01 },
+            default:        { position: [0, 0.6, 0.6],  size: 1.0 },
+        },
+        "PLATE-PRONG": {
+            "PLAIN":        { position: [0, 0.7, 0.45],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.5],  scale: [0.34, 0.34, 0.34] },
+            "PLATE-PRONG":  { position: [0, 0.7, 0.5],  size: 1.0 },
+            default:        { position: [0, 0.6, 0.5],  size: 1.0 },
+        },
+        "TWISTED": {
+            "PLAIN":        { position: [0, 0.85, 0.6],  scale: [0.38, 0.38, 0.38] },
+            "CHANNEL":      { position: [0, 0.85, 0.6],  scale: [0.32, 0.32, 0.3] },
+            "PLATE-PRONG":  { position: [0, 0.85, 0.6],  size: 0.95 },
+            default:        { position: [0, 0.85, 0.6],  size: 0.95 },
+        },
+        "FRENCH-PAVE": {
+            "PLAIN":        { position: [0, 0.7, 0.5],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.5],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.5],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.5],  size: 1.0 },
+        },
+        "PAVE-STONES": {
+             "PLAIN":        { position: [0, 0.7, 0.5],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.5],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.5],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.5],  size: 1.0 },
+        },
+        "8-STONES": {
+             "PLAIN":        { position: [0, 0.7, 0.5],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.5],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.5],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.5],  size: 1.0 },
+        },
+        "MULTI-ROW": {
+            "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "TWISTED-2": {
+             "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "FLUTED": {
+             "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "BRAIDED": {
+             "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "CATHEDRAL-SIDE-STONE": {
+            "PLAIN":        { position: [0, 0.7, 0.5],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.5],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.5],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.5],  size: 1.0 },
+        },
+        "SIDE-BEZEL-STONES": {
+             "PLAIN":        { position: [0, 0.7, 0.5],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.5],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.5],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.5],  size: 1.0 },
+        },
+        "BAGUETTE-SIDE-STONE": {
+             "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "PEAR-SIDE-STONE": {
+             "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "HALF-MOON-SIDE-STONE": {
+            "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "BAGUETTE": {
+             "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+        "PEAR": {
+            "PLAIN":        { position: [0, 0.7, 0.6],  scale: [0.40, 0.40, 0.45] },
+            "CHANNEL":      { position: [0, 0.7, 0.6],  scale: [0.335, 0.335, 0.335] },
+            "PLATE-PRONG":  { position: [0, 0.65, 0.6],  size: 1.0 },
+            default:        { position: [0, 0.65, 0.6],  size: 1.0 },
+        },
+    };
+
+    // Generic fallback for any shank not specifically listed
+    const FALLBACK_CONFIG = {
+        "PLAIN":        { position: [0, 0.6, 0.5], scale: [0.40, 0.40, 0.45] },
+        "CHANNEL":      { position: [0, 0.6, 0.5], scale: [0.33, 0.33, 0.33] },
+        "PLATE-PRONG":  { position: [0, 0.6, 0.5], size: 1.0 },
+        default:        { position: [0, 0.6, 0.5], size: 1.0 },
+    };
+
+    // Resolves mesh scale without distorting model proportions
+    const resolveMeshScale = (configEntry, meshName, style) => {
+        const sizeMult = typeof configEntry?.size === "number" ? configEntry.size : 1.0;
+
+        // 1. Explicit array scale override (used for PLAIN / CHANNEL)
+        if (Array.isArray(configEntry?.scale)) {
+            return [
+                configEntry.scale[0] * sizeMult,
+                configEntry.scale[1] * sizeMult,
+                configEntry.scale[2] * sizeMult
+            ];
+        }
+
+        // 2. PLATE-PRONG: Always maintain exact original calibrated mesh ratios (Pic 1)
+        if (style === "PLATE-PRONG") {
+            const base = configEntry?.scaleProfile === "prominent" ? PROMINENT_PAVE : BASELINE_PAVE;
+            const isPlain = meshName === "plain001" || meshName === "plain";
+            const isMetal = meshName === "metal002";
+            const baseScale = isPlain ? base.plain001 : isMetal ? base.metal002 : base.diamond;
+            return [
+                baseScale[0] * sizeMult,
+                baseScale[1] * sizeMult,
+                baseScale[2] * sizeMult
+            ];
+        }
+
+        // 3. Fallback: standard baseline
+        const isPlain = meshName === "plain001" || meshName === "plain";
+        const isMetal = meshName === "metal002";
+        const defaultBase = isPlain ? [0.40, 0.40, 0.45] : isMetal ? [0.33, 0.33, 0.33] : [0.335, 0.335, 0.335];
+        return [
+            defaultBase[0] * sizeMult,
+            defaultBase[1] * sizeMult,
+            defaultBase[2] * sizeMult
+        ];
+    };
+
+    // Keep the matching band visibly separated from the engagement shank.
+    // The authored offsets are intentionally retained per shank/band style;
+    // this factor only increases their existing separation uniformly.
+    const MATCHING_BAND_GAP_FACTOR = 1.25;
+
     return (
         <>
             {meshes.map((mesh, index) => {
-                let position =
-                    bandStyle === "PLAIN" && ringShank !== "PLAIN" ? [0, 0.6, 0.5] :
-                    bandStyle !== "PLAIN" && ringShank === "PLAIN" ? [0, 0.7, 0.5] :
-                    bandStyle === "PLAIN" && ringShank === "PLAIN" ? [0, 0.7, 0.5] :
-                    [0, 0.6, 0.5];
+                const shankTable = BAND_CONFIG[ringShank] || FALLBACK_CONFIG;
+                const configEntry = shankTable[bandStyle] || shankTable["default"] || FALLBACK_CONFIG["default"];
 
-                let scale = (mesh.name === "plain001" || mesh.name === "plain")
-                    ? [0.40, 0.40, 0.45]
-                    : mesh.name === "metal002" ? [0.33, 0.33, 0.33] : [0.335, 0.335, 0.335];
+                const position = configEntry.position || [0, 0.6, 0.5];
+                const scale = resolveMeshScale(configEntry, mesh.name, bandStyle);
                 const color = COLORED_MESH_NAMES.has(mesh.name) ? (ringColor || bandColor) : "#ffffff";
                 const isDiamond = !COLORED_MESH_NAMES.has(mesh.name);
-
-                //For Other Models//
-                if (ringShank === "KNIFE-EDGE") {
-                    if (bandStyle === "PLAIN") {
-                        position = [0, 0.4, 0.7];
-                        scale = [0.45, 0.45, 0.45];
-                    } else if (bandStyle === "CHANNEL") {
-                        position = [0, 0.4, 0.8];
-                        scale = [0.37, 0.37, 0.37];
-                    } else {
-                        position = [0, 0.3, 0.7];
-                        scale = (mesh.name === "plain001" || mesh.name === "plain") ? [0.45, 0.45, 0.49]
-                            : mesh.name === "metal002" ? [0.37, 0.37, 0.37] : [0.380, 0.380, 0.380];
-                    }
-                } else if (ringShank === "CATHEDRAL") {
-                    if (bandStyle === "PLAIN") {
-                        position = [0, 0.4, 0.6];
-                        scale = [0.47, 0.47, 0.47];
-                    } else if (bandStyle === "CHANNEL") {
-                        position = [0, 0.2, 0.7];
-                        scale = [0.37, 0.37, 0.37];
-                    } else {
-                        position = [0, 0.2, 0.6];
-                        scale = (mesh.name === "plain001" || mesh.name === "plain") ? [0.45, 0.45, 0.49]
-                            : mesh.name === "metal002" ? [0.37, 0.37, 0.37] : [0.380, 0.380, 0.380];
-                    }
-                } else if (ringShank === "SPLIT") {
-                    position = [0, 0.6, 0.65];
-                    if (bandStyle === "PLAIN") {
-                        scale = [0.40, 0.41, 0.44];
-                    }
-                } else if (ringShank === "PLAIN") {
-                    position = [0, 0.75, 0.5];
-                    if (bandStyle === "PLAIN") {
-                        scale = [0.40, 0.40, 0.44];
-                    }
-                }
-                //For Other Models//
 
                 return (
                     <BandMesh
                         key={`${bandStyle}_${index}`}
                         geometry={mesh.geometry}
-                        position={position}
+                        position={[position[0], position[1], position[2] * MATCHING_BAND_GAP_FACTOR]}
                         scale={scale}
                         materialProps={materialProps}
                         color={color}

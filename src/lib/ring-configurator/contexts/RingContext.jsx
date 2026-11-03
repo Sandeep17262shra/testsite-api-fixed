@@ -28,6 +28,10 @@ const initialRingState = {
   setIsEnabled: () => { },
   ringHead: "4-PRONG",
   setRingHead: () => { },
+  twoStoneLeft: "round",
+  setTwoStoneLeft: () => { },
+  twoStoneRight: "pear",
+  setTwoStoneRight: () => { },
   ringShank: "PLAIN",
   setRingShank: () => { },
   ringSideSetting: "PLAIN",
@@ -60,6 +64,8 @@ const initialRingState = {
   setEnvMapIntensity: () => { },
   bandWidth: "2mm",
   setBandWidth:() => { },
+  weddingBandCoverage: "3_4",
+  setWeddingBandCoverage: () => { },
   styleShape: "D",
   setStyleShape:() => { },
   engravingFocus: false,
@@ -70,7 +76,7 @@ export const RingContext = createContext(initialRingState);
 
 export const RingProvider = ({ children }) => {
 
-  const getConfigFromURL = (storeParentUrl) => {
+  	const getConfigFromURL = () => {
 	  if (typeof window === "undefined") return null;
 	  const params = new URLSearchParams(window.location.search);
 	  let encodedConfig = params.get('config');
@@ -85,12 +91,7 @@ export const RingProvider = ({ children }) => {
 	  if (!encodedConfig) {
 	    try {
 	      const stored = sessionStorage.getItem(LS_KEY);
-	      if (stored) {
-        const savedConfig = JSON.parse(stored);
-        // A saved JDemo selection must never become the initial selection for
-        // another storefront (for example, jewelith-pricing-test).
-        if (savedConfig._storeParentUrl === storeParentUrl) return savedConfig;
-      }
+	      if (stored) return JSON.parse(stored);
 	    } catch {}
 	    return null;
 	  }
@@ -104,8 +105,8 @@ export const RingProvider = ({ children }) => {
 	  }
 	};	
 	
+  const config = getConfigFromURL();
   const { parentUrl } = useContext(StoreContext) || {};
-  const config = getConfigFromURL(parentUrl);
   const isDiamondwise = isDiamondWiseParentUrl(parentUrl);
 
   const initialShank = config?.ringShank || (isDiamondwise ? "dw-jul-ma-02-shank" : initialRingState.ringShank);
@@ -129,6 +130,8 @@ export const RingProvider = ({ children }) => {
   const [engravingFont, setEngravingFont] = useState(config?.engravingFont || initialRingState.engravingFont);
   const [mobileZoomIn, setMobileZoomIn] = useState(config?.mobileZoomIn || initialRingState.mobileZoomIn);
   const [ringHead, setRingHead] = useState(initialHead);
+  const [twoStoneLeft, setTwoStoneLeft] = useState(config?.twoStoneLeft || initialRingState.twoStoneLeft);
+  const [twoStoneRight, setTwoStoneRight] = useState(config?.twoStoneRight || initialRingState.twoStoneRight);
   const initialBiMetal =
     config?.biMetal === "Yes" || config?.biMetal === true
       ? "Yes"
@@ -158,6 +161,7 @@ export const RingProvider = ({ children }) => {
   const [clearcoatRoughness, setClearcoatRoughness] = useState(config?.clearcoatRoughness || initialRingState.clearcoatRoughness);
   const [envMapIntensity, setEnvMapIntensity] = useState(config?.envMapIntensity || initialRingState.envMapIntensity);
   const [bandWidth, setBandWidth] = useState(config?.bandWidth || initialRingState.bandWidth);
+  const [weddingBandCoverage, setWeddingBandCoverage] = useState(config?.weddingBandCoverage || initialRingState.weddingBandCoverage || "3_4");
   const [styleShape, setStyleShape] = useState(config?.styleShape || initialRingState.styleShape);
   const [glInstance, setGlInstance] = useState(null);
 
@@ -193,12 +197,13 @@ export const RingProvider = ({ children }) => {
       const existing = JSON.parse(sessionStorage.getItem(LS_KEY) || "{}");
       sessionStorage.setItem(LS_KEY, JSON.stringify({
         ...existing,
-        _storeParentUrl: parentUrl,
         ringColor,
         headColor,
         bandColor: ringColor,
         metal,
         ringHead,
+        twoStoneLeft,
+        twoStoneRight,
         ringShank,
         ringSideSetting,
         ringMatchingBand,
@@ -209,15 +214,15 @@ export const RingProvider = ({ children }) => {
         engraving,
         engravingFont,
         bandWidth,
+        weddingBandCoverage,
         styleShape,
         diamondWiseDesignId,
       }));
     } catch {}
   }, [
-    parentUrl,
-    ringColor, headColor, metal, ringHead, ringShank, ringSideSetting,
+    ringColor, headColor, metal, ringHead, twoStoneLeft, twoStoneRight, ringShank, ringSideSetting,
     ringMatchingBand, ringBand, biMetal, sizeOption, ringSize,
-    engraving, engravingFont, bandWidth, styleShape, diamondWiseDesignId,
+    engraving, engravingFont, bandWidth, weddingBandCoverage, styleShape, diamondWiseDesignId,
   ]);
 
   return (
@@ -233,6 +238,8 @@ export const RingProvider = ({ children }) => {
       mobileZoomIn, setMobileZoomIn,
       isEnabled, setIsEnabled,
       ringHead, setRingHead,
+      twoStoneLeft, setTwoStoneLeft,
+      twoStoneRight, setTwoStoneRight,
       ringShank, setRingShank,
       ringSideSetting,
       setRingSideSetting,
@@ -257,6 +264,7 @@ export const RingProvider = ({ children }) => {
       clearcoatRoughness, setClearcoatRoughness,
       envMapIntensity, setEnvMapIntensity,
       bandWidth, setBandWidth,
+      weddingBandCoverage, setWeddingBandCoverage,
       styleShape, setStyleShape,
 	  glInstance, setGlInstance,
     }}>

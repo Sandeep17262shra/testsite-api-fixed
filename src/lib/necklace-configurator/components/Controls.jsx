@@ -11,12 +11,38 @@ import {
 } from '../shared/assets';
 import { Base64 } from "js-base64";
 import { ShareContext } from "../contexts/ShareContext";
+import {
+  getNecklaceChainCatalogPrice,
+  getNecklaceCharmCatalogPrice,
+  getNecklaceMetalCatalogPrice,
+  getNecklaceChainLengthTotalPrice,
+  getNecklaceNamePendantTextPrice,
+  getNecklacePendantCharmCatalogPrice,
+  getNecklaceCatalogLabel,
+  getNecklaceMetalCatalogLabels,
+  isNecklaceCatalogProductActive,
+} from "../necklacePriceConfig";
 import { resolveParentUrl, isCategoryAllowed } from "../shared/parentCategoryConfig";
 import { isJewelryShellActive, rememberJewelryCategory, requestJewelryCategory } from "@/lib/jewelry-shell/jewelryCategoryBus";
+import { getFooterSummaryTaxLabel } from "@/lib/jewelry-shell/summaryTaxLabel";
 import { View360Context } from "../contexts/View360Context";
 import { CHAIN_DRAPE_CONFIG, getSeamCharmSlots } from "../necklace/DrapeChain";
 import { buildCharmAddOnLines } from "../shared/orderSummary";
+import { playBeadAddSound, playBeadRemoveSound, unlockBeadsAudio } from "../../beeds-configurator/beadsSounds";
+import { useClickSound } from "../hooks/useClickSound";
 import { useSectionScrollSpy } from "../shared/useSectionScrollSpy";
+import {
+    getNecklaceChainKeyByPath,
+    getNecklaceMetalId,
+    getNecklaceBirthstoneIdByHex,
+    getNecklaceDiamondCharmIdByPath,
+    NECKLACE_CHAIN_IDS,
+    NECKLACE_METAL_IDS,
+    NAME_PENDANT_FONT_IDS,
+    resolveCharmProductId,
+    buildJewelryProductIdPayload,
+} from "../data/jewelryProductIds";
+import { renderOptionBoxLabel } from "@/lib/ring-configurator/theme3OptionLabels";
 
 function CardOption({ active, label, image, onClick, disabled = false }) {
   return (
@@ -27,12 +53,13 @@ function CardOption({ active, label, image, onClick, disabled = false }) {
       disabled={disabled}
     >
       {image && <img src={image} alt={label || ""} />}
-      {label && <span>{label}</span>}
+      {label && <span className="theme3-option-box-label">{label}</span>}
     </button>
   );
 }
 
 function TextOption({ active, label, onClick, disabled = false, children }) {
+  const content = children != null ? children : label;
   return (
     <button
       type="button"
@@ -40,7 +67,9 @@ function TextOption({ active, label, onClick, disabled = false, children }) {
       onClick={onClick}
       disabled={disabled}
     >
-      {children || label}
+      {typeof content === "string" || typeof content === "number"
+        ? renderOptionBoxLabel(content)
+        : content}
     </button>
   );
 }
@@ -117,7 +146,7 @@ function OptionRow({ title, children, className }) {
     <section className={`gb-option-row${className ? ` ${className}` : ""}`}>
       {title && (
         <div className="gb-option-title">
-          <span>{title}</span>
+          <span className="theme3-section-heading">{title}</span>
         </div>
       )}
       <div className="gb-option-slider">
@@ -174,7 +203,7 @@ const Controls = forwardRef(function Controls({ activeSection = "bracelet", onSe
         setMaterialPropsBracelet,
         setTexture,
         setMaterialProps,
-        setCameraView,
+        cameraView, setCameraView,
         setCapture, capture,
         setResetObj,
         showResetPopup, setShowResetPopup,
@@ -187,8 +216,11 @@ const Controls = forwardRef(function Controls({ activeSection = "bracelet", onSe
         pendantMetalHex, setPendantMetalHex,
     } = useContext(BraceletContext);
 
-    const { setShare, shareUrl, setShareUrl, parent, setParent } = useContext(ShareContext);
+    const { setShare, shareUrl, setShareUrl, parent, setParent, necklacePriceConfigVersion } =
+        useContext(ShareContext);
     const { view360, setView360 } = useContext(View360Context);
+
+    const { playClick } = useClickSound();
 
     const [showCopied, setShowCopied] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
@@ -208,6 +240,8 @@ const Controls = forwardRef(function Controls({ activeSection = "bracelet", onSe
     const isNameChain = NAME_CHAIN_PATHS.includes(braceletPath);
     const supportsChainLength = CHAIN_LENGTH_SUPPORTED_PATHS.includes(braceletPath);
     const maxCharmsForNecklace = MAX_CHARMS_BY_NECKLACE[braceletPath] ?? 6;
+    const activeCharm = activeCharmSlot !== null ? charms[activeCharmSlot] : null;
+    const activeCharmMetal = activeCharm?.metalColor || activeCharm?.bodyColor || charmMetal;
 
     useEffect(() => {
     const placedCharms = charms.filter(Boolean);
@@ -235,21 +269,72 @@ useEffect(() => {
     }
 }, [supportsNamePendant, customizeType]);
 
-    const namePendantPrice = supportsNamePendant && namePendant.enabled && namePendant.text.trim() ? 250 : 0;
+    // Each placed charm retains its own metal. Reflect that metal in the
+    // frontend swatches when the customer selects a different charm slot.
+    useEffect(() => {
+        if (!activeCharm) return;
+        const selectedMetal = activeCharm.metalColor || activeCharm.bodyColor;
+        if (selectedMetal && selectedMetal !== charmMetal) setCharmMetal(selectedMetal);
+    }, [activeCharm, charmMetal, setCharmMetal]);
+
     const selectedPendantCharm = PENDANT_CHARMS.find((charm) => charm.id === pendantCharm.charmId) || PENDANT_CHARMS[0];
-    const pendantCharmPrice = pendantCharm.enabled ? (selectedPendantCharm?.price || 0) : 0;
-    const totalPrice = braceletPrice + charmsPrice + namePendantPrice + pendantCharmPrice + (braceletMetal === "#A8A8A6" ? 0 : currentPurityPrice);
+    const namePendantPrice =
+        supportsNamePendant && namePendant.enabled && namePendant.text.trim()
+            ? getNecklaceNamePendantTextPrice(namePendant.fontStyle, namePendant.text)
+            : 0;
+    const pendantCharmPrice = pendantCharm.enabled
+        ? getNecklacePendantCharmCatalogPrice(
+              selectedPendantCharm?.id,
+              selectedPendantCharm?.price || 350
+          )
+        : 0;
+    const chainLengthPrice = supportsChainLength
+        ? getNecklaceChainLengthTotalPrice(chainLength ?? DEFAULT_CHAIN_LENGTH)
+        : 0;
+    const isPlatinum = String(braceletMetal || "").toLowerCase() === "#a8a8a6";
+    const isSilver = String(braceletMetal || "").toLowerCase() === "#c0c0c0" || String(braceletMetal || "").toLowerCase() === "#b8b8b8";
+    const hasPurity = !isPlatinum && !isSilver;
+    const metalComponentPrice = getNecklaceMetalCatalogPrice(
+      braceletMetal,
+      braceletPurity,
+      hasPurity ? currentPurityPrice : 0
+    );
+    const totalPrice =
+      braceletPrice +
+      charmsPrice +
+      namePendantPrice +
+      pendantCharmPrice +
+      metalComponentPrice +
+      chainLengthPrice;
 
     useEffect(() => {
         const currentBracelet = BRACELETS[selectedBracelet];
-        if (currentBracelet) setBraceletPrice(currentBracelet.price);
+        if (currentBracelet) {
+            setBraceletPrice(
+                getNecklaceChainCatalogPrice(currentBracelet.path, currentBracelet.price)
+            );
+        }
         const totalCharmsPrice = charms.reduce((total, charm) => {
             if (!charm) return total;
-            const charmData = CHARMS.find(c => c.path === charm.path);
-            return total + (charmData ? charmData.price : 0);
+            const charmData = CHARMS.find((c) => c.path === charm.path);
+            const fallback = charmData ? charmData.price : 0;
+            return total + getNecklaceCharmCatalogPrice(charm, fallback);
         }, 0);
         setCharmsPrice(totalCharmsPrice);
-    }, [selectedBracelet, charms]);
+    }, [
+      selectedBracelet,
+      charms,
+      braceletPath,
+      braceletMetal,
+      braceletPurity,
+      necklacePriceConfigVersion,
+      chainLength,
+      namePendant?.enabled,
+      namePendant?.text,
+      namePendant?.fontStyle,
+      pendantCharm?.enabled,
+      pendantCharm?.charmId,
+    ]);
 
     // Close summary dropdown on outside click
     useEffect(() => {
@@ -274,6 +359,7 @@ useEffect(() => {
     }, [isSummaryExpanded]);
 
     const handleSummaryArrowClick = () => {
+        playClick();
         setIsSummaryExpanded((prev) => !prev);
     };
 
@@ -289,7 +375,6 @@ const purityOptions = [
     { label: "14K", value: "14K", price: 200 },
     { label: "18K", value: "18K", price: 300 },
 ];
-const isPlatinum = braceletMetal === "#A8A8A6";
     const gemstoneOptions = [
         { name: "Blue Sapphire", hex: "#0047AB" },
         { name: "Green Emerald", hex: "#4AE2A1" },
@@ -307,6 +392,34 @@ const isPlatinum = braceletMetal === "#A8A8A6";
     ];
 
     const connectedFontOptions = fontOptions.filter((font) => font.connected);
+    const necklaceChainId = (path) => {
+        const key = getNecklaceChainKeyByPath(path);
+        return key ? NECKLACE_CHAIN_IDS[key]?.id : undefined;
+    };
+    const necklaceMetalId = (metal, purity = braceletPurity) => getNecklaceMetalId(metal.hex, purity);
+    const necklaceFontId = (font) => NAME_PENDANT_FONT_IDS[font.id]?.id;
+    const necklaceMetalLabel = (metal) =>
+        getNecklaceMetalCatalogLabels(necklaceMetalId(metal), metal.alt).metal;
+    const necklacePurityLabel = (option) =>
+        getNecklaceMetalCatalogLabels(getNecklaceMetalId(braceletMetal, option.value), "", option.label).purity;
+
+    useEffect(() => {
+        if (!hasPurity) return;
+        const validPurities = purityOptions.filter((option) =>
+            isNecklaceCatalogProductActive(getNecklaceMetalId(braceletMetal, option.value))
+        );
+        if (validPurities.length && !validPurities.some((option) => option.value === braceletPurity)) {
+            setBraceletPurity(validPurities[0].value);
+        }
+    }, [necklacePriceConfigVersion, braceletMetal, braceletPurity, hasPurity]);
+
+    useEffect(() => {
+        if (!hasPurity) return;
+        const validMetals = metalOptions.filter((metal) => isNecklaceCatalogProductActive(necklaceMetalId(metal)));
+        if (validMetals.length && !validMetals.some((metal) => metal.hex === braceletMetal)) {
+            setBraceletMetal(validMetals[0].hex);
+        }
+    }, [necklacePriceConfigVersion, braceletMetal, braceletPurity, hasPurity]);
 
     const updateNamePendant = (updates) =>
         setNamePendant((prev) => ({ ...prev, ...updates }));
@@ -337,7 +450,6 @@ const isPlatinum = braceletMetal === "#A8A8A6";
     };
 
     const handleReset = () => {
-        setHasReachedAddOns(false);
         setSelectedBracelet(0);
         setBraceletPath(BRACELETS[0].path);
         setCharms([]);
@@ -348,6 +460,8 @@ const isPlatinum = braceletMetal === "#A8A8A6";
         applyMaterial('#ECC875', '/textures/silver.jpg');
         setTexture(null);
         setBraceletMetal("#ECC875");
+        setBraceletPurity("9K");
+        setCurrentPurityPrice(100);
         setCharmMetal("#ECC875");
         setPendantMetalHex("#ECC875");
         setCameraView("normal");
@@ -374,15 +488,20 @@ const isPlatinum = braceletMetal === "#A8A8A6";
                 selectedBracelet,
                 braceletPath,
                 braceletMetal,
+                braceletPurity,
+                chainLength: chainLength ?? DEFAULT_CHAIN_LENGTH,
                 pendantMetalHex,
                 charmMetal,
                 charms,
                 namePendant,
                 pendantCharm,
+                cameraView,
                 braceletPrice,
                 charmsPrice,
                 namePendantPrice,
                 pendantCharmPrice,
+                currentPurityPrice: hasPurity ? currentPurityPrice : 0,
+                chainLengthPrice,
                 totalPrice,
             };
 
@@ -396,6 +515,7 @@ const isPlatinum = braceletMetal === "#A8A8A6";
             url.searchParams.set("config", encoded);
             const finalUrl = url.toString();
 
+            setShareUrl(finalUrl);
             await navigator.clipboard.writeText(finalUrl);
         } catch (err) {
             console.error("Share failed:", err);
@@ -428,19 +548,38 @@ const isPlatinum = braceletMetal === "#A8A8A6";
             console.warn('Canvas snapshot failed', e);
         }
 
+        const effectivePurity = isPlatinum ? 'Platinum' : isSilver ? 'Silver 925' : braceletPurity;
+        const currentChainLength = chainLength ?? DEFAULT_CHAIN_LENGTH;
+        const chainLengthLabel = supportsChainLength
+            ? (CHAIN_LENGTH_OPTIONS.find((o) => o.id === currentChainLength)?.label || `${currentChainLength}"`)
+            : "";
+
         setPendingCartPayload({
             type: 'ADD_TO_CART',
             quantity: 1,
-            Title: `${BRACELETS[selectedBracelet]?.name}${supportsNamePendant && namePendant.enabled && namePendant.text ? ` - "${namePendant.text}"` : ''} - ${metalOptions.find(o => o.hex === braceletMetal)?.alt}`,
+            Title: `${BRACELETS[selectedBracelet]?.name}${supportsNamePendant && namePendant.enabled && namePendant.text ? ` - "${namePendant.text}"` : ''} - ${hasPurity ? `${braceletPurity} ` : ''}${metalOptions.find(o => o.hex === braceletMetal)?.alt}${supportsChainLength && chainLengthLabel ? ` - ${chainLengthLabel}` : ''}`,
             Price: totalPrice,
             Category: 'Pendant',
             PendantStyle: BRACELETS[selectedBracelet]?.name,
             MetalType: metalOptions.find(o => o.hex === braceletMetal)?.alt,
+            Purity: effectivePurity,
+            ChainLength: supportsChainLength ? chainLengthLabel : "None",
+            Length: supportsChainLength ? chainLengthLabel : "None",
             NameText: supportsNamePendant && namePendant.enabled && namePendant.text.trim() ? namePendant.text : "None",
             FontStyle: fontOptions.find(f => f.id === namePendant.fontStyle)?.label,
             PendantCharm: pendantCharm.enabled ? selectedPendantCharm?.name : "None",
             CharmBody: pendantCharm.enabled ? (metalOptions.find(o => o.hex === pendantCharm.bodyColor)?.alt || "Custom") : "None",
             Gemstone: pendantCharm.enabled ? (gemstoneOptions.find(o => o.hex === pendantCharm.gemstoneColor)?.name || "Custom") : "None",
+            // Stable product-ID payload — keyed IDs for chain, metal, font, charms.
+            ProductIds: buildJewelryProductIdPayload({
+                jewelryType: "necklace",
+                braceletPath,
+                braceletMetal,
+                braceletPurity,
+                namePendant,
+                charms,
+                chainLength: currentChainLength,
+            }),
             Media,
         });
         setShareUrl("");
@@ -489,6 +628,7 @@ const isPlatinum = braceletMetal === "#A8A8A6";
                 id: replaced.id,
                 ...(replaced.chainSide ? { chainSide: replaced.chainSide } : {}),
             };
+            playBeadAddSound();
             setCharms(updated);
             return;
         }
@@ -523,6 +663,7 @@ const isPlatinum = braceletMetal === "#A8A8A6";
                     added,
                 ];
         }
+        playBeadAddSound();
         setCharms(updated);
         setActiveCharmSlot(Math.max(updated.findIndex((c) => c.id === newCharm.id), 0));
     };
@@ -575,6 +716,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
 
     const removeCharmAt = (index) => {
         const updated = charms.filter((_, charmIndex) => charmIndex !== index);
+        playBeadRemoveSound();
         setCharms(updated);
         setActiveCharmSlot(updated.length ? Math.min(index, updated.length - 1) : 0);
     };
@@ -607,6 +749,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
         if (event.pointerType === "mouse" && event.button !== 0) return;
         if (event.target.closest(".remove-slot-btn")) return;
         event.preventDefault();
+        unlockBeadsAudio();
         suppressCharmClickRef.current = false;
         setDragState({
             pointerId: event.pointerId,
@@ -698,38 +841,38 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
         },
     ];
 
-    const availableCharmCategories = isNameChain
+    const compatibleCharmCategories = isNameChain
         ? NECKLACE_CHARM_CATEGORIES.filter((cat) => cat.id !== "initial")
         : NECKLACE_CHARM_CATEGORIES;
+    const availableCharmCategories = compatibleCharmCategories.filter((cat) => {
+        if (cat.id === "birthstones") {
+            return STONE_COLOR_SWATCHES.some((stone) =>
+                isNecklaceCatalogProductActive(getNecklaceBirthstoneIdByHex(stone.hex))
+            );
+        }
+        if (cat.id === "diamonds") {
+            return CHARMS.some((charm) => charm.type === "diamond" &&
+                isNecklaceCatalogProductActive(getNecklaceDiamondCharmIdByPath(charm.path))
+            );
+        }
+        return isNecklaceCatalogProductActive("NIC1");
+    });
 
-    // "Add-ons" only leads the customer through once: after the add-ons
-    // section has been reached the button stays "Add to Cart", even when
-    // scrolling back up (cleared again by Reset).
-    const [hasReachedAddOns, setHasReachedAddOns] = useState(false);
     useEffect(() => {
-        if (activeSection === "charms") setHasReachedAddOns(true);
-    }, [activeSection]);
-    const showAddOnsStep = activeSection === "bracelet" && !hasReachedAddOns;
+        if (availableCharmCategories.length && !availableCharmCategories.some((cat) => cat.id === activeCharmCategory)) {
+            setActiveCharmCategory(availableCharmCategories[0].id);
+        }
+    }, [necklacePriceConfigVersion, activeCharmCategory, availableCharmCategories.map((cat) => cat.id).join(",")]);
 
     const handleNextStep = () => {
-        if (showAddOnsStep) {
-            lockSectionSpy("charms");
-            const node = sectionRefs.charms?.current;
-            node?.scrollIntoView({ behavior: "smooth" });
-        } else {
-            addToCart();
-        }
+        addToCart();
     };
 
-    const nextStepButtonText = showAddOnsStep
-        ? "Add-ons"
-        : addedToCart
-        ? "Checking out..."
-        : "Checkout";
+    const nextStepButtonText = addedToCart
+        ? "Adding To Cart..."
+        : "Add To Cart";
 
-    const nextStepCopy = showAddOnsStep
-        ? "Add charms or a name"
-        : "Add your necklace to cart";
+    const nextStepCopy = "Add your necklace to cart";
 
     const placedCharms = charms.filter(Boolean);
 
@@ -739,13 +882,16 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
         : "";
     const pendantFontLabel = fontOptions.find((o) => o.id === namePendant.fontStyle)?.label || "Dancing";
     const chainMetalName = metalOptions.find((o) => o.hex?.toLowerCase() === braceletMetal?.toLowerCase())?.alt || "Yellow Gold";
-    const chainPurityLabel = isPlatinum || chainMetalName.startsWith("Silver") ? "" : braceletPurity;
+    const chainPurityLabel = hasPurity ? braceletPurity : "";
     const chainSummaryDesc = [chainStyle, [chainPurityLabel, chainMetalName].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
-    const chainSummaryPrice = braceletPrice + (isPlatinum ? 0 : currentPurityPrice);
+    const chainSummaryPrice = braceletPrice + metalComponentPrice + chainLengthPrice;
 
     const summaryAddOnLines = [
         ...buildCharmAddOnLines(placedCharms, {
-            getPrice: (charm) => CHARMS.find((c) => c.path === charm.path)?.price ?? 0,
+            getPrice: (charm) => {
+              const fallback = CHARMS.find((c) => c.path === charm.path)?.price ?? 0;
+              return getNecklaceCharmCatalogPrice(charm, fallback);
+            },
             getBirthstoneLabel: (charm) => STONE_COLOR_SWATCHES.find((s) => s.hex?.toLowerCase() === charm.gemstoneColor?.toLowerCase())?.label,
             getName: (charm) => charm.name || CHARMS.find((c) => c.path === charm.path)?.name || "Charm",
         }),
@@ -809,21 +955,24 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                     >
                         <div className="order-summary-section">
                             <div className="order-summary-row">
-                                <span className="order-summary-title">Chain</span>
-                                <span className="order-summary-price">${chainSummaryPrice.toLocaleString()}</span>
+                                <span className="order-summary-title theme3-section-heading">Chain</span>
+                                <span className="order-summary-price theme3-section-heading">${chainSummaryPrice.toLocaleString()}</span>
                             </div>
                             <div className="order-summary-desc">{chainSummaryDesc}</div>
                             {chainLengthLabel && (
-                                <div className="order-summary-desc">Size: {chainLengthLabel}</div>
+                                <div className="order-summary-desc">
+                                    Size: {chainLengthLabel}
+                                    {chainLengthPrice > 0 ? ` · $${chainLengthPrice.toLocaleString()}` : ""}
+                                </div>
                             )}
                         </div>
 
                         {summaryAddOnLines.length > 0 && (
                             <div className="order-summary-section">
                                 <div className="order-summary-row">
-                                    <span className="order-summary-title">Add-ons</span>
+                                    <span className="order-summary-title theme3-section-heading">Add-ons</span>
                                     {summaryAddOnsPrice > 0 && (
-                                        <span className="order-summary-price">${summaryAddOnsPrice.toLocaleString()}</span>
+                                        <span className="order-summary-price theme3-section-heading">${summaryAddOnsPrice.toLocaleString()}</span>
                                     )}
                                 </div>
                                 {summaryAddOnLines.map((line) => (
@@ -851,29 +1000,28 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                 {buildSummaryContent}
             </header>
 
-            <div className="theme3-panel-scroll" ref={scrollContainerRef}>
+            <div className="theme3-panel-scroll theme3-panel-scroll--flush-top" ref={scrollContainerRef}>
                 {/* ── Chain Selection Section ── */}
                 <div
                     className="theme3-option-section"
                     data-theme3-section="bracelet"
                     ref={sectionRefs.bracelet}
                 >
-                    <header className="theme3-option-section-header">
-                        <h3>Jewelry</h3>
-                        <span className="theme3-section-header-price">
-                            ${braceletPrice.toLocaleString()}
-                        </span>
+                    <header className="theme3-jewelry-section-header">
+                        <span className="theme3-section-heading">Jewelry</span>
                     </header>
-
-                    <div className="jewelry-category-row" role="tablist" aria-label="Jewelry category">
-                        <div className="jewelry-category-row-title">CATEGORY</div>
+                    <div
+                        className="jewelry-category-row jewelry-category-row--compact"
+                        role="tablist"
+                        aria-label="Jewelry category"
+                    >
                         <div className="jewelry-category-row-options">
                         {isCategoryAllowed(parent || resolveParentUrl(), "necklace") && (
                             <button
                                 type="button"
                                 role="tab"
                                 aria-selected="true"
-                                className="jewelry-category-btn active"
+                                className="jewelry-category-btn theme3-option-box-label active"
                             >
                                 Necklace
                             </button>
@@ -883,8 +1031,8 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                 type="button"
                                 role="tab"
                                 aria-selected="false"
-                                className="jewelry-category-btn"
-                                onClick={() => { rememberJewelryCategory("bracelet"); setJewelryType("bracelet"); onSectionChange?.("bracelet"); }}
+                                className="jewelry-category-btn theme3-option-box-label"
+                                onClick={() => { playClick(); rememberJewelryCategory("bracelet"); setJewelryType("bracelet"); onSectionChange?.("bracelet"); }}
                             >
                                 Bracelet
                             </button>
@@ -894,8 +1042,8 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                 type="button"
                                 role="tab"
                                 aria-selected="false"
-                                className="jewelry-category-btn"
-                                onClick={() => requestJewelryCategory("bead-bracelet")}
+                                className="jewelry-category-btn theme3-option-box-label"
+                                onClick={() => { playClick(); requestJewelryCategory("bead-bracelet"); }}
                             >
                                 Bead Bracelet
                             </button>
@@ -904,19 +1052,24 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                 </div>
 
                     <OptionRow title="Style">
-                        {BRACELETS.map((bracelet, index) => (
+                        {BRACELETS.filter((bracelet) => isNecklaceCatalogProductActive(necklaceChainId(bracelet.path))).map((bracelet) => {
+                            const index = BRACELETS.indexOf(bracelet);
+                            const productId = necklaceChainId(bracelet.path);
+                            return (
                             <CardOption
                                 key={bracelet.name}
                                 active={selectedBracelet === index}
                                 image={withChainIconVersion(BRACELET_CARD_IMAGE_BY_PATH[bracelet.path])}
-                                label={bracelet.name}
+                                label={getNecklaceCatalogLabel(productId, bracelet.name)}
                                 onClick={() => {
+    playClick();
     setSelectedBracelet(index);
     setBraceletPath(bracelet.path);
     applyMaterialBracelet(braceletMetal, '/textures/silver.jpg');
 }}
                             />
-                        ))}
+                            );
+                        })}
                     </OptionRow>
 
                     {supportsChainLength && (
@@ -926,44 +1079,46 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                     key={opt.id}
                                     active={(chainLength ?? DEFAULT_CHAIN_LENGTH) === opt.id}
                                     label={opt.label}
-                                    onClick={() => setChainLength(opt.id)}
+                                    onClick={() => { playClick(); setChainLength(opt.id); }}
                                 />
                             ))}
                         </OptionRow>
                     )}
 
                     <OptionRow title="Metal">
-                        {metalOptions.map((metal) => (
+                        {metalOptions.filter((metal) => isNecklaceCatalogProductActive(necklaceMetalId(metal))).map((metal) => (
                             <button
                                 key={metal.alt}
                                 type="button"
                                 className={`gb-metal-option ${braceletMetal === metal.hex ? "active" : ""}`}
                                 onClick={() => {
+                                    playClick();
                                     applyMaterialBracelet(metal.hex, '/textures/silver.jpg', metal.roughness ?? null, metal.metalness ?? null);
                                     setBraceletMetal(metal.hex);
-                                    if (metal.alt === "Platinum") {
+                                    if (metal.alt === "Platinum" || metal.alt === "Silver 925") {
                                         setBraceletPurity("9K");
                                         setCurrentPurityPrice(0);
                                     } else if (currentPurityPrice === 0) {
                                         setCurrentPurityPrice(100);
                                     }
                                 }}
-                                title={metal.alt}
+                                title={necklaceMetalLabel(metal)}
                                 style={{ backgroundColor: metal.color || metal.hex }}
                             >
-                                <small>{metal.alt}</small>
+                                <small className="theme3-option-box-label">{necklaceMetalLabel(metal)}</small>
                             </button>
                         ))}
                     </OptionRow>
 
-                    {!isPlatinum && (
+                    {hasPurity && (
                         <OptionRow title="Purity">
-                            {purityOptions.map((option) => (
+                            {purityOptions.filter((option) => isNecklaceCatalogProductActive(getNecklaceMetalId(braceletMetal, option.value))).map((option) => (
                                 <TextOption
                                     key={option.value}
                                     active={braceletPurity === option.value}
-                                    label={option.label}
+                                    label={necklacePurityLabel(option)}
                                     onClick={() => {
+                                        playClick();
                                         setBraceletPurity(option.value);
                                         setCurrentPurityPrice(option.price);
                                     }}
@@ -980,9 +1135,9 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                     ref={sectionRefs.charms}
                 >
                     <header className="theme3-option-section-header">
-                        <h3>Customize</h3>
+                        <span className="theme3-section-heading">Customize</span>
                         {(customizeType === "text" ? namePendantPrice : charmsPrice) > 0 && (
-                            <span className="theme3-section-header-price">
+                            <span className="theme3-section-header-price theme3-section-heading">
                                 ${(customizeType === "text" ? namePendantPrice : charmsPrice).toLocaleString()}
                             </span>
                         )}
@@ -1084,7 +1239,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                 className="clear-all-charms-btn"
                                 title="Remove all charms"
                                 aria-label="Remove all charms"
-                                onClick={() => { setCharms([]); setActiveCharmSlot(0); }}
+                                onClick={() => { playBeadRemoveSound(); setCharms([]); setActiveCharmSlot(0); }}
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1103,12 +1258,12 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                             <TextOption
                                 active={customizeType === "charms"}
                                 label="Charms"
-                                onClick={() => setCustomizeType("charms")}
+                                onClick={() => { playClick(); setCustomizeType("charms"); }}
                             />
                             <TextOption
                                 active={customizeType === "text"}
                                 label="Text"
-                                onClick={() => setCustomizeType("text")}
+                                onClick={() => { playClick(); setCustomizeType("text"); }}
                             />
                         </OptionRow>
                     )}
@@ -1117,12 +1272,13 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                         <>
                             <div className="theme3-engraving-controls">
     <label>
-        Text
-        <small>{namePendant.text?.length || 0}/16</small>
+        <span className="theme3-section-heading">Text</span>
+        <small className="theme3-body-text">{namePendant.text?.length || 0}/16</small>
     </label>
     <div className="theme3-input-wrap" style={{ position: "relative" }}>
         <input
             type="text"
+            className="theme3-body-text"
             value={namePendant.text || ""}
             maxLength={16}
             placeholder="Type a name"
@@ -1139,7 +1295,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                 type="button"
                 className="theme3-input-clear-btn"
                 aria-label="Remove name"
-                onClick={() => updateNamePendant({ enabled: false, text: "" })}
+                onClick={() => { playClick(); updateNamePendant({ enabled: false, text: "" }); }}
                 style={{
                     position: "absolute",
                     right: "10px",
@@ -1161,14 +1317,14 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
 </div>
 
                             <OptionRow title="Font Style">
-                                {connectedFontOptions.map((font) => (
+                                {connectedFontOptions.filter((font) => isNecklaceCatalogProductActive(necklaceFontId(font))).map((font) => (
                                     <TextOption
                                         key={font.id}
                                         active={namePendant.fontStyle === font.id}
-                                        onClick={() => updateNamePendant({ fontStyle: font.id, enabled: true })}
+                                        onClick={() => { playClick(); updateNamePendant({ fontStyle: font.id, enabled: true }); }}
                                     >
                                         <span style={{ fontSize: "16px", fontWeight: "bold" }}>{font.sample}</span>
-                                        <span>{font.label}</span>
+                                        <span>{getNecklaceCatalogLabel(necklaceFontId(font), font.label)}</span>
                                     </TextOption>
                                 ))}
                             </OptionRow>
@@ -1180,13 +1336,14 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                         type="button"
                                         className={`gb-metal-option ${pendantMetalHex === metal.hex ? "active" : ""}`}
                                         onClick={() => {
+                                            playClick();
                                             applyMaterial(metal.hex, '/textures/silver.jpg', metal.roughness ?? null, metal.metalness ?? null);
                                             setPendantMetalHex(metal.hex);
                                         }}
                                         title={metal.alt}
                                         style={{ backgroundColor: metal.color || metal.hex }}
                                     >
-                                        <small>{metal.alt}</small>
+                                        <small className="theme3-option-box-label">{metal.alt}</small>
                                     </button>
                                 ))}
                             </OptionRow>
@@ -1199,12 +1356,12 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                             <button
                                 key={`charm-metal-${metal.label}`}
                                 type="button"
-                                className={`gb-metal-option ${charmMetal === metal.hex ? "active" : ""}`}
-                                onClick={() => setActiveCharmMetal(metal)}
+                                className={`gb-metal-option ${activeCharmMetal === metal.hex ? "active" : ""}`}
+                                onClick={() => { playClick(); setActiveCharmMetal(metal); }}
                                 title={metal.label}
                                 style={{ backgroundColor: metal.color || metal.hex }}
                             >
-                                <small>{metal.label}</small>
+                                <small className="theme3-option-box-label">{metal.label}</small>
                             </button>
                         ))}
                     </OptionRow>
@@ -1212,7 +1369,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                     {/* Charm Category Switcher */}
                     <section className="gb-option-row" >
                         <div className="gb-option-title" >
-                            <span>Collection</span>
+                            <span className="theme3-section-heading">Collection</span>
                         </div>
                         <div
                             className="necklace-charm-category-nav"
@@ -1226,14 +1383,14 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                         type="button"
                                         title={cat.label}
                                         className={`necklace-charm-category-btn ${isActive ? "active" : ""}`}
-                                        onClick={() => setActiveCharmCategory(cat.id)}
+                                        onClick={() => { playClick(); setActiveCharmCategory(cat.id); }}
                                     >
                                         {cat.icon(isActive)}
                                     </button>
                                 );
                             })}
                             <span
-                                className="necklace-charm-category-label"
+                                className="necklace-charm-category-label theme3-section-heading"
                                 style={{ marginLeft: "6px", fontSize: "16px", fontWeight: "700" }}
                             >
                                 {availableCharmCategories.find(c => c.id === activeCharmCategory)?.label}
@@ -1243,7 +1400,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
 
                     {activeCharmCategory === "birthstones" && (
     <OptionRow className="gb-option-row--two-line theme3-initial-grid">
-        {STONE_COLOR_SWATCHES.map((stone) => (
+        {STONE_COLOR_SWATCHES.filter((stone) => isNecklaceCatalogProductActive(getNecklaceBirthstoneIdByHex(stone.hex))).map((stone) => (
             <button
                 key={stone.hex}
                 type="button"
@@ -1251,7 +1408,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                 onClick={() => selectBirthstone(stone)}
             >
                 <img src={stone.image} alt={stone.label} />
-                <span>{stone.label}</span>
+                <span className="theme3-option-box-label">{getNecklaceCatalogLabel(getNecklaceBirthstoneIdByHex(stone.hex), stone.label)}</span>
             </button>
         ))}
     </OptionRow>
@@ -1259,7 +1416,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
 
                     {activeCharmCategory === "diamonds" && (
     <OptionRow title="Diamond" className="gb-option-row--two-line theme3-initial-grid">
-        {CHARMS.filter((c) => c.type === 'diamond').map((charm) => (
+        {CHARMS.filter((c) => c.type === 'diamond' && isNecklaceCatalogProductActive(getNecklaceDiamondCharmIdByPath(c.path))).map((charm) => (
             <CardOption
                 key={charm.path}
                 active={
@@ -1267,7 +1424,7 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                     charms[activeCharmSlot]?.path === charm.path
                 }
                 image={charm.preview}
-                label={charm.name}
+                label={getNecklaceCatalogLabel(getNecklaceDiamondCharmIdByPath(charm.path), charm.name)}
                 onClick={() => addDiamondCharm(charm)}
             />
         ))}
@@ -1280,11 +1437,12 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                 <button
                                     key={letter}
                                     type="button"
-                                    className={`gb-card-option ${initialLetter === letter ? "active" : ""}`}
+                                    className={` initial-charm-block gb-card-option ${initialLetter === letter ? "active" : ""}`}
                                     onClick={() => selectInitialLetter(letter)}
                                     title={`Letter ${letter}`}
                                 >
-                                    <span style={{ fontSize: "28px", fontWeight: "700", color: "#171717", lineHeight: 1 }}>
+                                    <span style={{ fontSize: "80px", fontWeight: "700", color: "#171717", lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+
                                         {letter}
                                     </span>
                                 </button>
@@ -1308,9 +1466,9 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                             aria-expanded={isSummaryExpanded}
                             onClick={handleSummaryArrowClick}
                         >
-                            <span>View details</span>
+                            <span className="theme3-link-text">View details</span>
                             <svg
-                                className={`theme3-summary-toggle-arrow${isSummaryExpanded ? " is-expanded" : ""}`}
+                                className={`theme3-summary-toggle-arrow theme3-link-text${isSummaryExpanded ? " is-expanded" : ""}`}
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="8"
                                 height="5"
@@ -1326,10 +1484,12 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                         </button>
 
                         <div className="theme3-summary-price-row">
-                            <strong className="theme3-summary-price">
+                            <strong className="theme3-summary-price theme3-section-heading">
                                 ${totalPrice.toLocaleString()}
                             </strong>
-                            <span className="theme3-summary-tax-label">+ tax</span>
+                            {getFooterSummaryTaxLabel() ? (
+                                <span className="theme3-summary-tax-label theme3-body-text">{getFooterSummaryTaxLabel()}</span>
+                            ) : null}
                         </div>
                     </div>
 
@@ -1351,6 +1511,14 @@ const addDiamondCharm = (diamondCharm, replaceActive = true) => {
                                 aria-label="Share necklace configuration"
                             >
                                 Share
+                            </button>
+                            <button
+                                type="button"
+                                className="theme3-panel-action-btn theme3-panel-reset-btn"
+                                onClick={() => setShowResetPopup(true)}
+                                aria-label="Reset necklace configuration"
+                            >
+                                Reset
                             </button>
                             {showCopied && (
                                 <span className="theme3-share-toast" role="status">

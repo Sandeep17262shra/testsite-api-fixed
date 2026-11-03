@@ -1,7 +1,9 @@
 import { LAYOUT_BEAD_SIZE_ID } from "./assets";
 import {
+  getCharmGapStringPositions,
   getGapAngleBetweenRingItems,
   getGapRingPoint,
+  getMinCharmGapSpacingPx,
   getRingPoint,
 } from "./beadRingLayout";
 
@@ -316,18 +318,19 @@ export function pickNearestValidCharmGap(
   preferredGap,
   segmentCount,
   occupiedGaps,
-  segmentEntries = null
+  segmentEntries = null,
+  { charmAssets = null } = {}
 ) {
   if (segmentCount < 1) {
     return 0;
   }
 
   const preferred = normalizeCharmGapIndex(preferredGap, segmentCount);
-  if (isValidCharmGap(preferred, segmentCount, occupiedGaps, segmentEntries)) {
+  if (isValidCharmGap(preferred, segmentCount, occupiedGaps, segmentEntries, { charmAssets })) {
     return preferred;
   }
 
-  const valid = getValidCharmGaps(segmentCount, occupiedGaps, segmentEntries);
+  const valid = getValidCharmGaps(segmentCount, occupiedGaps, segmentEntries, { charmAssets });
   if (!valid.length) {
     return null;
   }
@@ -377,10 +380,9 @@ export function pickLeastCrowdedCharmGap(preferredGap, segmentCount, chargesByGa
 
 /** Assign ring gaps to charms in customize-slot order, one per gap while gaps last. */
 export function assignCharmRingGapsForSlotItems(items) {
-  const segmentEntries = items
-    .filter((item) => item.type === "bead" || item.type === "spacer")
-    .map((item) => ({ type: item.type }));
+  const segmentEntries = items.filter((item) => item.type === "bead" || item.type === "spacer");
   const segmentCount = segmentEntries.length;
+  const charmAssets = getCharmAssetsFromItems(items);
   const occupied = new Set();
   const chargesByGap = new Map();
   const gapsByCharmId = new Map();
@@ -405,7 +407,11 @@ export function assignCharmRingGapsForSlotItems(items) {
 
     if (Number.isFinite(item.ringGap)) {
       const persisted = normalizeCharmGapIndex(item.ringGap, segmentCount);
-      if (isValidCharmGap(persisted, segmentCount, occupied, segmentEntries)) {
+      if (
+        isValidCharmGap(persisted, segmentCount, occupied, segmentEntries, {
+          enforceSpacing: false,
+        })
+      ) {
         gapsByCharmId.set(item.id, takeGap(persisted));
         return;
       }
@@ -413,7 +419,9 @@ export function assignCharmRingGapsForSlotItems(items) {
 
     const inferred = inferCharmRingGapFromSlotItems(items, index);
     const preferred = normalizeCharmGapIndex(inferred, segmentCount);
-    const ringGap = pickNearestValidCharmGap(preferred, segmentCount, occupied, segmentEntries);
+    const ringGap = pickNearestValidCharmGap(preferred, segmentCount, occupied, segmentEntries, {
+      charmAssets,
+    });
     if (ringGap != null) {
       gapsByCharmId.set(item.id, takeGap(ringGap));
       return;
@@ -545,7 +553,13 @@ export function normalizeCharmGapIndex(gap, segmentCount) {
 }
 
 /** A gap is valid when it is bead–bead, in range, and not already occupied by another charm. */
-export function isValidCharmGap(gap, segmentCount, occupiedGaps, segmentEntries = null) {
+export function isValidCharmGap(
+  gap,
+  segmentCount,
+  occupiedGaps,
+  segmentEntries = null,
+  { enforceSpacing = true, charmAssets = null } = {}
+) {
   if (segmentCount < 1 || !Number.isFinite(gap)) {
     return false;
   }
@@ -556,23 +570,51 @@ export function isValidCharmGap(gap, segmentCount, occupiedGaps, segmentEntries 
     return false;
   }
 
+  const others = [];
   for (const occupied of occupiedGaps) {
     const other = ((occupied % segmentCount) + segmentCount) % segmentCount;
     if (other === normalized) {
       return false;
     }
+    others.push(other);
   }
-  return true;
+
+  if (!enforceSpacing || !others.length || entries.length !== segmentCount) {
+    return true;
+  }
+  const stringPositions = getCharmGapStringPositions(entries);
+  if (!stringPositions) {
+    return true;
+  }
+  // Neighbouring gaps can be closer than a charm is wide; filling both overlaps the pendants.
+  const { positions, length } = stringPositions;
+  const minSpacing = getMinCharmGapSpacingPx(charmAssets);
+  return others.every((other) => {
+    const direct = Math.abs(positions[normalized] - positions[other]);
+    return Math.min(direct, length - direct) >= minSpacing;
+  });
 }
 
-export function getValidCharmGaps(segmentCount, occupiedGaps, segmentEntries = null) {
+export function getValidCharmGaps(
+  segmentCount,
+  occupiedGaps,
+  segmentEntries = null,
+  { charmAssets = null } = {}
+) {
   const valid = [];
   for (let gap = 0; gap < segmentCount; gap += 1) {
-    if (isValidCharmGap(gap, segmentCount, occupiedGaps, segmentEntries)) {
+    if (isValidCharmGap(gap, segmentCount, occupiedGaps, segmentEntries, { charmAssets })) {
       valid.push(gap);
     }
   }
   return valid;
+}
+
+/** Charm assets on a pattern/slot list — sizes the minimum spacing between charm gaps. */
+export function getCharmAssetsFromItems(items) {
+  return (items ?? [])
+    .filter((item) => item.type === "charm" && item.asset)
+    .map((item) => item.asset);
 }
 
 export function findNearestValidCharmGapIndex(
@@ -583,13 +625,13 @@ export function findNearestValidCharmGapIndex(
   segmentCount,
   occupiedGaps,
   segmentEntries = null,
-  { closedLoop = true, defaultSizeId = LAYOUT_BEAD_SIZE_ID } = {}
+  { closedLoop = true, defaultSizeId = LAYOUT_BEAD_SIZE_ID, charmAssets = null } = {}
 ) {
   const entries =
     segmentEntries ??
     layoutItems?.filter((item) => item.type === "bead" || item.type === "spacer") ??
     [];
-  const valid = getValidCharmGaps(segmentCount, occupiedGaps, entries);
+  const valid = getValidCharmGaps(segmentCount, occupiedGaps, entries, { charmAssets });
   if (!valid.length) {
     return null;
   }
@@ -681,6 +723,7 @@ export function resolveCharmDragSnapGap({
 }) {
   const occupied = getCharmOccupiedGaps(pattern, excludeCharmId);
   const segmentEntries = getRingSegmentEntries(pattern);
+  const charmAssets = getCharmAssetsFromItems(pattern);
   const effectiveSegmentCount = segmentCount || getCharmPlacementSegmentCount(pattern);
   const rawCandidate = gapItems.length
     ? findNearestValidCharmGapIndex(
@@ -691,12 +734,14 @@ export function resolveCharmDragSnapGap({
         effectiveSegmentCount,
         occupied,
         segmentEntries,
-        { closedLoop, defaultSizeId }
+        { closedLoop, defaultSizeId, charmAssets }
       )
     : findNearestCharmOnlyGapIndex(pointerAngle, effectiveSegmentCount);
   const rawGap = normalizeCharmGapIndex(rawCandidate ?? 0, effectiveSegmentCount);
 
-  if (isValidCharmGap(rawGap, effectiveSegmentCount, occupied, segmentEntries)) {
+  if (
+    isValidCharmGap(rawGap, effectiveSegmentCount, occupied, segmentEntries, { charmAssets })
+  ) {
     return {
       snapGap: rawGap,
       rawGap,
@@ -713,7 +758,7 @@ export function resolveCharmDragSnapGap({
         effectiveSegmentCount,
         occupied,
         segmentEntries,
-        { closedLoop, defaultSizeId }
+        { closedLoop, defaultSizeId, charmAssets }
       )
     : findNearestCharmOnlyGapIndex(pointerAngle, effectiveSegmentCount);
 

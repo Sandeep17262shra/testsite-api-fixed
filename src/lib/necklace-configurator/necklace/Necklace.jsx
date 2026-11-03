@@ -124,6 +124,8 @@ const {
   lastCharmTemplate,
   selectedBracelet,
   braceletMetal, charmMetal,
+  braceletPurity,
+  pendantMetalHex,
   materialPropsBracelet, texture,
   setHighlightedIndex, highlightedIndex,
   setSelectedIndex, materialProps,
@@ -240,20 +242,25 @@ const {
     return 5.3 * (isMobile ? 1.25 : fitFactor);
   }, [isMobile, fitFactor]);
 
+  // A small upward camera/target offset places the necklace a little below
+  // canvas centre in the alternate views, matching the default product view.
+  const alternateViewVerticalOffset = 2;
   const necklaceViewPositions = useMemo(() => ({
     front_zoom: {
-      position: [0, charmCenterY - 1.2, 0.24 + zoomDistance],
-      target: [0, charmCenterY - 1.3, 0.24],
+      // Aim at the charm centre. The previous target was 1.3 world units
+      // below it, which made both alternate views render visibly too high.
+      position: [0, charmCenterY + alternateViewVerticalOffset, 0.24 + zoomDistance],
+      target: [0, charmCenterY + alternateViewVerticalOffset, 0.24],
     },
     back_zoom: {
-      position: [0, charmCenterY - 1.2, 0.24 - zoomDistance],
-      target: [0, charmCenterY - 1.3, 0.24],
+      position: [0, charmCenterY + alternateViewVerticalOffset, 0.24 - zoomDistance],
+      target: [0, charmCenterY + alternateViewVerticalOffset, 0.24],
     },
     normal: {
       position: cameraDefaults.position,
       target: cameraDefaults.target,
     },
-  }), [charmCenterY, zoomDistance, cameraDefaults]);
+  }), [charmCenterY, zoomDistance, cameraDefaults, alternateViewVerticalOffset]);
 
   const [isZoomedMode, setIsZoomedMode] = useState(false);
 
@@ -300,6 +307,9 @@ const {
       selectedBracelet,
       braceletPath,
       braceletMetal,
+      braceletPurity,
+      chainLength:   chainLength ?? DEFAULT_CHAIN_LENGTH,
+      pendantMetalHex,
       charmMetal,
       charms,
       namePendant,
@@ -315,10 +325,14 @@ const {
     url.search = '';
     url.searchParams.set('config', encoded);
 
-    setShareUrl(url.toString());
+    const finalUrl = url.toString();
+    setShareUrl(finalUrl);
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(finalUrl).catch(() => {});
+    }
     setShare(false);
-  }, [share, selectedBracelet, braceletPath, braceletMetal, charmMetal, charms,
-    namePendant, pendantCharm, cameraView, parentUrl]);
+  }, [share, selectedBracelet, braceletPath, braceletMetal, braceletPurity, chainLength,
+    pendantMetalHex, charmMetal, charms, namePendant, pendantCharm, cameraView, parentUrl]);
 
   const deleteCharm = (index) => setCharms(charms.filter((_, i) => i !== index));
 

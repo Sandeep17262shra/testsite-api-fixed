@@ -89,6 +89,24 @@ export function getHeadTrimFactor(carat, trimAtTop) {
   return 1 - trimAtTop * progress;
 }
 
+// ─── Centre-stone assembly sizing ───────────────────────────────────────────
+export const STONE_ASSEMBLY_SHRINK = 0.8;
+export const STONE_ASSEMBLY_REFERENCE_CARAT = 1;
+export const STONE_ASSEMBLY_GROWTH_EXPONENT = 0.15;
+export const STONE_ASSEMBLY_PIVOT_Y = 3.3;
+export const STONE_ANCHOR_Y = 4.5;
+
+export const getStoneAssemblyScale = (carat) => {
+  const weight = Number(carat);
+  if (!Number.isFinite(weight) || weight <= STONE_ASSEMBLY_REFERENCE_CARAT) {
+    return STONE_ASSEMBLY_SHRINK;
+  }
+  return (
+    STONE_ASSEMBLY_SHRINK
+    * Math.pow(weight / STONE_ASSEMBLY_REFERENCE_CARAT, STONE_ASSEMBLY_GROWTH_EXPONENT)
+  );
+};
+
 export default getVisualCarat;
 
 // ─── HALO head carat tiers ──────────────────────────────────────────────────

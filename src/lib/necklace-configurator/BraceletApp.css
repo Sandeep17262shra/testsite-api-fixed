@@ -2703,6 +2703,7 @@ button:focus{
             display: flex;
     justify-content: center;
     align-items: center;
+    display: none !important;
 }
 .arrow-icon {
   font-size: 20px;
@@ -3551,4 +3552,93 @@ button:focus{
 .theme3-root .gb-option-row--charm-2d .gb-card-option img {
   width: 70px;
   height: 70px;
+}
+.gb-preview-controls button{
+  border: none !important;
+}
+
+/* Preview controls use inline SVGs (as in the ring configurator) so every
+   icon follows the selected storefront colour instead of carrying a fixed
+   fill baked into an image asset. */
+.theme3-root--jewelry .gb-preview-control {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 3px;
+  border: none !important;
+  border-radius: 50vh;
+  background: #ffffff !important;
+  color: var(--typography-button-primary-text-color, var(--appearance-primary, #262626)) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.theme3-root--jewelry .gb-preview-control.active,
+.theme3-root--jewelry .gb-preview-control.active:hover {
+  background: var(--appearance-primary, #262626) !important;
+  color: var(--typography-button-secondary-text-color, var(--appearance-primary-text, #ffffff)) !important;
+}
+
+.theme3-root--jewelry .gb-preview-control svg {
+  display: block;
+  fill: currentColor;
+}
+
+/* Footer Reset is grouped with Share, just as it is in the ring builder. */
+.theme3-root--jewelry .theme3-panel-action-wrapper {
+  gap: 12px;
+}
+
+/* Reset is a footer action now; keep the obsolete panel-header copy hidden. */
+.theme3-root--jewelry .theme3-header-btn {
+  display: none;
+}
+
+.theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  height: 42px;
+  width: 96px;
+  padding: 0 16px;
+  border: 1px solid var(--appearance-primary, #262626) !important;
+  border-radius: 4px;
+  background: #ffffff !important;
+  color: #262626 !important;
+  font-family: inherit;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn:hover,
+.theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-reset-btn:hover {
+  background: #f7f7f7 !important;
+  border-color: var(--appearance-hover-primary, var(--appearance-primary, #262626)) !important;
+}
+
+@media (max-width: 900px) {
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-share-btn,
+  .theme3-root--jewelry .theme3-panel-action-btn.theme3-panel-reset-btn {
+    min-height: 32px;
+    height: 32px;
+    width: auto;
+    padding: 0 14px;
+  }
+}
+
+/* Keep Share and Reset identical even inside a narrow embedded viewport. */
+.theme3-root--jewelry .theme3-panel-action-wrapper {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 12px !important;
+}
+
+.theme3-root--jewelry .theme3-panel-action-wrapper .theme3-panel-share-btn,
+.theme3-root--jewelry .theme3-panel-action-wrapper .theme3-panel-reset-btn {
+  width: 96px !important;
+  min-width: 96px;
+  flex: 0 0 96px;
 }

@@ -21,6 +21,20 @@ const ENGRAVING_ZOOM_CONFIG = {
   "TWISTED": { distance: 4.6, yOffset: -3 },
   "CHANNEL": { distance: 4.6, yOffset: -3 },
   "PLATE-PRONG": { distance: 4.6, yOffset: -3 },
+  "FRENCH-PAVE": { distance: 4.6, yOffset: -3 },
+  "PAVE-STONES": { distance: 4.6, yOffset: -3 },
+  "8-STONES": { distance: 4.6, yOffset: -3 },
+  "MULTI-ROW": { distance: 4.6, yOffset: -3 },
+  "TWISTED-2": { distance: 4.6, yOffset: -3 },
+  "FLUTED": { distance: 4.6, yOffset: -3 },
+  "BRAIDED": { distance: 4.6, yOffset: -3 },
+  "CATHEDRAL-SIDE-STONE": { distance: 4.6, yOffset: -3 },
+  "SIDE-BEZEL-STONES": { distance: 4.6, yOffset: -3 },
+  "BAGUETTE-SIDE-STONE": { distance: 4.6, yOffset: -3 },
+  "BAGUETTE": { distance: 4.6, yOffset: -3 },
+  "PEAR-SIDE-STONE": { distance: 4.6, yOffset: -3 },
+  "PEAR": { distance: 4.6, yOffset: -3 },
+  "HALF-MOON-SIDE-STONE": { distance: 4.6, yOffset: -3 },
 };
 
 // Same "side setting overrides a plain shank" rule as getEngravingLocalPosition
@@ -45,6 +59,7 @@ export const HEAD_CAMERA_POSITIONS = Object.freeze({
   "6-PRONG": { position: [10, 25, -13], target: [0, 0, 0] },
   BEZEL: { position: [10, 40, -13], target: [0, 0, 0] },
   "HIDDEN-HALO": { position: [5, 10, -13], target: [0, 0, 0] },
+  "HIDDEN-HALO-2": { position: [5, 10, -13], target: [0, 0, 0] },
   "SINGLE-HALO": { position: [10, 40, -13], target: [0, 0, 0] },
   "DOUBLE-HALO": { position: [10, 40, -13], target: [0, 0, 0] },
   OVAL: { position: [0, 15, -13], target: [0, 0, 0] },
@@ -53,6 +68,8 @@ export const HEAD_CAMERA_POSITIONS = Object.freeze({
   PEAR: { position: [10, 20, -13], target: [0, 0, 0] },
   BAGUETTE: { position: [10, 20, -13], target: [0, 0, 0] },
   diamondwise: { position: [8, 15, -13], target: [0, 0, 0] },
+  "CLAW-SET": { position: [10, 25, -13], target: [0, 0, 0] },
+  TULIP: { position: [10, 25, -13], target: [0, 0, 0] },
 });
 
 const getHeadCameraPosition = (headId) =>

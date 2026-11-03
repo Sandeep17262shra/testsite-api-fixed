@@ -9,7 +9,7 @@
 }
 
 /* Shuffle arrows read as crossing, not turning, so the busy state pulses instead of spins. */
-.beeds-configurator-root .gb-preview-control--randomize.is-busy:not(:disabled) img {
+.beeds-configurator-root .gb-preview-control--randomize.is-busy:not(:disabled) svg {
   animation: beads-randomize-shuffle 0.7s ease-in-out infinite;
 }
 
@@ -41,7 +41,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .beads-2d-item-swap.is-swapping,
-  .beeds-configurator-root .gb-preview-control--randomize.is-busy:not(:disabled) img {
+  .beeds-configurator-root .gb-preview-control--randomize.is-busy:not(:disabled) svg {
     animation: none;
   }
 }
@@ -56,4 +56,8 @@
     transform: translateX(1.5px);
     opacity: 1;
   }
+}
+
+.beads-configurator-root .beads-jewelry-category-row--compact {
+  margin-top: 0;
 }

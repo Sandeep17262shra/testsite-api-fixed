@@ -18,7 +18,8 @@ import {
   getStoreLanguage,
   getStoreLocale,
 } from './Parentconfig.js';
-import { getStorePriceConfig, getPrice as getRawPrice, getAvailableOptions, isOptionAvailable } from '../priceConfig.js';
+import { getStorePriceConfig, getPrice as getRawPrice, getAvailableOptions, getBandWidthPrice as getRawBandWidthPrice, getSideStoneCarat as getRawSideStoneCarat, isOptionAvailable, isJDemo364ParentUrl } from '../priceConfig.js';
+import { DIAMONDWISE_DESIGNS } from '../data/diamondwiseDesigns.js';
 
 /**
  * Get a price with currency conversion applied
@@ -48,10 +49,36 @@ export const getShankPrice = (parentUrl, style) => {
 };
 
 /**
- * Get head style price with currency conversion
+ * Get head style price with currency conversion.
+ * Three-stone heads (OVAL, TRAPEZOID, HALF-MOON, PEAR, BAGUETTE, THREE-STONE)
+ * are represented in the API by H008 ("Oval"). When a three-stone variant
+ * (e.g. HALF-MOON for round center stone) is queried, fall back to OVAL (H008)
+ * price so the Three Stone head price is always added correctly.
  */
+const THREE_STONE_HEAD_LABELS = new Set(["OVAL", "TRAPEZOID", "HALF-MOON", "PEAR", "BAGUETTE", "ROUND", "THREE-STONE"]);
 export const getHeadPrice = (parentUrl, style) => {
-  return getConvertedPrice(parentUrl, 'headPrices', style);
+  const normStyle = String(style || "").toUpperCase();
+  const price = getConvertedPrice(parentUrl, 'headPrices', style);
+  if ((!price || price === 0) && THREE_STONE_HEAD_LABELS.has(normStyle)) {
+    const ovalPrice = getConvertedPrice(parentUrl, 'headPrices', 'OVAL');
+    if (ovalPrice > 0) return ovalPrice;
+  }
+  return price;
+};
+
+/**
+ * Get side stone style price with currency conversion
+ */
+export const getSideStonePrice = (parentUrl, style) => {
+  if (!style) return 0;
+  const raw = String(style).trim();
+  const lower = raw.toLowerCase();
+  const upper = raw.toUpperCase();
+  const price = getConvertedPrice(parentUrl, 'sideStonePrices', lower);
+  if (price > 0) return price;
+  const upperPrice = getConvertedPrice(parentUrl, 'sideStonePrices', upper);
+  if (upperPrice > 0) return upperPrice;
+  return price || 0;
 };
 
 /**
@@ -60,6 +87,13 @@ export const getHeadPrice = (parentUrl, style) => {
 export const getMatchingBandPrice = (parentUrl, style) => {
   return getConvertedPrice(parentUrl, 'matchingBandPrices', style);
 };
+
+export const getBandWidthPrice = (parentUrl, width) => {
+  return Math.round(getRawBandWidthPrice(parentUrl, width) * getCurrencyRate(parentUrl));
+};
+
+export const getSideStoneCarat = (parentUrl, productType, style) =>
+  getRawSideStoneCarat(parentUrl, productType, style);
 
 /**
  * Get diamond price with currency conversion
@@ -125,12 +159,17 @@ export const filterAvailableOptions = (allOptions, parentUrl, optionType) => {
   // same store response instead of maintaining its own conversion table.
   const aliases = {
     headStyles: {
-      plain: "4-PRONG", "hidden-halo": "HIDDEN-HALO", "single-halo": "HALO",
+      plain: "4-PRONG", "hidden-halo": "HIDDEN-HALO", "hidden-halo-2": "HIDDEN-HALO-2", "single-halo": "HALO",
       "double-halo": "DOUBLE-HALO", bezel: "BEZEL", halo: "HALO", "three-stone": "OVAL",
-      tulip: "TULIP", "two-stone": "TWO-STONE",
+      tulip: "TULIP", "two-stone": "TWO-STONE", "claw-set": "CLAW-SET",
     },
   };
-  return allOptions.filter((option) => options.includes(aliases[optionType]?.[option] ?? option));
+  const filtered = allOptions.filter((option) => options.includes(aliases[optionType]?.[option] ?? option));
+  if (optionType === "headStyles" && isJDemo364ParentUrl(parentUrl)) {
+    const isDw = (opt) => String(opt).startsWith("dw-") || DIAMONDWISE_DESIGNS.some((d) => d.headId === opt);
+    return [...filtered.filter(isDw), ...filtered.filter((opt) => !isDw(opt))];
+  }
+  return filtered;
 };
 
 export const getDefaultQuality = (parentUrl) => {
@@ -169,17 +208,7 @@ export const INTENSITY_OPTIONS = ["Light", "Fancy", "Intense", "Vivid", "Deep", 
  * @returns {number} - The price with currency conversion applied
  */
 export const getIntensityPrice = (parentUrl, intensity) => {
-  let index = INTENSITY_OPTIONS.indexOf(intensity);
-  if (index === -1) {
-    const legacy = ["Light", "Fancy Light", "Fancy", "Fancy Intense", "Fancy Vivid", "Fancy Dark", "Fancy Deep"];
-    const legacyIndex = legacy.indexOf(intensity);
-    if (legacyIndex !== -1) {
-      index = Math.min(legacyIndex, INTENSITY_OPTIONS.length - 1);
-    }
-  }
-  const rawPrice = index >= 0 ? 20 * index : 0;
-  const rate = getCurrencyRate(parentUrl);
-  return Math.round(rawPrice * rate);
+  return 0;
 };
 
 /**

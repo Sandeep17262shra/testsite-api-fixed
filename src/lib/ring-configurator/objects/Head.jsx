@@ -11,7 +11,8 @@ import { useSceneStage } from "../contexts/SceneStageContext";
 import { fetchDecrypted } from '../utility/modelLoader';
 import { ensureAsset, getCachedAsset } from '../utility/assetCache';
 import { parseGLTF } from '../utility/gltfParser';
-import { getVisualCarat, getVisualCaratForHead } from '../utility/visualCarat';
+import { getVisualCarat, getVisualCaratForHead, getStoneAssemblyScale, STONE_ASSEMBLY_SHRINK, STONE_ASSEMBLY_PIVOT_Y } from '../utility/visualCarat';
+import { FANCY_BASE_COLORS } from '../data/fancyDiamondColors';
 const diamondMeshNames = new Set(["diamond002", "oval004_1", "pear003_2", "pear_diamond","baquette_diamond", "diamond", "diamond001", "hidden_halo_-_diamonds", "all-diamonds1342_1", "all-diamonds929_1", "4_prong001_1", "4_prong007_1", "emerald002_2", "hidden_halo_-_diamonds001", "hidden_halo_-_diamonds002", "hidden_halo_-_diamonds003", "hidden_halo_-_diamonds004", "hidden_halo_-_diamonds005", "hidden_halo_-_diamonds006", "hidden_halo_-_diamonds007", "hidden_halo_-_diamonds008", "hidden_halo_-_diamonds009", "emerald001_1", "left_stone_diamond", "right_stone_diamond"]);
 const HIDDEN_HALO_MESHES = new Set([
     "hidden_halo001", "hidden_halo_-_diamonds001",
@@ -115,10 +116,14 @@ export function getHeadStoneAnchorY(ringHead, shape, carat, baseAnchorY) {
   let pivotY;
   if (ringHead === "BEZEL") {
     pivotY = (shapeDataForBezel[activeShape] || shapeDataForBezel.round).position[1];
+  } else if (ringHead === "HIDDEN-HALO-2") {
+    pivotY = (shapeDataForHiddenHalo2[activeShape] || shapeDataForHiddenHalo2.round).position[1];
   } else if (ringHead === "HIDDEN-HALO") {
     pivotY = (shapeDataForHiddenHalo[activeShape] || shapeDataForHiddenHalo.round).position[1];
   } else if (ringHead === "TULIP") {
     pivotY = (shapeDataForTulip[activeShape] || shapeDataForTulip.round).position[1];
+  } else if (ringHead === "CLAW-SET") {
+    pivotY = (shapeDataForClawSet[activeShape] || shapeDataForClawSet.round).position[1];
   } else if (ringHead === "HALO") {
     pivotY = (shapeDataForHalo[activeShape] || shapeDataForHalo.round).position[1];
   } else {
@@ -154,11 +159,11 @@ const shapeData = {
         position: [0, 0.35, 0]
     },
     moval: {
-        scale: (carat) => [0.35 + carat, 0.35 + carat, 0.40],
-        position: [0, 0.35, 0]
+        scale: (carat) => [0.27 + carat, 0.35 + carat, 0.42],
+        position: [0, 0.2, 0]
     },
     radiant: {
-        scale: (carat) => [0.33 + carat, 0.33 + carat, 0.40],
+        scale: (carat) => [0.3 + carat, 0.43 + carat, 0.40],
         position: [0, 0.4, 0]
     },
     pear: {
@@ -177,7 +182,7 @@ const shapeData = {
     heart: {
         scale: (carat) => [0.4 + carat, 0.40 + carat, 0.4],
         position: [0, 0.4, 0],
-        specialPosition: [0, 0.3, 0.15]
+        specialPosition: [0, 0.3, -0.15]
     },
     asscher: {
         scale: (carat) => [0.35 + carat, 0.35 + carat, 0.40],
@@ -185,50 +190,76 @@ const shapeData = {
     },
 };
 
-// TWO-STONE ("Toi et Moi"): two 4-PRONG heads placed side by side, each
-// holding a stone of the currently selected shape (PLAIN shank only - see
-// RingCustomizer.jsx's TWO_STONE_COMPATIBLE_SHANKS). This first pass only
-// places the pair of metal head baskets: describeHead() below points
-// "TWO-STONE" at the SAME existing 4-PRONG/{shape} basket asset used for a
-// single stone, and activeTransforms renders it twice (left/right), reusing
-// that shape's normal shapeData position/rotation/scale and just offsetting
-// X. It does not yet duplicate the actual centre diamond - Diamond.jsx still
-// renders one stone via getHeadStoneAnchorY, centered between the two
-// baskets for now. Wiring a second Diamond.jsx instance into the left/right
-// slots is the next step once this placement is confirmed live.
-//
-// Each value is a first-pass half-gap guess (roughly the shape's own
-// half-width per shapeData's scale) - tune live once stones are on screen,
-// the same way Ring.jsx's activePosition values were tuned per shank.
-const TWO_STONE_X_OFFSET = {
-    round: 1.1,
-    princess: 1.0,
-    cushion: 1.0,
-    oval: 1.0,
-    moval: 1.0,
-    radiant: 1.0,
-    pear: 1.0,
-    emerald: 1.0,
-    marquise: 0.9,
-    heart: 1.1,
-    asscher: 1.0,
-};
-
 const shapeDataForBezel = {
     round: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0] },
     princess: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0] },
     cushion: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0] },
     oval: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0] },
-    moval: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0] },
-    radiant: { rotation: [Math.PI / 2, 0, 0], position: [0.04, 4.5, 0] },
+    moval: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0], scale: (carat) => [0.24 + carat, 0.32 + carat, 0.38] },
+    radiant: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0], scale: (carat) => [0.293 + carat, 0.40 + carat, 0.39]  },
     pear: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0.2] },
     emerald: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0] },
     marquise: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0] },
-    heart: { rotation: [Math.PI / 2, 0, 0], position: [0, 4.5, 0.25] },
+    heart: { rotation: [Math.PI / 2, 0, Math.PI], position: [0, 4.5, -0.15] },
     asscher: { rotation: [Math.PI / 2, 0, 0], position: [0.04, 4.5, 0] },
 };
 
+// ══════════════════════════════════════════════════════════════════════════════
+// HIDDEN-HALO CARAT GROWTH RATE & TRANSFORMS
+// Controls how much the head basket and attached diamond grow as carat increases.
+// ══════════════════════════════════════════════════════════════════════════════
+export const HIDDEN_HALO_CARAT_GROWTH_RATE = 0.065;
+
 const shapeDataForHiddenHalo = {
+    round: {
+        scale: [0.45, 0.45, 0.45],
+        position: [0, 0.52, 0]
+    },
+    princess: {
+        scale: [0.45, 0.45, 0.45],
+        position: [0, 0.50, 0]
+    },
+    cushion: {
+        scale: [0.48, 0.48, 0.48],
+        position: [0, 0.37, 0]
+    },
+    oval: {
+        scale: [0.53, 0.53, 0.53],
+        position: [0, 0.0, 0]
+    },
+    moval: {
+        scale: [0.42, 0.42, 0.6],
+        position: [0, 0.70, 0]
+    },
+    radiant: {
+        scale: [0.44, 0.44, 0.44],
+        position: [0, 0.58, 0]
+    },
+    pear: {
+        scale: [0.5, 0.5, 0.5],
+        position: [0, 0.22, 0],
+        rotation: [0, Math.PI, 0]
+    },
+    emerald: {
+        scale: [0.42, 0.42, 0.42],
+        position: [0, 0.73, 0]
+    },
+    marquise: {
+        scale: [0.5, 0.5, 0.5],
+        position: [0, 0.2, 0]
+    },
+    heart: {
+        scale: [0.40, 0.40, 0.44],
+        position: [0, 0.85, 0],
+        rotation: [0, Math.PI, 0]
+    },
+    asscher: {
+        scale: [0.48, 0.48, 0.48],
+        position: [0, 0.27, 0]
+    }
+};
+
+const shapeDataForHiddenHalo2 = {
     round: {
         rotation: [0, 0, 0], position: [0, 0.80, 0],
         rotation2: [0, 0, 0], position2: [0, 0.85, 0]
@@ -269,8 +300,6 @@ const shapeDataForHiddenHalo = {
         rotation: [Math.PI / 2, 0, 0], position: [0, 0.35, 0.15],
         rotation2: [0, 0, 0], position2: [0, 0.85, 0]
     },
-    // Starting values mirror EMERALD (nearest analogue: asscher is a square
-    // step-cut) -- tune live if the head sits high/low/off-center for asscher.
     asscher: {
         rotation: [Math.PI / 2, 0, 0], position: [0, 0.35, 0],
         rotation2: [0, 0, 0], position2: [0, 0.85, 0]
@@ -302,7 +331,7 @@ const shapeDataForTulip = {
         position: [0, 0.6, 0]
     },
     moval: {
-        scale: (carat) => [0.6 + carat, 0.45, 0.6 + carat],
+        scale: (carat) => [0.45 + carat, 0.45, 0.5 + carat],
         position: [0, 0.65, 0],
     },
     pear: {
@@ -312,6 +341,63 @@ const shapeDataForTulip = {
     emerald: {
         scale: (carat) => [0.3 + carat, 0.25, 0.35 + carat],
         position: [0, 1, 0]
+    },
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CLAW-SET CARAT GROWTH RATE
+// Controls how much the head basket and attached diamond grow as carat increases.
+// ══════════════════════════════════════════════════════════════════════════════
+export const CLAW_SET_CARAT_GROWTH_RATE = 0.065;
+
+// CLAW-SET: 11 individually-modelled GLBs with baked diamond and metal head.
+// Each file ships with non-identity node transforms baked into vertices.
+const shapeDataForClawSet = {
+    round: {
+        scale: [0.35, 0.35, 0.35],
+        position: [0, 1.13, 0]
+    },
+    oval: {
+        scale: [0.42, 0.42, 0.42],
+        position: [0, 0.72, 0]
+    },
+    cushion: {
+        scale: [0.46, 0.46, 0.46],
+        position: [0, 0.45, 0]
+    },
+    emerald: {
+        scale: [0.52, 0.52, 0.52],
+        position: [0, 0.08, 0]
+    },
+    pear: {
+        scale: [0.46, 0.46, 0.46],
+        position: [0, 0.44, 0],
+  
+    },
+    princess: {
+        scale: [0.38, 0.38, 0.38],
+        position: [0, 0.98, 0]
+    },
+    radiant: {
+        scale: [0.39, 0.35, 0.39],
+        position: [0, 1.12, 0]
+    },
+    asscher: {
+        scale: [0.36, 0.36, 0.36],
+        position: [0, 1.11, 0]
+    },
+    marquise: {
+        scale: [0.6, 0.6, 0.6],
+        position: [0, -0.4, 0]
+    },
+    heart: {
+        scale: [0.5, 0.5, 0.5],
+        position: [0, 0.2, 0],
+        rotation: [0, Math.PI, 0]
+    },
+    moval: {
+        scale: [0.5, 0.6, 0.45],
+        position: [0, -0.75, 0],
     },
 };
 
@@ -352,13 +438,13 @@ const HALO_SHAPES = ["round", "princess", "cushion", "oval", "moval", "radiant",
 // head styles were tuned. 1.0 = same footprint as round already.
 const HALO_SIZE_RATIO = {
     round: 1.0,
-    princess: 1.1,
+    princess: 1,
     cushion: 1.1212,
     oval: 1.1676,
     moval: 1.1676,
     radiant: 1.07,
-    pear: 0.9,
-    emerald: 1.06,
+    pear: 0.7,
+    emerald: 1,
     marquise: 0.94,
     heart: 1.3,
     asscher: 1.074,
@@ -381,17 +467,47 @@ const shapeDataForHalo = HALO_SHAPES.reduce((acc, shape) => {
     // size instead of drifting upward.
     const ratio = HALO_SIZE_RATIO[shape] ?? 1.0;
     acc[shape] = {
-    position: shape === "moval" ? [0, 0.2, 0] : [0, 3.1, 0],
-    
-    rotation: HALO_ROTATION[shape] || [0, 0, 0],   // was: [0, 0, 0]
-    scale: (carat) => (0.39 + carat) * ratio
-};
+        position: [0, 3.1, 0],
+        rotation: HALO_ROTATION[shape] || [0, 0, 0],
+        scale: (carat) => (0.39 + carat) * ratio
+    };
     return acc;
 }, {});
 
+// ─── Moval-specific per-axis halo scale ─────────────────────────────────────
+// Adjust x / y / z independently to fit the moval halo model perfectly.
+// The base uniform scale (controlled by HALO_SIZE_RATIO.moval above) is
+// multiplied by each factor below, so 1.0 = no change from the uniform value.
+//   x → left/right width
+//   y → up/down height (usually leave near 1.0)
+//   z → front/back depth
+const HALO_MOVAL_SCALE_OFFSET = {
+    x: 0.8,
+    y: 1.0,
+    z: 1.0,
+};
+// Override moval's entry so its scale() returns a [sx, sy, sz] tuple.
+{
+    const ratio = HALO_SIZE_RATIO.moval ?? 1.0;
+    shapeDataForHalo.moval = {
+        position: [0, 3.1, 0],
+        rotation: HALO_ROTATION.moval || [0, 0, 0],
+        scale: (carat) => {
+            const s = (0.39 + carat) * ratio;
+            return [
+                s * HALO_MOVAL_SCALE_OFFSET.x,
+                s * HALO_MOVAL_SCALE_OFFSET.y,
+                s * HALO_MOVAL_SCALE_OFFSET.z,
+            ];
+        },
+    };
+}
+
+
 function getHaloHeadPath(shape) {
-    // Always the tier-3 (largest) baked model - no per-carat switching.
-    return `HALO/halo-${shape}/halo-${shape}-3`;
+    // For moval diamond, use the current oval halo model; otherwise the shape's model.
+    const s = shape === "moval" ? "oval" : shape;
+    return `HALO/halo-${s}/halo-${s}-3`;
 }
 
 const HALO_CENTER_PREFIX = "HALOCENTER__";
@@ -422,7 +538,7 @@ const threeStoneHeadShapes = {
             scale: [0.2, 0.2, 0.2],
         },
         left: {
-            rotation: [Math.PI / 2, 0.2, 0],   // mirrored Z-tilt
+            rotation: [Math.PI / 2, 0.0, 0],   // mirrored Z-tilt
             position: [-1.25, 3.5, 0],
             scale: [0.2, 0.2, 0.2],
         },
@@ -434,44 +550,28 @@ const threeStoneHeadShapes = {
     trapezoid: {
         right: {
             rotation: [Math.PI / 2, 0.5, 0],
-            position: [1.5, 3.6, 0],
-            scale: [0.2, 0.2, 0.2],
+            position: [1.4, 3.6, 0],
+            scale: [0.18, 0.18, 0.18],
         },
         left: {
             rotation: [Math.PI / 2, 0.5, 0],
-            position: [-1.5, 3.6, 0],
-            scale: [0.2, 0.2, 0.2],
+            position: [-1.4, 3.6, 0],
+            scale: [0.18, 0.18, 0.18],
         },
         rotation: [Math.PI / 2, 0.5, 0],
         position: [-1.2, 3.8, 0],
         scale: [0.2, 0.2, 0.2],
     },
-    half_moon: {
-        right: {
-            rotation: [Math.PI / 2, -0.55, 0],  // stand upright, slight inward Z-tilt
-            position: [1.52, 3.35, 0],
-            scale: [0.3, 0.2, 0.2],
-        },
-        left: {
-            rotation: [Math.PI / 2, 0.35, 0],   // mirrored Z-tilt
-            position: [-1.5, 3.35, 0],
-            scale: [0.3, 0.2, 0.2],
-        },
-        // fallback
-        rotation: [Math.PI / 2, 0, -0.17],
-        position: [0.9, 3.6, 0],
-        scale: [0.3, 0.2, 0.2],
-    },
     pear: {
         right: {
-            rotation: [Math.PI / 2, 0.43, Math.PI / 2],
-            position: [1.4, 3.5, 0],
-            scale: [0.2, 0.2, 0.2],
+            rotation: [Math.PI / 1, 0, 3.1],
+            position: [1.55, 3.6, 0],
+            scale: [0.35, 0.35, 0.35],
         },
         left: {
-            rotation: [Math.PI / 2, -0.43, Math.PI / 2],
-            position: [-1.4, 3.5, 0],
-            scale: [0.2, 0.2, 0.2],
+            rotation: [Math.PI / 1, 0, -3.1],
+            position: [-1.55, 3.5, 0],
+            scale: [0.35, 0.36, 0.35],
         },
         rotation: [Math.PI / 2, 0.43, Math.PI / 2],
         position: [-1.4, 3.5, 0],
@@ -484,18 +584,33 @@ const threeStoneHeadShapes = {
     // top-level fallback (see getSideStoneDirection / the render loop).
     baguette: {
         right: {
-            rotation: [Math.PI / 2, 0.43, Math.PI / 2],
+            rotation: [Math.PI / 1, 0, 4.1],
             position: [1.4, 3.5, 0],
-            scale: [0.2, 0.2, 0.2],
+            scale: [0.35, 0.35, 0.35],
         },
         left: {
-            rotation: [Math.PI / 2, -0.43, Math.PI / 2],
+            rotation: [Math.PI / 1, 0, -4.1],
             position: [-1.4, 3.5, 0],
-            scale: [0.2, 0.2, 0.2],
+            scale: [0.35, 0.36, 0.35],
         },
-        rotation: [Math.PI / 2, 0.42, Math.PI / 2],
-        position: [-1.55, 3.5, 0],
-        scale: [0.22, 0.22, 0.22],
+        rotation: [Math.PI / 2, 0.43, Math.PI / 2],
+        position: [-1.4, 3.5, 0],
+        scale: [0.2, 0.2, 0.2],
+    },
+    round: {
+        right: {
+            rotation: [Math.PI / 2, 1.55, 1.55],
+            position: [1.5, 3.5, 0],
+            scale: [0.15, 0.15, 0.15],
+        },
+        left: {
+            rotation: [Math.PI / 2, -1.55, -1.55],
+            position: [-1.5, 3.5, 0],
+            scale: [0.15, 0.15, 0.15],
+        },
+        rotation: [Math.PI / 2, 0.5, 0],
+        position: [-1.2, 3.8, 0],
+        scale: [0.2, 0.2, 0.2],
     }
 };
 
@@ -503,12 +618,12 @@ const threeStoneHeadShapes = {
 const threeStoneCenterShapes = {
     round: {
         scale: (carat) => [0.40 + carat, 0.34, 0.40 + carat],
-        position: [0, 1, 0],
+        position: [0, 1.1, 0],
         rotation: [0, 0, 0],
     },
     princess: {
-        scale: (carat) => [0.33 + carat, 0.33 + carat, 0.37],
-        position: [0, 0.4, 0],
+        scale: (carat) => [0.32 + carat, 0.32 + carat, 0.37],
+        position: [0, 0.5, 0],
         rotation: [Math.PI / 2, 0, 0],
     },
     cushion: {
@@ -527,12 +642,12 @@ const threeStoneCenterShapes = {
         rotation: [Math.PI / 2, 0, 0],
     },
     radiant: {
-        scale: (carat) => [0.33 + carat, 0.33 + carat, 0.40],
+        scale: (carat) => [0.3 + carat, 0.43 + carat, 0.40],
         position: [0, 0.4, 0],
         rotation: [Math.PI / 2, 0, 0],
     },
     pear: {
-        scale: (carat) => [0.3 + carat, 0.3 + carat, 0.3],
+        scale: (carat) => [0.34 + carat, 0.34 + carat, 0.3],
         position: [0, 1.05, 0.2],
         rotation: [Math.PI / 2, 0, 0],
     },
@@ -542,19 +657,101 @@ const threeStoneCenterShapes = {
         rotation: [Math.PI / 2, 0, 0],
     },
     marquise: {
-        scale: (carat) => [0.35 + carat, 0.35 + carat, 0.40],
-        position: [0, 0.3, 0],
+        scale: (carat) => [0.35 + carat, 0.35 + carat, 0.37],
+        position: [0, 0.5, 0],
         rotation: [Math.PI / 2, 0, 0],
     },
     heart: {
         scale: (carat) => [0.40 + carat, 0.40 + carat, 0.40],
-        position: [0, 0.4, 0.15],
-        rotation: [Math.PI / 2, 0, 0],
+        position: [0, 0.4, -0.15],
+        rotation: [Math.PI / 2, 0, Math.PI],
     },
     asscher: {
         scale: (carat) => [0.38 + carat, 0.38 + carat, 0.42],
         position: [0, 0.16, 0],
         rotation: [Math.PI / 2, 0, 0],
+    },
+    moval: {
+        scale: (carat) => [0.27 + carat, 0.35 + carat, 0.42],
+        position: [0, 0.2, 0],
+        rotation: [Math.PI / 2, 0, 0],
+
+    },
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TWO-STONE CARAT GROWTH RATE & PER-SHAPE TRANSFORMS
+// Controls scale and position for each two-stone shape.
+// To move a shape up or down, adjust the Y value (the 2nd number in position: [x, Y, z]).
+//   Higher Y (e.g. 0.60) = moves UP
+//   Lower Y  (e.g. 0.45) = moves DOWN
+//
+// Optional per-side overrides: if left or right needs independent tuning, add
+// `left:` or `right:` inside any shape (e.g. left: { position: [0, 0.55, 0] }).
+// ══════════════════════════════════════════════════════════════════════════════
+export const TWO_STONE_CARAT_GROWTH_RATE = 0.045;
+export const TWO_STONE_BASE_MODEL_Y = 5.91;
+
+export const shapeDataForTwoStone = {
+    round: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.045, 0.78, 0] },
+        right: { position: [-0.045, 0.78, 0] }, 
+    },
+    pear: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    oval: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    cushion: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    emerald: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    princess: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    marquise: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    asscher: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    radiant: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.78, 0] },
+        right: { position: [-0.05, 0.78, 0] }, 
+    },
+    heart: {
+        scale: [0.4, 0.4, 0.4],
+        position: [0, 0.72, 0],
+        left:  { position: [0.05, 0.82, -0.3] },
+        right: { position: [-0.05, 0.82, 0] }, 
     },
 };
 
@@ -635,20 +832,38 @@ function getSideStoneDirection(meshName) {
     return null;
 }
 
-const PRONG_HEADS = ["4-PRONG", "6-PRONG", "BEZEL", "HIDDEN-HALO", "TULIP"];
+const PRONG_HEADS = ["4-PRONG", "6-PRONG", "BEZEL", "HIDDEN-HALO", "HIDDEN-HALO-2", "TULIP", "CLAW-SET"];
 // Halo heads: the halo stones stay colourless; only the centre stone
 // (Diamond.jsx) takes the selected diamond / gemstone colour.
-const COLORLESS_HALO_HEADS = new Set(["HIDDEN-HALO", "SINGLE-HALO", "DOUBLE-HALO"]);
+const COLORLESS_HALO_HEADS = new Set(["HIDDEN-HALO", "HIDDEN-HALO-2", "SINGLE-HALO", "DOUBLE-HALO"]);
 const COLORLESS_SIDE_STONE = "#FFFFFF";
-const THREE_STONE_HEADS = ["OVAL", "TRAPEZOID", "HALF-MOON", "PEAR", "BAGUETTE"];
+const GEMSTONE_COLORS = {
+    "blue-sapphire": "#0047AB",
+    "green-emerald": "#4AE2A1",
+    "green-sapphire": "#00AB55",
+    moissanite: "#FFFFFF",
+    "pink-sapphire": "#D1008F",
+    "red-ruby": "#B71C1C",
+    "yellow-sapphire": "#FFA94D",
+};
+const SIDE_STONE_COLORS = {
+    colorless: COLORLESS_SIDE_STONE,
+    ...GEMSTONE_COLORS,
+};
+const THREE_STONE_HEADS = ["OVAL", "TRAPEZOID", "HALF-MOON", "PEAR", "BAGUETTE", "ROUND"];
 
 /** Everything that identifies one loadable head, derived from head + shape. */
-function describeHead(ringHead, shape, carat) {
+function describeHead(ringHead, shape, carat, twoStoneLeft, twoStoneRight) {
     const isThreeStone = THREE_STONE_HEADS.includes(ringHead);
     const isTwoStone = ringHead === "TWO-STONE";
     const isHalo = ringHead === "HALO";
     const safeShape = shape || "round";
     let headPath;
+    let leftHeadPath;
+    let rightHeadPath;
+    let leftShape;
+    let rightShape;
+
     if (isHalo) {
         headPath = getHaloHeadPath(safeShape);
     } else if (PRONG_HEADS.includes(ringHead)) {
@@ -656,13 +871,15 @@ function describeHead(ringHead, shape, carat) {
     } else if (isThreeStone) {
         headPath = `THREE-STONE/${ringHead.toUpperCase()}`;
     } else if (isTwoStone) {
-        // No dedicated TWO-STONE asset yet - reuses the existing single-stone
-        // 4-PRONG basket, rendered twice (see activeTransforms below).
-        headPath = `4-PRONG/${safeShape.toUpperCase()}`;
+        leftShape = (shape || twoStoneLeft || "round").toLowerCase();
+        rightShape = (twoStoneRight || "pear").toLowerCase();
+        leftHeadPath = `TWO-STONE/left-head/${leftShape}`;
+        rightHeadPath = `TWO-STONE/right-head/${rightShape}`;
+        headPath = `TWO-STONE|${leftShape}|${rightShape}`;
     } else {
         headPath = ringHead;
     }
-    return { ringHead, shape: safeShape, isThreeStone, isTwoStone, isHalo, headPath };
+    return { ringHead, shape: safeShape, isThreeStone, isTwoStone, isHalo, headPath, leftHeadPath, rightHeadPath, leftShape, rightShape };
 }
 
 async function loadHeadMeshes(headPath, isThreeStone) {
@@ -670,11 +887,17 @@ async function loadHeadMeshes(headPath, isThreeStone) {
     const gltf = await parseGLTF(buffer);
     const isMovalHalo = headPath === "HALO/halo-moval/halo-moval-3";
     const isMovalTulip = headPath === "TULIP/MOVAL";
+    const isClawSet = headPath.startsWith("CLAW-SET/");
+    const isHiddenHalo = headPath.startsWith("HIDDEN-HALO/");
+    const isTwoStoneSub = headPath.startsWith("TWO-STONE/");
+    const isHalo = headPath.startsWith("HALO/");
     // The Moval source files retain their node transforms while all other
     // head exports have those transforms baked into their vertices. This
     // loader deliberately clears node transforms for the shared head frame;
     // preserve the Moval assets' authored placement by baking it first.
-    const needsBakedNodeTransforms = isMovalHalo || isMovalTulip;
+    // CLAW-SET and HIDDEN-HALO models also carry node transforms that must be baked into vertices.
+    // TWO-STONE is handled separately below (multi-variant GLB structure).
+    const needsBakedNodeTransforms = isMovalHalo || isMovalTulip || isClawSet || isHiddenHalo || isTwoStoneSub || isHalo;
     if (needsBakedNodeTransforms) gltf.scene.updateMatrixWorld(true);
     const meshes = [];
     gltf.scene.traverse((child) => {
@@ -687,17 +910,100 @@ async function loadHeadMeshes(headPath, isThreeStone) {
         mesh.geometry = child.geometry.clone();
         if (needsBakedNodeTransforms) {
             // The normal head loader resets node transforms, so bake the
-            // Moval export's authored placements into its cloned geometry
-            // before rendering it in the common head frame.
+            // authored placements into its cloned geometry before rendering
+            // in the common head frame.
             mesh.geometry.applyMatrix4(child.matrixWorld);
+        }
+        if (isTwoStoneSub) {
+            // TWO-STONE GLBs contain multiple variant meshes in the same file
+            // (different LODs/shapes all exported together). Only the active
+            // variant is placed in world space via the parent "Scene" node that
+            // carries scale ≈ 390. After matrixWorld baking, valid head meshes
+            // land at Y ≈ 5-11; the inactive variants stay near Y ≈ 0 (their
+            // local-space origin). Discard any mesh whose baked center Y < 1.
+            const bakedBox = new THREE.Box3().setFromBufferAttribute(mesh.geometry.attributes.position);
+            const center = new THREE.Vector3();
+            bakedBox.getCenter(center);
+            if (center.y < 1.0) return; // inactive variant — skip
+
+            // Tag stone meshes so getHaloDiamondKind() returns "center" for them.
+            const name = child.name.toLowerCase();
+            const matName = (child.material?.name || "").toLowerCase();
+            const isDiamond = name.includes("diamond") || name.includes("asscher") || name.includes("heart") ||
+                              matName.includes("diamond") || matName.includes("radiant") || matName.includes("heart");
+            if (isDiamond) {
+                mesh.name = `${HALO_CENTER_PREFIX}${child.name}`;
+            }
+
+            mesh.userData = mesh.userData || {};
+            mesh.userData.side = headPath.includes("left-head") ? "left" : "right";
         }
         if (isMovalHalo) {
             if (child.name === "Diamond_Round_5") mesh.name = `${HALO_ACCENT_PREFIX}${child.name}`;
             if (child.name === "geometry_0") mesh.name = `${HALO_CENTER_PREFIX}${child.name}`;
         }
+        if (isClawSet) {
+            const isMetal = child.name.toLowerCase().includes("metal");
+            if (!isMetal) {
+                mesh.name = `${HALO_CENTER_PREFIX}${child.name}`;
+            }
+        }
+        if (isHiddenHalo) {
+            const matName = child.material?.name || "";
+            if (matName.startsWith("Center") || matName.toLowerCase().includes("center")) {
+                if (!mesh.name.startsWith(HALO_CENTER_PREFIX)) {
+                    mesh.name = `${HALO_CENTER_PREFIX}${child.name}`;
+                }
+            } else if (matName.startsWith("Halo") || matName.toLowerCase().includes("halo")) {
+                if (!mesh.name.startsWith(HALO_ACCENT_PREFIX)) {
+                    mesh.name = `${HALO_ACCENT_PREFIX}${child.name}`;
+                }
+            }
+        }
+        if (isHalo) {
+            const matName = child.material?.name || "";
+            if (matName.startsWith("Center") || matName.toLowerCase().includes("center")) {
+                if (!mesh.name.startsWith(HALO_CENTER_PREFIX)) {
+                    mesh.name = `${HALO_CENTER_PREFIX}${child.name}`;
+                }
+            } else if (matName.startsWith("Halo") || matName.toLowerCase().includes("halo")) {
+                if (!mesh.name.startsWith(HALO_ACCENT_PREFIX)) {
+                    mesh.name = `${HALO_ACCENT_PREFIX}${child.name}`;
+                }
+            }
+        }
         meshes.push(mesh);
     });
     if (!meshes.length) throw new Error(`No meshes in head ${headPath}`);
+
+    if (isTwoStoneSub && headPath.includes("left-head") && headPath.toLowerCase().includes("heart")) {
+        // Rotate the left two-stone heart head by 180° around its local tilted vertical axis.
+        // The head has an authored ~10.5° outward tilt along the shank curve (Z axis).
+        // Rotating around the world Y axis previously inverted this tilt to -10.5° (leaning inward).
+        // Rotating around the tilted local axis preserves the outward tilt tangent to the shank,
+        // while flipping the tip 180° to point backward (-Z) opposing the right head.
+        const combinedBox = new THREE.Box3();
+        for (const m of meshes) {
+            if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+            combinedBox.union(m.geometry.boundingBox);
+        }
+        const center = new THREE.Vector3();
+        combinedBox.getCenter(center);
+
+        const tiltAngle = 10.5 * Math.PI / 180;
+        const localAxis = new THREE.Vector3(-Math.sin(tiltAngle), Math.cos(tiltAngle), 0).normalize();
+        const rotMat = new THREE.Matrix4()
+            .makeTranslation(center.x, center.y, center.z)
+            .multiply(new THREE.Matrix4().makeRotationAxis(localAxis, Math.PI))
+            .multiply(new THREE.Matrix4().makeTranslation(-center.x, -center.y, -center.z));
+
+        for (const m of meshes) {
+            m.geometry.applyMatrix4(rotMat);
+            m.geometry.computeVertexNormals();
+            m.geometry.computeBoundingBox();
+        }
+    }
+
     return meshes;
 }
 
@@ -769,7 +1075,7 @@ const HeadMesh = React.memo(({ geometry, position, rotation, scale, materialProp
 
 function Head() {
     const { headColor, ringHead, ringSideSetting, metalness, roughness, reflectivity, clearcoat, clearcoatRoughness, envMapIntensity } = useContext(RingContext);
-    const { setShape, cut, clarity, diamondColor, diamondSize, diamondColorClarity } = useContext(DiamondContext);
+    const { cut, clarity, diamondColor, sideStoneColor, diamondSize, diamondColorClarity, colorType, gemstone, fancyDiamond, fancyDiamondIntensity } = useContext(DiamondContext);
     const { handleMetal } = useContext(SectionContext);
     const { target, displayed, reportPartReady } = useSceneStage();
 
@@ -841,10 +1147,27 @@ function Head() {
         toneMapped: false,
     }), [texture, effectiveIor, effectiveBounces, aberrationStrength, diamondColor]);
 
+    const selectedStoneColor = useMemo(() => {
+        if (colorType === "fancygem" && gemstone) return GEMSTONE_COLORS[gemstone] || diamondColor;
+        if (colorType === "fancycolored" && fancyDiamond && fancyDiamondIntensity) {
+            return FANCY_BASE_COLORS[fancyDiamond]?.[fancyDiamondIntensity] || diamondColor;
+        }
+        return diamondColor;
+    }, [colorType, gemstone, fancyDiamond, fancyDiamondIntensity, diamondColor]);
+    const coloredDiamondMaterialProps = useMemo(() => ({
+        ...diamondMaterialProps,
+        color: selectedStoneColor,
+    }), [diamondMaterialProps, selectedStoneColor]);
+
     const colorlessDiamondMaterialProps = useMemo(() => ({
         ...diamondMaterialProps,
         color: COLORLESS_SIDE_STONE,
     }), [diamondMaterialProps]);
+    const sideStoneMaterialProps = useMemo(() => ({
+        ...diamondMaterialProps,
+        // Accept a legacy raw hex value from a shared configuration too.
+        color: SIDE_STONE_COLORS[sideStoneColor] || sideStoneColor || COLORLESS_SIDE_STONE,
+    }), [diamondMaterialProps, sideStoneColor]);
 
     const metalMaterialProps = useMemo(() => ({
         envMap: metalTexture,
@@ -857,22 +1180,6 @@ function Head() {
         transparent: true,
     }), [metalTexture, metalness, roughness, reflectivity, clearcoat, clearcoatRoughness, envMapIntensity]);
 
-    // A three-stone head dictates the centre stone shape.
-    useEffect(() => {
-        if (!THREE_STONE_HEADS.includes(ringHead)) return;
-        if (ringHead === "HALF-MOON") {
-            setShape("round");
-        } else if (ringHead === "OVAL") {
-            setShape("oval");
-        } else if (ringHead === "PEAR") {
-            setShape("pear");
-        } else if (ringHead === "BAGUETTE") {
-            setShape("emerald");
-        } else {
-            setShape("princess");
-        }
-    }, [ringHead, setShape]);
-
     // ─────────────────────────────────────────────────────────────────────
     // LOAD for `target`, RENDER from `displayed`. The head currently on
     // screen is never touched until the whole new configuration is ready.
@@ -882,8 +1189,8 @@ function Head() {
     const targetKey = target.parts.head;
     const isStandardTarget = !target.isDiamondWise;
     const targetHead = useMemo(
-        () => describeHead(target.ringHead, target.shape, target.diamondSize),
-        [target.ringHead, target.shape, target.diamondSize]
+        () => describeHead(target.ringHead, target.shape, target.diamondSize, target.twoStoneLeft, target.twoStoneRight),
+        [target.ringHead, target.shape, target.diamondSize, target.twoStoneLeft, target.twoStoneRight]
     );
 
     useEffect(() => {
@@ -897,8 +1204,14 @@ function Head() {
         }
 
         let alive = true;
-        const requests = [loadHead(targetHead.headPath, targetHead.isThreeStone)];
-        if (targetHead.isThreeStone) requests.push(loadCenterStone(targetHead.shape));
+        const requests = [];
+        if (targetHead.isTwoStone) {
+            requests.push(loadHead(targetHead.leftHeadPath, false));
+            requests.push(loadHead(targetHead.rightHeadPath, false));
+        } else {
+            requests.push(loadHead(targetHead.headPath, targetHead.isThreeStone));
+            if (targetHead.isThreeStone) requests.push(loadCenterStone(targetHead.shape));
+        }
 
         Promise.all(requests)
             .catch((error) => {
@@ -916,9 +1229,19 @@ function Head() {
     const displayHead = useMemo(() => {
         if (displayed.isDiamondWise) return null;
         if (displayed.ringHead === "NO-HEAD") return null;
-        const described = describeHead(displayed.ringHead, displayed.shape, displayed.diamondSize);
-        const meshes = getCachedAsset("head", described.headPath);
-        if (!meshes) return null;
+        const described = describeHead(displayed.ringHead, displayed.shape, displayed.diamondSize, displayed.twoStoneLeft, displayed.twoStoneRight);
+        let meshes;
+        if (described.isTwoStone) {
+            const leftMeshes = getCachedAsset("head", described.leftHeadPath);
+            const rightMeshes = getCachedAsset("head", described.rightHeadPath);
+            if (!leftMeshes || !rightMeshes) return null;
+            leftMeshes.forEach((m) => { m.userData = m.userData || {}; m.userData.side = "left"; });
+            rightMeshes.forEach((m) => { m.userData = m.userData || {}; m.userData.side = "right"; });
+            meshes = [...leftMeshes, ...rightMeshes];
+        } else {
+            meshes = getCachedAsset("head", described.headPath);
+            if (!meshes) return null;
+        }
         return {
             ...described,
             meshes,
@@ -927,7 +1250,7 @@ function Head() {
                 : null,
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [displayed.isDiamondWise, displayed.ringHead, displayed.shape, displayed.commitId, displayed.diamondSize]);
+    }, [displayed.isDiamondWise, displayed.ringHead, displayed.shape, displayed.commitId, displayed.diamondSize, displayed.twoStoneLeft, displayed.twoStoneRight]);
 
     const displayedShank = displayed.ringShank;
 
@@ -953,55 +1276,112 @@ function Head() {
         const ringHeadBezelForHeart = [0.35 + diamondCaratSize, (activeShape === "pear" ? 0.33 : 0.35) + diamondCaratSize, 0.35];
         const ringHeadBezelForPrincess = [0.3 + diamondCaratSize, 0.29 + diamondCaratSize, 0.35];
 
-        // Spread has to track the DRAWN stone, not the weight, or the side
-        // prongs walk away from a centre stone that is no longer growing
-        // as fast. visualCarat(5) is 3.5, so the spread now tops out where
-        // 3.5ct used to sit - matching the head it belongs to.
-        const visualCarat = getVisualCarat(diamondSize);
-        const sideStoneXOffset = visualCarat <= 3 ? 0 : ((visualCarat - 3) / 1) * 0.04;
         const WIDE_PLAIN_HEAD_Y_OFFSET = 0.22;
         const shankYOffset = displayedShank === "WIDE-PLAIN" ? WIDE_PLAIN_HEAD_Y_OFFSET : 0;
 
         if (activeThreeStone) {
+            const visualCarat = getVisualCarat(diamondSize);
+            const stoneAssemblyScale = getStoneAssemblyScale(visualCarat);
+            const stoneAssemblyOffsetY = STONE_ASSEMBLY_PIVOT_Y * (1 - stoneAssemblyScale);
+            // Counteract parent Scene.jsx group's stoneAssemblyScale so side stones NEVER change size
+            const scaleCorrection = STONE_ASSEMBLY_SHRINK / stoneAssemblyScale;
+
             const threeStoneKey = activeHead.toLowerCase().replace('-', '_');
             const shapeConfig = threeStoneHeadShapes[threeStoneKey] || threeStoneHeadShapes.oval;
 
-            let rightPos = [...(shapeConfig.right?.position || shapeConfig.position)];
-            let leftPos  = [...(shapeConfig.left?.position  || shapeConfig.position)];
+            let baseRightPos = [...(shapeConfig.right?.position || shapeConfig.position)];
+            let baseLeftPos  = [...(shapeConfig.left?.position  || shapeConfig.position)];
 
-            rightPos[0] = rightPos[0] + sideStoneXOffset;
-            leftPos[0]  = leftPos[0]  - sideStoneXOffset;
-            rightPos[1] = rightPos[1] - sideStoneXOffset * 0.4 + shankYOffset;
-            leftPos[1]  = leftPos[1]  - sideStoneXOffset * 0.4 + shankYOffset;
-
-            if (["CHANNEL", "PLATE-PRONG"].includes(ringSideSetting) && ["baguette", "trapezoid"].includes(threeStoneKey)) {
-                rightPos = [1.45 + sideStoneXOffset, 3.45 + shankYOffset, 0];
-                leftPos  = [-1.45 - sideStoneXOffset, 3.45 + shankYOffset, 0];
-            }
             if (["CHANNEL", "PLATE-PRONG"].includes(ringSideSetting) && threeStoneKey === "trapezoid") {
-                rightPos = [1.2 + sideStoneXOffset, 3.7 + shankYOffset, 0];
-                leftPos  = [-1.2 - sideStoneXOffset, 3.7 + shankYOffset, 0];
+                baseRightPos = [1.2, 3.7, 0];
+                baseLeftPos  = [-1.2, 3.7, 0];
+            } else if (["CHANNEL", "PLATE-PRONG"].includes(ringSideSetting) && threeStoneKey === "baguette") {
+                baseRightPos = [1.45, 3.45, 0];
+                baseLeftPos  = [-1.45, 3.45, 0];
             }
 
+            // ═════════════════════════════════════════════════════════════════
+            // THREE-STONE MOVEMENT CONFIGURATION
+            // ═════════════════════════════════════════════════════════════════
+            // • THREE_STONE_SPREAD_FACTOR: How far outward (X-axis) the side
+            //   stones travel as the center carat increases. Increase this number
+            //   (e.g. 0.18 or 0.20) for more outward movement; decrease it (e.g. 0.10)
+            //   for less.
+            // • THREE_STONE_Y_DROP_FACTOR: How much the side stones drop down
+            //   (Y-axis) along the curved shoulder of the shank as they push outward.
+            // ═════════════════════════════════════════════════════════════════
+            const THREE_STONE_SPREAD_FACTOR = 0.02;
+            const THREE_STONE_Y_DROP_FACTOR = 0.25;
+
+            // World spread: starts at 0 at 1ct, moves outward as center carat increases
+            const caratGrowth = Math.max(0, visualCarat - 1);
+            const worldSpread = caratGrowth * THREE_STONE_SPREAD_FACTOR;
+
+            // Target world coordinates for right and left side stones
+            const worldRightX = (baseRightPos[0] * STONE_ASSEMBLY_SHRINK) + worldSpread;
+            const worldLeftX  = (baseLeftPos[0] * STONE_ASSEMBLY_SHRINK) - worldSpread;
+            // Subtle drop following the curve of the shank shoulder
+            const worldY_base = (baseRightPos[1] * STONE_ASSEMBLY_SHRINK) + (STONE_ASSEMBLY_PIVOT_Y * (1 - STONE_ASSEMBLY_SHRINK));
+            const worldY      = worldY_base - worldSpread * THREE_STONE_Y_DROP_FACTOR;
+            const worldZ      = (baseRightPos[2] || 0) * STONE_ASSEMBLY_SHRINK;
+
+            // Convert world targets back into the parent group's local coordinate space:
+            // Local coords: pos_world = pos_local * stoneAssemblyScale + stoneAssemblyOffsetY
+            const rightPos = [
+                worldRightX / stoneAssemblyScale,
+                (worldY - stoneAssemblyOffsetY) / stoneAssemblyScale + shankYOffset,
+                worldZ / stoneAssemblyScale,
+            ];
+            const leftPos = [
+                worldLeftX / stoneAssemblyScale,
+                (worldY - stoneAssemblyOffsetY) / stoneAssemblyScale + shankYOffset,
+                worldZ / stoneAssemblyScale,
+            ];
+
+            const fixedRightScale = [
+                (shapeConfig.right?.scale?.[0] || shapeConfig.scale?.[0] || 0.2) * scaleCorrection,
+                (shapeConfig.right?.scale?.[1] || shapeConfig.scale?.[1] || 0.2) * scaleCorrection,
+                (shapeConfig.right?.scale?.[2] || shapeConfig.scale?.[2] || 0.2) * scaleCorrection,
+            ];
+            const fixedLeftScale = [
+                (shapeConfig.left?.scale?.[0] || shapeConfig.scale?.[0] || 0.2) * scaleCorrection,
+                (shapeConfig.left?.scale?.[1] || shapeConfig.scale?.[1] || 0.2) * scaleCorrection,
+                (shapeConfig.left?.scale?.[2] || shapeConfig.scale?.[2] || 0.2) * scaleCorrection,
+            ];
+            const fixedBaseScale = [
+                (shapeConfig.scale?.[0] || 0.2) * scaleCorrection,
+                (shapeConfig.scale?.[1] || 0.2) * scaleCorrection,
+                (shapeConfig.scale?.[2] || 0.2) * scaleCorrection,
+            ];
+
+            const baseWorldPos = [
+                (shapeConfig.position?.[0] ?? rightPos[0]) * STONE_ASSEMBLY_SHRINK,
+                ((shapeConfig.position?.[1] ?? rightPos[1]) * STONE_ASSEMBLY_SHRINK) + (STONE_ASSEMBLY_PIVOT_Y * (1 - STONE_ASSEMBLY_SHRINK)),
+                (shapeConfig.position?.[2] ?? 0) * STONE_ASSEMBLY_SHRINK,
+            ];
             const basePos = shapeConfig.position
-                ? [shapeConfig.position[0], shapeConfig.position[1] + shankYOffset, shapeConfig.position[2]]
+                ? [
+                    baseWorldPos[0] / stoneAssemblyScale,
+                    (baseWorldPos[1] - stoneAssemblyOffsetY) / stoneAssemblyScale + shankYOffset,
+                    baseWorldPos[2] / stoneAssemblyScale,
+                  ]
                 : rightPos;
 
             return {
                 position: basePos,
                 rotation: shapeConfig.rotation || [0, 0, 0],
-                scale:    shapeConfig.scale    || [0.2, 0.2, 0.2],
+                scale:    fixedBaseScale,
                 haloTransforms: {},
                 sideStoneTransforms: {
                     right: {
                         position: rightPos,
                         rotation: shapeConfig.right?.rotation || shapeConfig.rotation || [0, 0, 0],
-                        scale:    shapeConfig.right?.scale    || shapeConfig.scale    || [0.2, 0.2, 0.2],
+                        scale:    fixedRightScale,
                     },
                     left: {
                         position: leftPos,
                         rotation: shapeConfig.left?.rotation  || shapeConfig.rotation || [0, 0, 0],
-                        scale:    shapeConfig.left?.scale     || shapeConfig.scale    || [0.2, 0.2, 0.2],
+                        scale:    fixedLeftScale,
                     },
                 }
             };
@@ -1009,10 +1389,13 @@ function Head() {
 
         if (activeHead === "BEZEL") {
             const bezelData = shapeDataForBezel[activeShape] || shapeDataForBezel.round;
+            const computedScale = typeof bezelData.scale === "function"
+                ? bezelData.scale(diamondCaratSize)
+                : (activeShape === "heart" ? ringHeadBezelForHeart : (activeShape === "princess" || activeShape === "radiant") ? ringHeadBezelForPrincess : ringHeadBezel);
             return {
                 position: [bezelData.position[0], bezelData.position[1] + shankYOffset, bezelData.position[2]],
                 rotation: bezelData.rotation,
-                scale: activeShape === "heart" ? ringHeadBezelForHeart : (activeShape === "princess" || activeShape === "radiant") ? ringHeadBezelForPrincess : ringHeadBezel,
+                scale: computedScale,
                 haloTransforms: {}
             };
         }
@@ -1027,24 +1410,82 @@ function Head() {
             };
         }
 
-        if (activeHead === "HALO") {
-            const haloData = shapeDataForHalo[activeShape] || shapeDataForHalo.round;
-            const s = haloData.scale(diamondCaratSize);
+        if (activeHead === "CLAW-SET") {
+            const clawData = shapeDataForClawSet[activeShape] || shapeDataForClawSet.round;
+            const visualCarat = getVisualCaratForHead(diamondSize);
+            const growthRate = clawData.growthRate ?? CLAW_SET_CARAT_GROWTH_RATE;
+            const caratGrowth = Math.max(0.7, 1 + (visualCarat - 1) * growthRate);
+
+            const rawScale = typeof clawData.scale === "function" ? clawData.scale(0) : clawData.scale;
+            const baseScale = Array.isArray(rawScale) ? rawScale : [rawScale || 0.35, rawScale || 0.35, rawScale || 0.35];
+
+            const scaled = [
+                baseScale[0] * caratGrowth,
+                baseScale[1] * caratGrowth,
+                baseScale[2] * caratGrowth
+            ];
+
+            const CLAW_BASE_MODEL_Y = 5.85;
+            const yDrop = (caratGrowth - 1) * baseScale[1] * CLAW_BASE_MODEL_Y;
+            const posY = clawData.position[1] + shankYOffset - yDrop;
+
             return {
-                position: [haloData.position[0], haloData.position[1] + shankYOffset, haloData.position[2]],
-                rotation: haloData.rotation,
-                scale: [s, s, s],
+                position: [clawData.position[0], posY, clawData.position[2]],
+                rotation: clawData.rotation || [0, 0, 0],
+                scale: scaled,
                 haloTransforms: {}
             };
         }
 
+        if (activeHead === "HALO") {
+            const haloData = shapeDataForHalo[activeShape] || shapeDataForHalo.round;
+            const raw = haloData.scale(diamondCaratSize);
+            // moval returns [sx, sy, sz]; every other shape returns a scalar.
+            const scale = Array.isArray(raw) ? raw : [raw, raw, raw];
+            return {
+                position: [haloData.position[0], haloData.position[1] + shankYOffset, haloData.position[2]],
+                rotation: haloData.rotation,
+                scale,
+                haloTransforms: {}
+            };
+        }
+
+
         if (activeHead === "HIDDEN-HALO") {
             const haloData = shapeDataForHiddenHalo[activeShape] || shapeDataForHiddenHalo.round;
+            const visualCarat = getVisualCaratForHead(diamondSize);
+            const growthRate = haloData.growthRate ?? HIDDEN_HALO_CARAT_GROWTH_RATE;
+            const caratGrowth = Math.max(0.7, 1 + (visualCarat - 1) * growthRate);
+
+            const rawScale = typeof haloData.scale === "function" ? haloData.scale(0) : haloData.scale;
+            const baseScale = Array.isArray(rawScale) ? rawScale : [rawScale || 0.40, rawScale || 0.40, rawScale || 0.40];
+
+            const scaled = [
+                baseScale[0] * caratGrowth,
+                baseScale[1] * caratGrowth,
+                baseScale[2] * caratGrowth
+            ];
+
+            const HIDDEN_HALO_BASE_MODEL_Y = 5.91;
+            const yDrop = (caratGrowth - 1) * baseScale[1] * HIDDEN_HALO_BASE_MODEL_Y;
+            const posY = haloData.position[1] + shankYOffset - yDrop;
+
+            return {
+                position: [haloData.position[0], posY, haloData.position[2]],
+                rotation: haloData.rotation || [0, 0, 0],
+                scale: scaled,
+                haloTransforms: {}
+            };
+        }
+
+        if (activeHead === "HIDDEN-HALO-2") {
+            const haloData = shapeDataForHiddenHalo2[activeShape] || shapeDataForHiddenHalo2.round;
             return {
                 position: [haloData.position[0], haloData.position[1] + shankYOffset, haloData.position[2]],
                 rotation: haloData.rotation,
                 haloTransforms: (meshes || []).reduce((acc, mesh) => {
-                    acc[mesh.name] = HIDDEN_HALO_MESHES.has(mesh.name)
+                    const isHaloMesh = HIDDEN_HALO_MESHES.has(mesh.name) || mesh.name?.toLowerCase().includes("hidden_halo") || mesh.name?.toLowerCase().includes("hidden halo");
+                    acc[mesh.name] = isHaloMesh
                         ? { position: [haloData.position2[0], haloData.position2[1] + shankYOffset, haloData.position2[2]], rotation: haloData.rotation2, scale: [0.4, 0.38, 0.4] }
                         : { position: [haloData.position[0], haloData.position[1] + shankYOffset, haloData.position[2]], rotation: haloData.rotation, scale: (shapeData[activeShape] || shapeData.round).scale(diamondCaratSize) };
                     return acc;
@@ -1072,11 +1513,11 @@ function Head() {
             scale = shapeInfo.scale(diamondCaratSize);
         }
 
-        rotation = activeShape !== "round" && (activeHead === "4-PRONG" || activeHead === "6-PRONG" || activeHead === "TWO-STONE")
-            ? [Math.PI / 2, 0, 0]
+        rotation = activeShape !== "round" && (activeHead === "4-PRONG" || activeHead === "6-PRONG")
+            ? (activeShape === "heart" ? [Math.PI / 2, 0, Math.PI] : [Math.PI / 2, 0, 0])
             : [0, 0, 0];
 
-        if ((activeHead === "4-PRONG" || activeHead === "6-PRONG" || activeHead === "TWO-STONE") && activeShape === "asscher") {
+        if ((activeHead === "4-PRONG" || activeHead === "6-PRONG") && activeShape === "asscher") {
             scale = [...scale];
             scale[0] += 0.03;
             scale[1] += 0.03;
@@ -1084,13 +1525,43 @@ function Head() {
         }
 
         if (activeHead === "TWO-STONE") {
-            const xOffset = TWO_STONE_X_OFFSET[activeShape] ?? TWO_STONE_X_OFFSET.round;
+            const visualCarat = getVisualCaratForHead(diamondSize);
+            const caratGrowth = Math.max(0.7, 1 + (visualCarat - 1) * TWO_STONE_CARAT_GROWTH_RATE);
+
+            const getSideTransform = (side, shapeKey) => {
+                const shapeEntry = shapeDataForTwoStone[shapeKey] || shapeDataForTwoStone.round;
+                const sideOverride = shapeEntry[side] || {};
+                const baseScale = sideOverride.scale || shapeEntry.scale || [0.45, 0.45, 0.45];
+                const basePos = sideOverride.position || shapeEntry.position || [0, 0.52, 0];
+                const baseRot = sideOverride.rotation || shapeEntry.rotation || [0, 0, 0];
+
+                const scaled = [
+                    baseScale[0] * caratGrowth,
+                    baseScale[1] * caratGrowth,
+                    baseScale[2] * caratGrowth
+                ];
+                const yDrop = (caratGrowth - 1) * baseScale[1] * TWO_STONE_BASE_MODEL_Y;
+                const posY = basePos[1] + shankYOffset - yDrop;
+
+                return {
+                    position: [basePos[0], posY, basePos[2]],
+                    rotation: baseRot,
+                    scale: scaled,
+                };
+            };
+
+            const leftTransform = getSideTransform("left", displayHead.leftShape || "round");
+            const rightTransform = getSideTransform("right", displayHead.rightShape || "pear");
+
             return {
-                position, rotation, scale, haloTransforms: {},
+                position: leftTransform.position,
+                rotation: [0, 0, 0],
+                scale: leftTransform.scale,
                 twoStoneTransforms: {
-                    left:  { position: [position[0] - xOffset, position[1], position[2]], rotation, scale },
-                    right: { position: [position[0] + xOffset, position[1], position[2]], rotation, scale },
+                    left: leftTransform,
+                    right: rightTransform,
                 },
+                haloTransforms: {}
             };
         }
 
@@ -1121,7 +1592,7 @@ function Head() {
             rotation: transforms.rotation || [0, 0, 0],
             scale: transforms.scale(diamondCaratSize)
         };
-    }, [displayHead, diamondSize, displayedShank]);
+    }, [displayHead, diamondSize, displayedShank, displayed.shape]);
 
     const headHeightBoost = getHeadHeightBoost(getVisualCarat(diamondSize));
 
@@ -1130,50 +1601,25 @@ function Head() {
     return (
         <>
             {displayHead.meshes.flatMap((mesh, index) => {
-                // HALO's accent ring and centre stone are told apart by the
-                // node-name tag the asset pipeline applied (see
-                // getHaloDiamondKind) rather than the fixed-name Set every
-                // other head uses. The baked centre-stone mesh itself is
-                // skipped entirely for HALO - the hero stone is now the same
-                // shared <Diamond> every other head style uses (see
-                // Scene.jsx), so rendering the baked one too would double it
-                // up. Only the surrounding ring of small accent diamonds
-                // (and the metal basket) still come from this baked model.
-                const isHaloHead = displayHead.ringHead === "HALO";
-                const haloDiamondKind = isHaloHead ? getHaloDiamondKind(mesh.name) : null;
-                // HALO now renders its OWN baked centre stone (this mesh) instead of
-                // the shared <Diamond> component - Scene.jsx no longer mounts that
-                // shared diamond while a HALO head is displayed, so nothing doubles up.
-                const isDiamond = isHaloHead ? Boolean(haloDiamondKind) : diamondMeshNames.has(mesh.name);
-                const stoneProps = isHaloHead
-                    ? colorlessDiamondMaterialProps
+                // HALO, CLAW-SET, HIDDEN-HALO and TWO-STONE have their center
+                // stone(s) included in their own head models.
+                const isSelfContainedHead = displayHead.ringHead === "HALO" || displayHead.ringHead === "CLAW-SET" || displayHead.ringHead === "HIDDEN-HALO" || displayHead.ringHead === "TWO-STONE";
+                const haloDiamondKind = isSelfContainedHead ? getHaloDiamondKind(mesh.name) : null;
+                // HALO, CLAW-SET, HIDDEN-HALO and TWO-STONE render their OWN baked stone(s) instead of
+                // the shared <Diamond> component - Scene.jsx does not mount that
+                // shared diamond while a self-contained head is displayed.
+                const isDiamond = isSelfContainedHead ? Boolean(haloDiamondKind) : (diamondMeshNames.has(mesh.name) || (mesh.name && mesh.name.toLowerCase().includes("diamond")));
+                const sideStoneDirection = displayHead.isThreeStone ? getSideStoneDirection(mesh.name) : null;
+                const stoneProps = sideStoneDirection
+                    ? sideStoneMaterialProps
+                    : isSelfContainedHead
+                    ? (haloDiamondKind === "center" ? coloredDiamondMaterialProps : colorlessDiamondMaterialProps)
                     : (COLORLESS_HALO_HEADS.has(displayHead.ringHead) ? colorlessDiamondMaterialProps : diamondMaterialProps);
-
-                // TWO-STONE: render every mesh in the (single, shared) 4-PRONG
-                // basket asset TWICE, once per side - see activeTransforms above.
-                if (displayHead.isTwoStone && activeTransforms.twoStoneTransforms) {
-                    return ["left", "right"].map((side) => {
-                        const shown = boostHeadTransform(activeTransforms.twoStoneTransforms[side], headHeightBoost);
-                        return (
-                            <HeadMesh
-                                key={`head_${displayHead.headPath}_${side}_${mesh.name}_${index}`}
-                                geometry={mesh.geometry}
-                                position={shown.position}
-                                rotation={shown.rotation}
-                                scale={shown.scale}
-                                materialProps={metalMaterialProps}
-                                headColor={headColor}
-                                isDiamond={isDiamond}
-                                diamondProps={isDiamond ? stoneProps : null}
-                            />
-                        );
-                    });
-                }
 
                 let finalTransform;
 
                 if (displayHead.isThreeStone && activeTransforms.sideStoneTransforms) {
-                    const direction = getSideStoneDirection(mesh.name);
+                    const direction = sideStoneDirection;
                     if (direction === "left") {
                         finalTransform = activeTransforms.sideStoneTransforms.left;
                     } else if (direction === "right") {
@@ -1185,6 +1631,13 @@ function Head() {
                             scale:    activeTransforms.scale,
                         };
                     }
+                } else if (displayHead.isTwoStone && activeTransforms.twoStoneTransforms) {
+                    const side = mesh.userData?.side || (mesh.name?.toLowerCase().includes("left") ? "left" : "right");
+                    finalTransform = activeTransforms.twoStoneTransforms[side] || {
+                        position: activeTransforms.position,
+                        rotation: activeTransforms.rotation,
+                        scale:    activeTransforms.scale,
+                    };
                 } else {
                     const baseTransform = {
                         position: activeTransforms.position,
@@ -1195,8 +1648,8 @@ function Head() {
                     finalTransform = haloTransform || baseTransform;
                 }
 
-                // Three-stone settings are laid out as a group and are left alone.
-                const shown = displayHead.isThreeStone
+                // Multi-stone settings (three-stone and two-stone) are laid out as a group and left alone.
+                const shown = (displayHead.isThreeStone || displayHead.isTwoStone)
                     ? finalTransform
                     : boostHeadTransform(finalTransform, headHeightBoost);
 

@@ -121,14 +121,17 @@ export const NAME_CHAIN_CONFIG = {
   // override individual categories - heavier links want hanging charms pushed
   // a little further out.
   charmPlacement: {
-    birthstone: { anchor: "center", radiusOffset: 0,     yOffset: 0, rotationOffset: 0, scale: 1 },
-    diamond:    { anchor: "center", radiusOffset: 0,     yOffset: 0, rotationOffset: 0, scale: 1 },
+    birthstone: { anchor: "center", radiusOffset: 0.01,     yOffset: 0, rotationOffset: 0, scale: 1 },
+    diamond:    { anchor: "center", radiusOffset: 0.01,     yOffset: 0, rotationOffset: 0, scale: 1 },
+    // Princess-cut diamonds need a small lift; other diamond cuts keep the
+    // standard diamond placement above.
+    princessDiamond: { anchor: "center", radiusOffset: 0.01, yOffset: 0.01, rotationOffset: 0, scale: 1 },
     gemstone:   { anchor: "center", radiusOffset: 0,     yOffset: 0, rotationOffset: 0, scale: 1 },
-    initial:    { anchor: "top",    radiusOffset: 0.18, yOffset: 0, rotationOffset: 0, scale: 1 },
+    initial:    { anchor: "top",    radiusOffset: 0.20, yOffset: 0.02, rotationOffset: 0, scale: 1 },
     image:      { anchor: "top",    radiusOffset: 0.17, yOffset: 0, rotationOffset: 0, scale: 1 },
     // 3D charms are authored much larger than the 2D ones and have no
     // per-bracelet scale entry to fall back on, so they need reining in here.
-    glb:        { anchor: "top",    radiusOffset: 0.008, yOffset: 0, rotationOffset: 0, scale: 0.8 },
+    glb:        { anchor: "top",    radiusOffset: 0.00, yOffset: 0, rotationOffset: 0, scale: 0.8 },
   },
 
   // ── Clasp: spring-ring lock at the BACK, opposite the name plate ──────────
@@ -183,17 +186,17 @@ const NAME_CHAIN_LINK_STYLES = {
   },
   [GENERATED_NAME_CHAIN_ROUND_PATH]: {
     // Round: perfectly circular links (width == length).
-    linkLength: 0.045,
-    linkWidth: 0.045,
-    linkTube: 0.0055,
-    linkOverlap: 0.80,
+    linkLength: 0.050,
+    linkWidth: 0.050,
+    linkTube: 0.0035,
+    linkOverlap: 0.78,
     linkTubularSegments: 20,
   },
   [GENERATED_NAME_CHAIN_SQUARE_PATH]: {
     // Square: equal-sided links with barely-rounded corners. They need more
     // tube segments than the round shapes - the curvature all sits in four
     // short corners, so evenly spaced samples get few of them each.
-    linkLength: 0.052,
+    linkLength: 0.062,
     linkWidth: 0.040,
     linkCornerRatio: 0.28,
     linkTube: 0.0062,
@@ -205,9 +208,9 @@ const NAME_CHAIN_LINK_STYLES = {
   [GENERATED_NAME_CHAIN_OVAL_PATH]: {
     // Oval: shorter and noticeably rounder than the cable link, in slightly
     // heavier wire - reads as a chunkier chain without looking clumsy.
-    linkLength: 0.076,
-    linkWidth: 0.052,
-    linkTube: 0.0058,
+    linkLength: 0.056,
+    linkWidth: 0.032,
+    linkTube: 0.0048,
     linkOverlap: 0.80,
   },
 };
@@ -219,7 +222,9 @@ export function getNameChainCharmCategory(charm) {
   if (!charm) return "glb";
   if (charm.type === "initial") return "initial";
   if (charm.type === "birthstone") return "birthstone";
-  if (charm.type === "diamond") return "diamond";
+  if (charm.type === "diamond") {
+    return /princess/i.test(charm.path || "") ? "princessDiamond" : "diamond";
+  }
   if (charm.type === "cushion") return "gemstone";
   return /\.(png|jpe?g|webp|gif|svg)$/i.test(charm.path || "") ? "image" : "glb";
 }
@@ -824,7 +829,7 @@ const Washer = ({ position, materialProps, cfg = NAME_CHAIN_CONFIG }) => {
 // ─── Text bounds probe ──────────────────────────────────────────────────────
 // Reads the extruded text's own GEOMETRY bounds (not its world bounds), so the
 // measurement can't feed back into the transform we then derive from it.
-const TextBoundsProbe = ({ targetRef, onMeasured, deps, band }) => {
+const TextBoundsProbe = ({ targetRef, onMeasured, deps, band, measurementKey }) => {
   const done = useRef(false);
 
   useEffect(() => { done.current = false; }, deps); // eslint-disable-line react-hooks/exhaustive-deps
@@ -836,6 +841,10 @@ const TextBoundsProbe = ({ targetRef, onMeasured, deps, band }) => {
     const geometries = [];
     targetRef.current.traverse((child) => {
       if (!child.isMesh || !child.geometry) return;
+      // A font switch suspends while its JSON is fetched. The old mesh can
+      // remain mounted during that interval, so never measure it for the new
+      // request or it will publish stale washer anchors.
+      if (child.userData.fontMeasurementKey !== measurementKey) return;
       if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
       const bb = child.geometry.boundingBox;
       if (!bb || !Number.isFinite(bb.min.x) || !Number.isFinite(bb.max.x)) return;
@@ -923,6 +932,7 @@ const NameChainBracelet = ({ namePendant, materialProps, pendantMaterialProps, o
   const hasName = Boolean(namePendant?.enabled) && cleanText.length > 0;
 
   const font = getFont(namePendant?.fontStyle);
+  const measurementKey = `${cleanText}|${font.id}`;
   const textRef = useRef();
   const [bounds, setBounds] = useState(null);
   const pendantProps = pendantMaterialProps || materialProps;
@@ -998,6 +1008,7 @@ const NameChainBracelet = ({ namePendant, materialProps, pendantMaterialProps, o
           <group ref={textRef} position={[centeredX, 0, -cfg.textDepth / 2]}>
             <Suspense fallback={null}>
               <KernedText3D
+                measurementKey={measurementKey}
                 font={font.url}
                 size={cfg.textSize}
                 height={cfg.textDepth}
@@ -1026,7 +1037,8 @@ const NameChainBracelet = ({ namePendant, materialProps, pendantMaterialProps, o
             targetRef={textRef}
             onMeasured={setBounds}
             band={cfg.textSize * cfg.washerBandRatio}
-            deps={[cleanText, font.id]}
+            deps={[measurementKey]}
+            measurementKey={measurementKey}
           />
         </group>
       )}

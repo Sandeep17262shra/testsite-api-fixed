@@ -17,7 +17,7 @@ import { RingContext } from './contexts/RingContext';
 import { Suspense } from "react";
 import MatchingBand from './objects/MatchingBand';
 import Head, { getHeadStoneAnchorY } from './objects/Head';
-import { getVisualCarat } from './utility/visualCarat';
+import { getVisualCarat, getStoneAssemblyScale, STONE_ASSEMBLY_SHRINK, STONE_ASSEMBLY_PIVOT_Y, STONE_ANCHOR_Y } from './utility/visualCarat';
 import DiamondWiseRing, { getDiamondWiseHeadTransform } from './objects/DiamondWiseRing';
 import { DIAMONDWISE_DESIGNS, getDiamondWiseDesignById, getDiamondWiseDesignByShankId } from './data/diamondwiseDesigns';
 import * as THREE from "three";
@@ -52,6 +52,15 @@ const DIAMONDWISE_ZOOM_LIMIT_SCALE = 1;
 //
 // DiamondWise designs are framed separately and are not affected by this table.
 const SHANK_FRAMING_DEFAULT = { minDistance: 7.4, positionY: -1.5 };
+// Wedding bands have no head or centre stone above the shank. Lift their
+// complete model slightly so the visible band, rather than the empty head
+// space an engagement ring needs, is centered in the product frame.
+const WEDDING_RING_FRAME_OFFSET_Y = 0.95;
+// Pave and Channel use their dedicated wedding-band assets, whose geometry
+// already sits higher than the regular shank assets. Give those two a smaller
+// lift so they do not look over-raised beside the other wedding styles.
+const WEDDING_BAND_MODEL_SHANKS = new Set(["CHANNEL", "PLATE-PRONG"]);
+const WEDDING_BAND_MODEL_FRAME_OFFSET_Y = 0.7;
 // The standard-ring group (see the <group> wrapping <Ring>/<Head> below) is
 // scaled uniformly by this factor - needed to convert a local Y (inside Ring)
 // into the world Y the camera controller targets.
@@ -65,27 +74,32 @@ const RING_GROUP_SCALE = 1.05;
 // close-up distance.
 const ENGRAVING_ORBIT_MIN_DISTANCE = 1.5;
 const SHANK_FRAMING = {
-  PLAIN:         { minDistance: 6.2, positionY: -1.8 },
-  "PLATE-PRONG": { minDistance: 6.2, positionY: -1.75 },
-  CHANNEL:       { minDistance: 6.4, positionY: -1.7 },
-  SPLIT:         { minDistance: 6.4, positionY: -1.65 },
-  "KNIFE-EDGE":  { minDistance: 6.8, positionY: -1.4 },
-  CATHEDRAL:     { minDistance: 7, positionY: -1.4 },
-  TWISTED:       { minDistance: 7.2, positionY: -1.4 },
-  "WIDE-PLAIN":  { minDistance: 7.3, positionY: -1.4 },
+  PLAIN:         { minDistance: 6.5, positionY: -1.9 },
+  "PLATE-PRONG": { minDistance: 6.5, positionY: -1.9 },
+  CHANNEL:       { minDistance: 6.5, positionY: -1.9 },
+  SPLIT:         { minDistance: 6.5, positionY: -1.8 },
+  "KNIFE-EDGE":  { minDistance: 7, positionY: -1.6 },
+  CATHEDRAL:     { minDistance: 7.2, positionY: -1.45 },
+  TWISTED:       { minDistance: 6.3, positionY: -2.1 },
+  "WIDE-PLAIN":  { minDistance: 7.5, positionY: -1.6 },
 
   // New default-only shanks — same export pipeline/local-space offset as
   // PLATE-PRONG/CHANNEL after the rotation+translation bake fix (see Ring.jsx
   // NEW_DEFAULT_SHANKS), so reuse their framing as the starting point.
-  "FRENCH-PAVE":          { minDistance: 7.5, positionY: -1.1 },
-  "PAVE-STONES":          { minDistance: 7.5, positionY: -1.1 },
-  "8-STONES":             { minDistance: 7.5, positionY: -1.1},
-  "MULTI-ROW":            { minDistance: 7.5, positionY: -1.1 },
-  "TWISTED-2":            { minDistance: 7.5, positionY: -1.1 },
-  FLUTED:                 { minDistance: 7.5, positionY: -1.1 },
-  BRAIDED:                { minDistance: 7.5, positionY: -1.1 },
-  "CATHEDRAL-SIDE-STONE": { minDistance: 7.5, positionY: -1.1 },
-  "SIDE-BEZEL-STONES":    { minDistance: 7.5, positionY: -1.1 },
+  "FRENCH-PAVE":          { minDistance: 6.6, positionY: -1.85 },
+  "PAVE-STONES":          { minDistance: 6.6, positionY: -1.85 },
+  "8-STONES":             { minDistance: 6.6, positionY: -1.85},
+  "MULTI-ROW":            { minDistance: 6.6, positionY: -1.85 },
+  "TWISTED-2":            { minDistance: 6.6, positionY: -1.85 },
+  FLUTED:                 { minDistance: 6.6, positionY: -1.85 },
+  BRAIDED:                { minDistance: 6.6, positionY: -1.85 },
+  "CATHEDRAL-SIDE-STONE": { minDistance: 6.6, positionY: -1.85 },
+  "SIDE-BEZEL-STONES":    { minDistance: 6.6, positionY: -1.85 },
+  "BAGUETTE-SIDE-STONE":  { minDistance: 6.5, positionY: -1.95 },
+  "PEAR-SIDE-STONE":      { minDistance: 6.5, positionY: -1.95 },
+  "HALF-MOON-SIDE-STONE": { minDistance: 6.5, positionY: -1.95 },
+  BAGUETTE:               { minDistance: 6.6, positionY: -1.85 },
+  PEAR:                   { minDistance: 6.6, positionY: -1.85 },
 };
 
 // Framing follows the ring that is ON SCREEN, not the one being loaded, so the
@@ -110,31 +124,7 @@ const DIAMONDWISE_MIN_DISTANCE = 7.1;
 //
 // DiamondWise designs carry their own integrated head and are left untouched.
 // ───────────────────────────────────────────────────────────────────────────
-const STONE_ASSEMBLY_SHRINK = 0.8;
-// Above the reference carat the shrink is eased off, because the models' own
-// carat term is too weak at the top of the slider - a 5ct read barely wider
-// than a 2ct. Below the reference nothing changes, so the small end keeps the
-// proportions it already has.
-//   1ct x1.00   2ct x1.11   3ct x1.18   4ct x1.23   5ct x1.26
-const STONE_ASSEMBLY_REFERENCE_CARAT = 1;
-const STONE_ASSEMBLY_GROWTH_EXPONENT = 0.15;
-// Y (inside the ring group) of the head/shank junction - the point the assembly
-// is scaled about. Measured: the standard head spans y 3.21 - 4.61 and the band
-// tops out at 3.42, so the prong base sits just inside the top of the shank.
-const STONE_ASSEMBLY_PIVOT_Y = 3.3;
-// Where the centre stone sits when the assembly is at scale 1.
-const STONE_ANCHOR_Y = 4.5;
-
-const getStoneAssemblyScale = (carat) => {
-  const weight = Number(carat);
-  if (!Number.isFinite(weight) || weight <= STONE_ASSEMBLY_REFERENCE_CARAT) {
-    return STONE_ASSEMBLY_SHRINK;
-  }
-  return (
-    STONE_ASSEMBLY_SHRINK
-    * Math.pow(weight / STONE_ASSEMBLY_REFERENCE_CARAT, STONE_ASSEMBLY_GROWTH_EXPONENT)
-  );
-};
+// Sizing constants and getStoneAssemblyScale are imported from utility/visualCarat.js
 
 // The reset pose only fixes the camera's DIRECTION. Its distance is taken from
 // `distance` (the current zoom-in floor), so the configurator opens - and the
@@ -208,18 +198,27 @@ function Scene() {
   // ───────────────────────────────────────────────────────────────────────
   const { target, displayed, isPending } = useSceneStage();
   const displayedIsDiamondWise = displayed.isDiamondWise;
-  const displayedIsHalo = displayed.ringHead === "HALO";
-  const targetIsHalo = target.ringHead === "HALO";
+  const displayedIsSelfContainedHead = displayed.ringHead === "HALO" || displayed.ringHead === "CLAW-SET" || displayed.ringHead === "HIDDEN-HALO" || displayed.ringHead === "TWO-STONE";
+  const targetIsSelfContainedHead = target.ringHead === "HALO" || target.ringHead === "CLAW-SET" || target.ringHead === "HIDDEN-HALO" || target.ringHead === "TWO-STONE";
   const displayedIsNoHead = displayed.ringHead === "NO-HEAD";
   const targetIsNoHead = target.ringHead === "NO-HEAD";
   const shankFraming = getShankFraming(displayed.ringShank);
+  const isRaisedWeddingBandModel =
+    displayedIsNoHead && WEDDING_BAND_MODEL_SHANKS.has(displayed.ringShank);
+  const ringFramePositionY =
+    shankFraming.positionY +
+    (displayedIsNoHead
+      ? (isRaisedWeddingBandModel
+        ? WEDDING_BAND_MODEL_FRAME_OFFSET_Y
+        : WEDDING_RING_FRAME_OFFSET_Y)
+      : 0);
   // Where the engraving actually sits in WORLD space, so the engraving-zoom
   // camera can center and frame it tightly instead of aiming at a fixed
   // guessed height. Local Y (inside <Ring>) varies by shank/setting - see
   // getEngravingLocalPosition - and the ring group's own Y offset varies by
   // shank too (see SHANK_FRAMING above), so both have to be combined here.
   const engravingTargetY =
-    shankFraming.positionY +
+    ringFramePositionY +
     getEngravingLocalPosition(displayed.ringSideSetting, displayed.ringShank)[1] * RING_GROUP_SCALE;
   const stoneAssemblyScale = displayedIsDiamondWise ? 1 : getStoneAssemblyScale(getVisualCarat(diamondSize));
   const stoneAssemblyOffsetY = STONE_ASSEMBLY_PIVOT_Y * (1 - stoneAssemblyScale);
@@ -555,6 +554,11 @@ function Scene() {
 	  BRAIDED: "perspective",
 	  "CATHEDRAL-SIDE-STONE": "perspectiveHeadView",
 	  "SIDE-BEZEL-STONES": "perspectiveHeadView",
+	  "BAGUETTE-SIDE-STONE": "perspectiveHeadView",
+	  "PEAR-SIDE-STONE": "perspectiveHeadView",
+	  "HALF-MOON-SIDE-STONE": "perspectiveHeadView",
+	  BAGUETTE: "perspectiveHeadView",
+	  PEAR: "perspectiveHeadView",
 	};
 
 	useEffect(() => {
@@ -627,6 +631,9 @@ useEffect(() => {
     '/3d-models/RING-SHANK/BRAIDED.glb',
     '/3d-models/RING-SHANK/CATHEDRAL-SIDE-STONE.glb',
     '/3d-models/RING-SHANK/SIDE-BEZEL-STONES.glb',
+    '/3d-models/RING-SHANK/BAGUETTE-SIDE-STONE.glb',
+    '/3d-models/RING-SHANK/PEAR-SIDE-STONE.glb',
+    '/3d-models/RING-SHANK/HALF-MOON-SIDE-STONE.glb',
     '/3d-models/SIDE-RING-SETTING/CHANNEL.glb',
     '/3d-models/SIDE-RING-SETTING/PLATE-PRONG.glb',
     '/3d-models/RING-HEAD/4-PRONG/OVAL.glb',
@@ -649,11 +656,25 @@ useEffect(() => {
     '/3d-models/RING-HEAD/HIDDEN-HALO/HEART.glb',
     '/3d-models/RING-HEAD/HIDDEN-HALO/ASSCHER.glb',
     '/3d-models/RING-HEAD/HIDDEN-HALO/RADIANT.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/ROUND.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/CUSHION.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/EMERALD.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/PRINCESS.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/OVAL.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/PEAR.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/MARQUISE.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/HEART.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/ASSCHER.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/RADIANT.glb',
+    '/3d-models/RING-HEAD/HIDDEN-HALO-2/MOVAL.glb',
     '/3d-models/RING-HEAD/TULIP/ROUND.glb',
     '/3d-models/RING-HEAD/TULIP/CUSHION.glb',
     '/3d-models/RING-HEAD/TULIP/OVAL.glb',
     '/3d-models/RING-HEAD/TULIP/PEAR.glb',
     '/3d-models/RING-HEAD/TULIP/EMERALD.glb',
+    '/3d-models/RING-HEAD/CLAW-SET/ROUND.glb',
+    '/3d-models/RING-HEAD/CLAW-SET/OVAL.glb',
+    '/3d-models/RING-HEAD/CLAW-SET/CUSHION.glb',
     // HALO uses one fixed (tier-3) model per shape - no carat switching.
     '/3d-models/RING-HEAD/HALO/halo-round/halo-round-3.glb',
     '/3d-models/RING-HEAD/HALO/halo-princess/halo-princess-3.glb',
@@ -668,6 +689,37 @@ useEffect(() => {
     '/3d-models/RING-HEAD/HALO/halo-moval/halo-moval-3.glb',
     '/3d-models/WEDDING-BANDS/CHANNEL.glb',
     '/3d-models/WEDDING-BANDS/PLATE-PRONG.glb',
+    '/3d-models/WEDDING-BANDS/Channel-Models/1_2.glb',
+    '/3d-models/WEDDING-BANDS/Channel-Models/3_4.glb',
+    '/3d-models/WEDDING-BANDS/Channel-Models/full.glb',
+    '/3d-models/WEDDING-BANDS/Pave-Models/1_2.glb',
+    '/3d-models/WEDDING-BANDS/Pave-Models/3_4.glb',
+    '/3d-models/WEDDING-BANDS/Pave-Models/full.glb',
+    // TWO-STONE: two models must load in parallel (left + right head) on every
+    // first-time selection, so they are slower than any other head type that
+    // fetches only one file. Preload the default pair (round left, pear right)
+    // first — those are what the shopper sees immediately when they switch to
+    // TWO-STONE — then warm all remaining shape variants behind them.
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/round.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/pear.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/pear.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/round.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/oval.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/oval.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/cushion.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/cushion.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/princess.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/princess.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/emerald.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/emerald.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/radiant.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/radiant.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/marquise.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/marquise.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/asscher.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/asscher.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/left-head/heart.glb',
+    '/3d-models/RING-HEAD/TWO-STONE/right-head/heart.glb',
   ];
 
   // Diamond .obj files are served unencrypted, so they must be warmed through
@@ -794,7 +846,7 @@ useEffect(() => {
           position={
             displayedIsDiamondWise
               ? (isMobile ? [0, -1, 0] : [0, -1, 0])
-              : [0, shankFraming.positionY, 0]
+              : [0, ringFramePositionY, 0]
           }
           scale={[RING_GROUP_SCALE, RING_GROUP_SCALE, RING_GROUP_SCALE]}
         >
@@ -845,10 +897,10 @@ useEffect(() => {
               requires the incoming non-halo diamond to report ready; gating
               this component only on `displayedIsHalo` left it unmounted, so
               reset/head changes had to wait for the 45-second watchdog. */}
-          {(!displayedIsHalo || !targetIsHalo) && (!displayedIsNoHead || !targetIsNoHead) && (
+          {(!displayedIsSelfContainedHead || !targetIsSelfContainedHead) && (!displayedIsNoHead || !targetIsNoHead) && (
             <Suspense fallback={null}>
               <group
-                visible={!displayedIsHalo && !displayedIsNoHead}
+                visible={!displayedIsSelfContainedHead && !displayedIsNoHead}
                 scale={stoneAssemblyScale}
                 position={[0, displayedIsDiamondWise ? 0 : stoneAssemblyOffsetY, 0]}
               >

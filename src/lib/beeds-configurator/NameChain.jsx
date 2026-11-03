@@ -22,8 +22,8 @@
 // y ~ 0.6 with a radius of ~1.0, so these defaults line up with them).
 
 import React, { useEffect, useMemo, useRef, useState, useLayoutEffect, Suspense } from "react";
-import { useFrame } from "@react-three/fiber";
 import { Text3D } from "@react-three/drei";
+import KernedText3D from "../necklace-configurator/shared/KernedText3D";
 import * as THREE from "three";
 import {
   NAME_PENDANT_FONTS, sanitizePendantText,
@@ -689,7 +689,7 @@ const NameChainBracelet = ({ namePendant, materialProps, onGeometryChange, brace
           <group scale={textScale}>
           <group ref={textRef} position={[centeredX, 0, -cfg.textDepth / 2]}>
             <Suspense fallback={null}>
-              <Text3D
+              <KernedText3D
                 font={font.url}
                 size={cfg.textSize}
                 height={cfg.textDepth}
@@ -702,7 +702,7 @@ const NameChainBracelet = ({ namePendant, materialProps, onGeometryChange, brace
               >
                 {cleanText}
                 <meshStandardMaterial {...metal} side={THREE.DoubleSide} />
-              </Text3D>
+              </KernedText3D>
             </Suspense>
           </group>
           </group>

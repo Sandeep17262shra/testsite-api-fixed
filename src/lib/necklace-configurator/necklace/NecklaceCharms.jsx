@@ -627,7 +627,7 @@ function getGlbCharmAnchorOffset(path, obj) {
   obj.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(obj);
   const center = box.getCenter(new THREE.Vector3());
-  const offset = { x: center.x, y: box.max.y, z: center.z };
+  const offset = { x: center.x, y: box.max.y, centerY: center.y, z: center.z };
   glbCharmAnchorOffsetCache.set(path, offset);
   return offset;
 }
@@ -640,6 +640,81 @@ const GEMSTONE_CHARM_SCALE_BY_TYPE = {
 const GEMSTONE_CHARM_SCALE_BY_PATH = {
   '/bc-assets/gemstone/cushion.glb': [0.17, 0.17, 0.17],
   '/bc-assets/gemstone/princess.glb': [0.17, 0.17, 0.17],
+};
+
+// Centre-anchor height tuning for the square/rounded-square diamond settings.
+// Cushion is calibrated at its current position; Princess sits 0.03 higher.
+const SQUARE_DIAMOND_CENTER_DROP_BY_PATH = {
+  '/bc-assets/gemstone/cushion.glb': 0.10,
+  '/bc-assets/gemstone/princess.glb': 0.04,
+};
+
+// ─── Princess / cushion necklace rotation tuning ────────────────────────────
+// These cuts are not round, so their mounting can look wrong at the sloped
+// ends of a necklace. Keep the chain-derived rotation intact and add an
+// offset per physical charm slot here.
+//
+// EVEN map slots are ordered LEFT → RIGHT for six charms:
+//   [ left-end, left-middle, left-inner, right-inner, right-middle, right-end ]
+//
+// Each value is an [x, y, z] rotation in DEGREES. In normal use tune z only:
+//   45   = 45° clockwise
+//   -45  = 45° counter-clockwise
+// Values remain at zero until individually calibrated against the model.
+const NECKLACE_DIAMOND_CHARM_ROTATION_BY_PATH = {
+  '/bc-assets/gemstone/princess.glb': [
+    [0, 0, -15], // 1: left-end
+    [0, 0, -7], // 2: left-middle
+    [0, 0, -7], // 3: left-inner
+    [0, 0, 7], // 4: right-inner
+    [0, 0, 7], // 5: right-middle
+    [0, 0, 15], // 6: right-end
+  ],
+  '/bc-assets/gemstone/cushion.glb': [
+    [0, 0, -15], // 1: left-end
+    [0, 0, -7], // 2: left-middle
+    [0, 0, -7], // 3: left-inner
+    [0, 0, 7], // 4: right-inner
+    [0, 0, 7], // 5: right-middle
+    [0, 0, 15], // 6: right-end
+  ],
+};
+
+// ODD map slots are ordered LEFT → RIGHT for five charms:
+//   [ left-end, left-middle, centre, right-middle, right-end ]
+// A three-charm necklace automatically reads the middle three entries here;
+// one charm reads only the centre entry.
+const NECKLACE_DIAMOND_CHARM_ODD_ROTATION_BY_PATH = {
+  '/bc-assets/gemstone/princess.glb': [
+    [0, 0, -15], // 1: left-end
+    [0, 0, -6], // 2: left-middle
+    [0, 0, 0], // 3: centre
+    [0, 0, 6], // 4: right-middle
+    [0, 0, 15], // 5: right-end
+  ],
+  '/bc-assets/gemstone/cushion.glb': [
+    [0, 0, -15], // 1: left-end
+    [0, 0, -6], // 2: left-middle
+    [0, 0, 0], // 3: centre
+    [0, 0, 6], // 4: right-middle
+    [0, 0, 15], // 5: right-end
+  ],
+};
+
+const NO_ROTATION = [0, 0, 0];
+
+// `index` is already left-to-right for the open drape layout. For a shorter
+// necklace, use the centred subset of its odd/even map: 2 uses even slots 3–4,
+// 3 uses odd slots 2–4, and so on.
+const getDiamondCharmRotationOffset = (path, index, total) => {
+  const rotationsByPath = total % 2 === 0
+    ? NECKLACE_DIAMOND_CHARM_ROTATION_BY_PATH
+    : NECKLACE_DIAMOND_CHARM_ODD_ROTATION_BY_PATH;
+  const slots = rotationsByPath[path];
+  if (!slots || total < 1 || total > slots.length) return NO_ROTATION;
+  const firstSlot = (slots.length - total) / 2;
+  const degrees = slots[firstSlot + index] ?? NO_ROTATION;
+  return degrees.map((value) => THREE.MathUtils.degToRad(value));
 };
 
 const NecklaceGemstoneCharm = ({ charm, index, total, seamSide = null, seamRank = null, materialProps, namePendant, braceletPath, chainOffsetX, drapeCfg, dropKey, animateDrop = true, charmKey, onReady, onClick }) => {  const [model, setModel] = useState(null);
@@ -702,11 +777,21 @@ const NecklaceGemstoneCharm = ({ charm, index, total, seamSide = null, seamRank 
   if (!gemReady) return null;
 
   const scale = GEMSTONE_CHARM_SCALE_BY_PATH[charm.path] ?? GEMSTONE_CHARM_SCALE_BY_TYPE[charm.type] ?? [0.05, 0.05, 0.05];
-  const innerPosition = [-anchorOffset.x * scale[0], -anchorOffset.y * scale[1], -anchorOffset.z * scale[2]];
+  const isSquareDiamond = /(?:princess|cushion)\.glb$/i.test(charm.path);
+  // Princess/Cushion are inline charms. Align their geometric centre with the
+  // chain anchor; other gemstone models retain their top-edge pendant anchor.
+  const anchorY = isSquareDiamond ? (anchorOffset.centerY ?? anchorOffset.y) : anchorOffset.y;
+  const innerPosition = [-anchorOffset.x * scale[0], -anchorY * scale[1], -anchorOffset.z * scale[2]];
   const hardwareMaterial = ringMetalProps(charm.bodyColor || materialProps.color || '#ECC875', { side: THREE.DoubleSide });
   const [bailOffsetX, bailOffsetY, bailOffsetZ] = charmStyle.bailOffset;
   const nameChainExtraDrop = isNameChain ? (charmStyle.gemstoneExtraDrop ?? 0.5) : 0;
   const washerYOffset = charmStyle.bailRadius * 0.6;
+  const rotationOffset = getDiamondCharmRotationOffset(charm.path, index, total);
+  // Lower square cuts while retaining their centre-based attachment.
+  const squareDiamondBailDrop = !isNameChain
+    ? (SQUARE_DIAMOND_CENTER_DROP_BY_PATH[charm.path] ?? 0)
+    : 0;
+  const diamondPosition = [innerPosition[0], innerPosition[1] - squareDiamondBailDrop, innerPosition[2]];
 
   return (
     <group
@@ -719,30 +804,34 @@ const NecklaceGemstoneCharm = ({ charm, index, total, seamSide = null, seamRank 
       rotation={placement.rotation}
       onClick={onClick}
     >
-      <primitive object={model} position={innerPosition} rotation={[Math.PI / 2, 0, 0]} scale={scale} />
+      {/* Rotate the diamond at its own anchor. This keeps the bail attached to
+          the chain while making the tuning block's z value visibly rotate the
+          face of Princess/Cushion cuts. */}
+      <group position={diamondPosition} rotation={rotationOffset}>
+        <primitive object={model} rotation={[Math.PI / 2, 0, 0]} scale={scale} />
 
-      {gemGeometry && (
-        <mesh
-          key={`gem_${charm.path}_${charm.gemstoneColor}`}
-          geometry={gemGeometry}
-          position={innerPosition}
-          rotation={[Math.PI / 2, 0, 0]}
-          scale={scale}
-          castShadow
-        >
-          <MeshRefractionMaterial
-            envMap={envTexture}
-            color={new THREE.Color(charm.gemstoneColor)}
-            ior={GEM_REFRACTION_PARAMS.ior}
-            bounces={GEM_REFRACTION_PARAMS.bounces}
-            aberrationStrength={GEM_REFRACTION_PARAMS.aberrationStrength}
-            fresnel={GEM_REFRACTION_PARAMS.fresnel}
-            toneMapped={false}
-            transparent
-            fastChroma
-          />
-        </mesh>
-      )}
+        {gemGeometry && (
+          <mesh
+            key={`gem_${charm.path}_${charm.gemstoneColor}`}
+            geometry={gemGeometry}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={scale}
+            castShadow
+          >
+            <MeshRefractionMaterial
+              envMap={envTexture}
+              color={new THREE.Color(charm.gemstoneColor)}
+              ior={GEM_REFRACTION_PARAMS.ior}
+              bounces={GEM_REFRACTION_PARAMS.bounces}
+              aberrationStrength={GEM_REFRACTION_PARAMS.aberrationStrength}
+              fresnel={GEM_REFRACTION_PARAMS.fresnel}
+              toneMapped={false}
+              transparent
+              fastChroma
+            />
+          </mesh>
+        )}
+      </group>
 
       {isNameChain && (
         <>
@@ -771,6 +860,8 @@ const NecklaceGemstoneCharm = ({ charm, index, total, seamSide = null, seamRank 
 export {
   NECKLACE_CHARM_STYLE_BY_BRACELET,
   DEFAULT_NECKLACE_CHARM_STYLE,
+  NECKLACE_DIAMOND_CHARM_ROTATION_BY_PATH,
+  NECKLACE_DIAMOND_CHARM_ODD_ROTATION_BY_PATH,
   getNecklaceCharmPlacement,
   getNecklaceCharmKind,
   buildCharmKeys,

@@ -1,4 +1,5 @@
 import apiData from '../../data/api-data.json';
+import { useClickSound } from "../../hooks/useClickSound";
 import { RingContext } from '../../contexts/RingContext';
 import { useRef, useContext, useEffect, useState } from 'react';
 import { LoaderContext } from '../../contexts/LoaderContext';
@@ -54,6 +55,7 @@ const symbs = ["♡", "☆", "☽", "∞", "☯︎", "♑︎", "♓︎", "♉︎
 const metalItems = apiData.ring.color;
 
 function ShankSection() {
+    const { playClick } = useClickSound();
     const {
         setShankTotal, shankTotal,
         stylePrice, setStylePrice,
@@ -284,6 +286,7 @@ const handleSideSettingHover = (hoveredSideSetting) => {
     };
 
     const handleShankChange = (newShank) => {
+    playClick();
     // Clear all hover states
     setHoverFinalRingPrice(null);
     setHoverStylePrice(null);
@@ -319,6 +322,7 @@ const handleSideSettingHover = (hoveredSideSetting) => {
 }
 
     const handleSideSettingChange = (newSideSetting) => {
+    playClick();
     // Clear all hover states
     setHoverFinalRingPrice(null);
     setHoverStylePrice(null);
@@ -378,6 +382,7 @@ const handleSideSettingHover = (hoveredSideSetting) => {
     };
 
     const handleColorChange = (activeColor, src) => {
+    playClick();
     applyFilterWithLoader(setLoader, () => {
         setRingColor(activeColor);
         setBandColor(activeColor);
@@ -423,6 +428,7 @@ const handleSideSettingHover = (hoveredSideSetting) => {
     // REPLACE handleMetal:
 // ✅ REPLACE ENTIRE FUNCTION
 const handleMetal = (newMetal) => {
+  playClick();
   const metalPrice = getMetalPrice(parent, newMetal);
   const basePrice = getMetalPrice(parent, "14K");
   const diff = metalPrice - basePrice;
@@ -451,6 +457,7 @@ const handleMetal = (newMetal) => {
 };
 
     const handleBandWidth = (newBandWidth) => {
+    playClick();
     setBandWidth(newBandWidth);
     let price = calculateFinalRingPrice(
         metal, 
@@ -468,6 +475,7 @@ const handleMetal = (newMetal) => {
 };
 
     const handleStyleShape = (newStyleShape) => {
+    playClick();
     setStyleShape(newStyleShape);
     let price = calculateFinalRingPrice(
         metal, 
@@ -575,6 +583,7 @@ const handleMetal = (newMetal) => {
     }
 
     const handleBandChange = (band) => {
+    playClick();
     if(ringBand == "Yes"){
         band = "No";
         handleSideSettingChange(ringSideSetting);
@@ -636,9 +645,9 @@ const handleMetal = (newMetal) => {
 
 
     useEffect(() => {
-        const shank_ttl = (stylePrice + ringSideSettingPrice + metalPrice + matchingBandPrice + engravingPrice);
+        const shank_ttl = (stylePrice + ringSideSettingPrice + matchingBandPrice + engravingPrice);
         setShankTotal(shank_ttl);
-    }, [stylePrice, ringSideSettingPrice, metalPrice, matchingBandPrice, engravingPrice]);
+    }, [stylePrice, ringSideSettingPrice, matchingBandPrice, engravingPrice]);
 
 useEffect(() => {
   if (platinum) {
@@ -819,7 +828,7 @@ const availableMatchingBands = filterAvailableOptions(
             );
         }
 
-        const allowedMatchingBandStyles = ["PLAIN", "CATHEDRAL", "KNIFE-EDGE", "SPLIT", "CHANNEL", "PLATE-PRONG", "FRENCH-PAVE", "PAVE-STONES", "8-STONES", "MULTI-ROW", "TWISTED-2", "FLUTED", "BRAIDED", "CATHEDRAL-SIDE-STONE"];
+        const allowedMatchingBandStyles = ["PLAIN", "CATHEDRAL", "KNIFE-EDGE", "SPLIT", "CHANNEL", "PLATE-PRONG", "FRENCH-PAVE", "PAVE-STONES", "8-STONES", "MULTI-ROW", "TWISTED-2", "FLUTED", "BRAIDED", "CATHEDRAL-SIDE-STONE", "SIDE-BEZEL-STONES", "BAGUETTE-SIDE-STONE", "PEAR-SIDE-STONE", "HALF-MOON-SIDE-STONE"];
         const isDisabled =
             ringBand === "Yes"
                 ? !allowedMatchingBandStyles.includes(style)
@@ -1010,7 +1019,7 @@ const availableMatchingBands = filterAvailableOptions(
                             }}
                             key={f.alt}
 							tabIndex={0}
-                            onClick={() => handleEngravingFont(f.name)}
+                            onClick={() => { playClick(); handleEngravingFont(f.name); }}
                             className={`border font-select-btn`}
                         >
                             <img src={f.src} alt={f.alt} />
@@ -1031,7 +1040,7 @@ const availableMatchingBands = filterAvailableOptions(
                             }}
                             // className="symbol-btn"
                             className={`symbol-btn ${index < 5 ? "symbol-25" : ""}`}
-                            onClick={() => handleSymbol(sym)}
+                            onClick={() => { playClick(); handleSymbol(sym); }}
                         >
                             <span style={{ color: "black" }}> {sym}</span>
                         </button>

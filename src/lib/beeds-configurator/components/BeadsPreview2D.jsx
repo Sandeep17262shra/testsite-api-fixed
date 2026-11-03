@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { isSvgBeadAsset, resolvePatternAsset } from "../assets";
 import { useBeedsContext } from "../contexts/BeedsContext";
 import { View360Context } from "../contexts/View360Context";
+import { useRingPreviewArtReady } from "../useRingPreviewArtReady";
 import { usePreviewFocusRingRotation } from "../usePreviewFocusRingRotation";
 import {
   buildPositionedRingItems,
@@ -1429,6 +1430,8 @@ export default function BeadsPreview2D() {
       })),
     [charmItems]
   );
+
+  const ringPreviewArtReady = useRingPreviewArtReady(ringItems, charmPendants);
 
   const flyingInItemId = useMemo(() => {
     if (flyInActiveItemId) {
@@ -3206,7 +3209,7 @@ export default function BeadsPreview2D() {
 
   const charmGhostParts = settlingCharmParts ?? dragCharmParts;
 
-  const quantity = isManualMode ? manualItems.length : pattern.filter((entry) => entry.type !== "charm").length;
+  const quantity = pattern.length;
 
   return (
     <div
@@ -3271,18 +3274,23 @@ export default function BeadsPreview2D() {
               pointerEvents="none"
             />
 
-            <g className="beads-2d-bead-shadows-layer" pointerEvents="none">
-              {renderRingItemShadowPass()}
-              {renderCharmShadowPass()}
+            <g
+              className={`beads-2d-ring-visual${ringPreviewArtReady ? " is-art-ready" : ""}`}
+              pointerEvents="none"
+            >
+              <g className="beads-2d-bead-shadows-layer" pointerEvents="none">
+                {renderRingItemShadowPass()}
+                {renderCharmShadowPass()}
+              </g>
+
+              {useManualRingRendering
+                ? ringItems.map((item, index) => renderManualRingItem(item, index))
+                : renderPresetRingItems()}
+
+              {renderCharmLinkLayer({ getTransitionClass: getCharmTransitionClass })}
+
+              {useManualRingRendering ? renderManualCharmDrops() : renderPresetCharmDrops()}
             </g>
-
-            {useManualRingRendering
-              ? ringItems.map((item, index) => renderManualRingItem(item, index))
-              : renderPresetRingItems()}
-
-            {renderCharmLinkLayer({ getTransitionClass: getCharmTransitionClass })}
-
-            {useManualRingRendering ? renderManualCharmDrops() : renderPresetCharmDrops()}
 
             {/*
               One marker for the whole drag, moved by the drag loop rather than re-rendered
@@ -3400,12 +3408,12 @@ export default function BeadsPreview2D() {
 
       <div className="beads-2d-stats" aria-live="polite">
         <div className="beads-2d-stat">
-          <span>Quantity</span>
-          <strong>{String(quantity)}</strong>
+          <span className="theme3-section-heading">Quantity</span>
+          <strong className="theme3-section-heading">{String(quantity)}</strong>
         </div>
         <div className="beads-2d-stat beads-2d-stat--length">
-          <span>Length</span>
-          <strong>{displayLengthLabel}</strong>
+          <span className="theme3-section-heading">Length</span>
+          <strong className="theme3-section-heading">{displayLengthLabel}</strong>
         </div>
     </div>
 

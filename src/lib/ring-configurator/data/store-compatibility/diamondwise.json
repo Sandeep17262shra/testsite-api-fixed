@@ -2,11 +2,17 @@
   {
     "head_id": "H000",
     "name": "No Head",
-    "compatible_shanks": ["S001", "S004", "S003", "S002", "S008"],
+    "compatible_shanks": [
+      "S001",
+      "S004",
+      "S003",
+      "S002",
+      "S008"
+    ],
     "compatible_shapes": [],
     "compatible_bands": []
   },
-{
+  {
     "head_id": "H001",
     "name": "4 Prongs",
     "compatible_shanks": [
@@ -217,15 +223,20 @@
     "name": "Three Stone",
     "compatible_shanks": [
       "S001",
-      "S003",
-      "S008"
+      "S003"
     ],
     "compatible_shapes": [
       "SH01",
       "SH02",
+      "SH03",
       "SH04",
+      "SH05",
       "SH06",
-      "SH07"
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",

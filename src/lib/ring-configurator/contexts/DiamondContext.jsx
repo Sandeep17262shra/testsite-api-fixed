@@ -18,6 +18,8 @@ const initialDiamondState = {
   setShape: () => {},
   diamondColor: "#FFFFFF",
   setDiamondColor: () => {},
+  sideStoneColor: "colorless",
+  setSideStoneColor: () => {},
   diamondSize: data.carat,
   setDiamondSize: () => {},
   diamondType: "Lab",
@@ -57,6 +59,7 @@ export const DiamondProvider = ({ children }) => {
   let diamondSizeFromURL = defaultCarat;
   let qualityFromURL = { type: "Lab", quality: defaultQuality || "Standard" };
   let diamondColorFromURL = initialDiamondState.diamondColor;
+  let sideStoneColorFromURL = initialDiamondState.sideStoneColor;
   let fancyDiamondFromURL = initialDiamondState.fancyDiamond;
   let gemstoneFromURL = initialDiamondState.gemstone;
   let activeTabFromURL = "Colorless";
@@ -85,12 +88,7 @@ export const DiamondProvider = ({ children }) => {
     try {
       const stored = sessionStorage.getItem(LS_KEY);
       if (stored) {
-        const savedConfig = JSON.parse(stored);
-        // Ignore saved selections from a different storefront. This prevents
-        // a JDemo DiamondWise shape from becoming this store's default.
-        if (savedConfig._storeParentUrl === currentParent) {
-          decodedConfig = savedConfig;
-        }
+        decodedConfig = JSON.parse(stored);
       }
     } catch (err) {}
   }
@@ -112,6 +110,7 @@ export const DiamondProvider = ({ children }) => {
       ? decodedConfig.selectedQuality
       : qualityFromURL;
     diamondColorFromURL = decodedConfig.diamondColor ?? diamondColorFromURL;
+    sideStoneColorFromURL = decodedConfig.sideStoneColor ?? sideStoneColorFromURL;
     fancyDiamondFromURL = decodedConfig.fancyDiamond ?? fancyDiamondFromURL;
     gemstoneFromURL = decodedConfig.gemstone ?? gemstoneFromURL;
     activeTabFromURL = decodedConfig.activeTab ?? activeTabFromURL;
@@ -137,6 +136,7 @@ export const DiamondProvider = ({ children }) => {
   const [shape, setShape] = useState(shapeFromURL);
   const [selectedQuality, setSelectedQuality] = useState(qualityFromURL);
   const [diamondColor, setDiamondColor] = useState(diamondColorFromURL);
+  const [sideStoneColor, setSideStoneColor] = useState(sideStoneColorFromURL);
   const [fancyDiamond, setFancyDiamond] = useState(fancyDiamondFromURL);
   const [gemstone, setGemstone] = useState(gemstoneFromURL);
   const [activeTab, setActiveTab] = useState(activeTabFromURL);
@@ -160,7 +160,6 @@ export const DiamondProvider = ({ children }) => {
       const existing = JSON.parse(sessionStorage.getItem(LS_KEY) || "{}");
       sessionStorage.setItem(LS_KEY, JSON.stringify({
         ...existing,
-        _storeParentUrl: currentParent,
         cut,
         clarity,
         shape,
@@ -168,6 +167,7 @@ export const DiamondProvider = ({ children }) => {
         diamondType,
         selectedQuality,
         diamondColor,
+        sideStoneColor,
         fancyDiamond,
         gemstone,
         fancyDiamondIntensity,
@@ -176,7 +176,6 @@ export const DiamondProvider = ({ children }) => {
       }));
     } catch {}
   }, [
-    currentParent,
     cut,
     clarity,
     shape,
@@ -184,6 +183,7 @@ export const DiamondProvider = ({ children }) => {
     diamondType,
     selectedQuality,
     diamondColor,
+    sideStoneColor,
     fancyDiamond,
     gemstone,
     fancyDiamondIntensity,
@@ -212,6 +212,8 @@ export const DiamondProvider = ({ children }) => {
         setShape,
         diamondColor,
         setDiamondColor,
+        sideStoneColor,
+        setSideStoneColor,
         diamondSize,
         setDiamondSize,
         diamondType,

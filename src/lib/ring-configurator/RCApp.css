@@ -26,6 +26,11 @@ button {
 }
 
 .gb-builder-shell {
+  --appearance-primary: #262626;
+  --appearance-primary-text: #ffffff;
+  --appearance-secondary: #e2e2de;
+  --appearance-secondary-text: #262626;
+  --appearance-hover-primary: #898985;
   width: 100%;
   min-height: 100vh;
   display: grid;
@@ -79,7 +84,7 @@ button {
   text-align: center;
   font-size: 17px;
   font-weight: 700;
-  color: #000000;
+  color: var(--appearance-primary) !important;
   pointer-events: none;
 }
 
@@ -98,10 +103,10 @@ button {
   min-width: 48px;
   min-height: 48px;
   padding: 3px;
-  border: 1px solid transparent;
+  border: none !important;
   border-radius: 50vh;
-  background: rgba(255, 255, 255, 0.88);
-  color: #111111;
+  background: #ffffff !important;
+  color: var(--appearance-primary) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   display: inline-flex;
   align-items: center;
@@ -110,13 +115,31 @@ button {
   cursor: pointer;
 }
 
+.gb-preview-control:hover {
+  border: none !important;
+  background: #ffffff !important;
+  color: var(--appearance-primary) !important;
+}
+
 .gb-ai-control {
   display: none;
 }
 
 .gb-preview-control.active {
-  border-color: #d9d9d9;
-  background: #ffffff;
+  border: none !important;
+  background: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.gb-preview-control.active:hover {
+  border: none !important;
+  background: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.gb-preview-control svg {
+  display: block;
+  fill: currentColor;
 }
 
 .gb-preview-control img {
@@ -130,6 +153,7 @@ button {
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
+  color: inherit;
 }
 
 .gb-options-pane {
@@ -1844,6 +1868,7 @@ img.rotate-minus-90{
     justify-content: center;
     align-items: center;
     z-index: 2 !important;
+    display: none !important;
 }
 
 .summary-dropdown-section p {
@@ -2419,11 +2444,11 @@ img.rotate-minus-90{
 .ring-ai-trigger {
   align-items: center;
   animation: shadow-blink 1s infinite;
-  background: #575757;
-  border: 0;
+  background: #ffffff;
+  border: none !important;
   border-radius: 999px;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
-  color: #fff;
+  color: var(--appearance-primary) !important;
   cursor: pointer;
   display: inline-flex;
   font-size: 12px;
@@ -2434,18 +2459,23 @@ img.rotate-minus-90{
   line-height: 1;
   min-width: 96px;
   padding: 0 16px;
-  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
   will-change: transform, box-shadow;
 }
 
 .ring-ai-trigger:hover {
-  background: #575757;
+  background: #ffffff;
+  border: none !important;
+  color: var(--appearance-primary) !important;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .ring-ai-trigger-open {
   animation: none;
+  background: var(--appearance-primary) !important;
+  border: none !important;
+  color: var(--appearance-primary-text) !important;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.16);
   transform: translateY(0);
 }
@@ -3303,6 +3333,11 @@ img.rotate-minus-90{
 
 /* Theme 3: iframe-first setting builder. All overrides stay inside this root. */
 .theme3-root {
+  --appearance-primary: #262626;
+  --appearance-primary-text: #ffffff;
+  --appearance-secondary: #e2e2de;
+  --appearance-secondary-text: #262626;
+  --appearance-hover-primary: #898985;
   --theme3-ink: #303030;
   --theme3-muted: #6d6d6a;
   --theme3-line: #d9d9d5;
@@ -3317,7 +3352,7 @@ img.rotate-minus-90{
   min-height: 0;
   overflow: hidden;
   background: var(--theme3-soft);
-  color: var(--theme3-ink);
+  color: var(--appearance-primary);
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -3368,8 +3403,8 @@ img.rotate-minus-90{
 .theme3-builder {
   position: relative;
   width: min(1560px, 100%);
-  height: calc(100vh - 36px);
-  height: calc(100dvh - 36px);
+  height: calc(100vh );
+  height: calc(100dvh );
   min-height: 0;
   display: grid;
   margin: 0 auto;
@@ -3473,11 +3508,31 @@ img.rotate-minus-90{
 }
 
 .theme3-preview-pane .gb-preview-control {
-  border-color: rgba(23, 23, 23, 0.12);
-  background: rgba(255, 255, 255, 0.94);
+  border: none !important;
+  background: #ffffff !important;
+  color: var(--appearance-primary) !important;
 }
 
-.theme3-preview-pane .gb-share-control img {
+.theme3-preview-pane .gb-preview-control:hover {
+  border: none !important;
+  background: #ffffff !important;
+  color: var(--appearance-primary) !important;
+}
+
+.theme3-preview-pane .gb-preview-control.active {
+  background: var(--appearance-primary) !important;
+  border: none !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.theme3-preview-pane .gb-preview-control.active:hover {
+  background: var(--appearance-primary) !important;
+  border: none !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.theme3-preview-pane .gb-share-control img,
+.theme3-preview-pane .gb-share-control svg {
   width: 20px;
   height: 20px;
 }
@@ -3505,6 +3560,7 @@ img.rotate-minus-90{
 .theme3-preview-caption strong {
   font-size: 14px;
   font-weight: 400;
+  color: var(--typography-body-color, var(--appearance-primary));
 }
 
 .theme3-preview-caption span,
@@ -3593,10 +3649,10 @@ img.rotate-minus-90{
   height: 34px;
   padding: 0 13px;
   animation: none;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(23, 23, 23, 0.18);
+  background: #ffffff;
+  border: none !important;
   box-shadow: 0 12px 28px rgba(23, 23, 23, 0.14);
-  color: var(--theme3-ink);
+  color: var(--appearance-primary) !important;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -3605,15 +3661,16 @@ img.rotate-minus-90{
 
 .theme3-ai-assistant-slot .ring-ai-trigger:hover {
   background: #ffffff;
-  border-color: rgba(23, 23, 23, 0.28);
-  box-shadow: 0 14px 30px rgba(23, 23, 23, 0.16);
+  border: none !important;
+  color: var(--appearance-primary) !important;
+  box-shadow: 0 12px 28px rgba(23, 23, 23, 0.14);
 }
 
 .theme3-ai-assistant-slot .ring-ai-trigger.ring-ai-trigger-open {
-  background: #e9e9e5;
-  border-color: rgba(23, 23, 23, 0.46);
-  color: #111111;
-  box-shadow: inset 0 0 0 1px rgba(23, 23, 23, 0.08), 0 8px 20px rgba(23, 23, 23, 0.11);
+  background: var(--appearance-primary) !important;
+  border: none !important;
+  color: var(--appearance-primary-text) !important;
+  box-shadow: 0 8px 20px rgba(23, 23, 23, 0.11);
 }
 
 .theme3-root .ring-ai-overlay {
@@ -3741,8 +3798,8 @@ img.rotate-minus-90{
 }
 
 .theme3-section-nav button.active {
-  background: var(--theme3-ink);
-  color: #ffffff;
+  background: var(--appearance-primary);
+  color: var(--appearance-primary-text);
 }
 
 .theme3-section-nav button:disabled {
@@ -3879,7 +3936,7 @@ img.rotate-minus-90{
 .theme3-ring-type-toggle {
   display: inline-flex;
   align-items: center;
-  border: 1px solid #000000;
+  border: 1px solid var(--appearance-primary);
   border-radius: 4px;
   overflow: hidden;
   padding: 0;
@@ -3910,8 +3967,8 @@ img.rotate-minus-90{
 }
 
 .theme3-ring-type-btn.active {
-  background: #000000;
-  color: #ffffff;
+  background: var(--appearance-primary);
+  color: var(--appearance-secondary);
 }
 
 .theme3-ring-type-price {
@@ -3953,32 +4010,67 @@ img.rotate-minus-90{
 
 .theme3-panel-action-btn {
   padding: 6px 16px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--appearance-primary) !important;
   border-radius: 4px;
   background: #ffffff;
-  color: #303030;
+  color: 1px solid var(--appearance-primary) !important;
   font-family: Arial, sans-serif;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   line-height: 1;
   transition: background 0.15s, border-color 0.15s;
   min-height: 36px;
+  min-width: 96px;
 }
 
-.theme3-panel-action-btn:hover {
-  background: #f5f5f5;
-  border-color: #bbb;
-}
+
 
 .theme3-panel-action-btn.active {
-  border-color: #303030;
-  background: #f0f0f0;
+  border-color: var(--appearance-primary);
+  background: var(--appearance-primary);
+  color: var(--appearance-secondary);
+}
+
+/* Default configurator option controls use the same API appearance tokens. */
+.gb-builder-shell .tab-main-wappar {
+  border-color: var(--appearance-primary);
+}
+
+.gb-builder-shell .tab-main-btn {
+  color: var(--appearance-primary);
+}
+
+.gb-builder-shell .tab-main-btn.active,
+.gb-builder-shell .round-btn.active,
+.gb-builder-shell .summary-button-section .summary-button,
+.gb-builder-shell .cart-btn-summary {
+  background-color: var(--appearance-primary) !important;
+  color: var(--appearance-secondary) !important;
+}
+
+.gb-builder-shell .tab-main-btn.active,
+.gb-builder-shell .round-btn.active,
+.gb-builder-shell .summary-button-section .summary-button {
+  color: var(--appearance-secondary) !important;
+}
+
+.gb-builder-shell .style-block .style-round-btn.active-border,
+.gb-builder-shell .style-block .style-round-btn.active-border:hover,
+.gb-builder-shell .active-border,
+.gb-builder-shell .style-square-btn.active-border,
+.gb-builder-shell .purity-square-btn.active {
+  border-color: var(--appearance-primary);
+}
+
+.gb-builder-shell button:hover:not(:disabled) {
+  border-color: var(--appearance-hover-primary);
 }
 
 .theme3-panel-action-wrapper {
   position: relative;
   display: inline-flex;
+      z-index: 51;
 }
 
 .theme3-share-tooltip {
@@ -4193,14 +4285,16 @@ img.rotate-minus-90{
 
 .theme3-band-section > .theme3-option-section-header { order: 0; }
 .theme3-band-section > .theme3-band-style { order: 1; }
-.theme3-band-section > [data-theme3-section="setting"] { order: 2; }
-.theme3-band-section > .theme3-band-metal { order: 3; }
-.theme3-band-section > .theme3-band-purity { order: 4; }
-.theme3-band-section > [data-theme3-band-order="ring-size"] { order: 5; }
-.theme3-band-section > .theme3-matching-band { order: 6; }
-.theme3-band-section > .theme3-engraving-inline { order: 7; }
-.theme3-band-section > .theme3-band-bimetal { order: 8; }
-.theme3-band-section > .theme3-band-bimetal-note { order: 8; }
+.theme3-band-section > .theme3-band-coverage { order: 2; }
+.theme3-band-section > .theme3-band-width { order: 2; }
+.theme3-band-section > [data-theme3-section="setting"] { order: 3; }
+.theme3-band-section > .theme3-band-metal { order: 4; }
+.theme3-band-section > .theme3-band-purity { order: 5; }
+.theme3-band-section > [data-theme3-band-order="ring-size"] { order: 6; }
+.theme3-band-section > .theme3-matching-band { order: 7; }
+.theme3-band-section > .theme3-engraving-inline { order: 8; }
+.theme3-band-section > .theme3-band-bimetal { order: 9; }
+.theme3-band-section > .theme3-band-bimetal-note { order: 9; }
 
 .theme3-matching-band-toggle-row {
   display: flex;
@@ -4326,10 +4420,10 @@ img.rotate-minus-90{
   width: 100%;
   min-height: 44px;
   padding: 0 13px;
-  border: 1px solid #D7D7D2;
+  border: 1px solid var(--appearance-secondary, #D7D7D2);
   border-radius: 5px;
   background: #ffffff;
-  color: #303030;
+  color: var(--appearance-secondary-text, #303030);
   font: inherit;
   font-size: 12px;
   font-weight: 400;
@@ -4342,8 +4436,26 @@ img.rotate-minus-90{
 }
 
 .theme3-engraving-controls > input:focus,
-.theme3-engraving-input-wrap > input:focus {
-  border: 1px solid #303030;
+.theme3-engraving-input-wrap > input:focus,
+.theme3-engraving-controls input:focus,
+.theme3-input-wrap > input:focus {
+  border: 1px solid var(--appearance-primary, #303030);
+}
+
+.theme3-engraving-controls input,
+.theme3-input-wrap > input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid var(--appearance-secondary, #D7D7D2);
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--appearance-secondary-text, #303030);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.8;
+  outline: none;
 }
 
 .theme3-engraving-clear-btn {
@@ -4391,7 +4503,7 @@ img.rotate-minus-90{
   display: grid;
   place-items: center;
   padding: 0 12px;
-  border: 1px solid #ddddda;
+  border: 1px solid var(--appearance-secondary) !important;
   border-radius: 5px;
   background: #ffffff;
   color: var(--theme3-ink);
@@ -4623,8 +4735,8 @@ img.rotate-minus-90{
   top: 12px;
   width: 100px;
   transform: rotate(-45deg);
-  background: #1f1f1f;
-  color: #ffffff;
+  background: #222222;
+  color: #ffffff !important;
   font-family: Arial, sans-serif;
   font-size: 7px;
   font-weight: 600;
@@ -4638,7 +4750,9 @@ img.rotate-minus-90{
    than sitting at full strength on a greyed-out tile. */
 .gb-card-option:disabled .demo-only-ribbon > span,
 .theme3-root .gb-card-option:disabled .demo-only-ribbon > span {
-  background: #6b6b6b;
+  background: #222222;
+  color: #ffffff !important;
+  opacity: 0.55;
 }
 
 .theme3-root .gb-card-option img {
@@ -4654,10 +4768,24 @@ img.rotate-minus-90{
   opacity: 1;
 }
 
+.theme3-root .gb-card-option img.three-stone-side-icon {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+}
+
 .theme3-root .gb-card-option span,
 .theme3-root .gb-text-option,
 .theme3-root .gb-metal-option b {
   font-size: 12px;
+}
+
+/* The selected option intentionally hides its price delta. Keep the price
+   row's height nevertheless: without a reserved row, an active card's grid
+   collapses on mobile and the tile visibly changes size as selection moves. */
+.theme3-root .gb-card-option .theme3-option-box-price {
+  display: block;
+  min-height: 12px;
 }
 
 .theme3-root .gb-card-option.active,
@@ -4804,6 +4932,14 @@ img.rotate-minus-90{
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.theme3-side-stone-colors .theme3-side-stone-color-swatch {
+  width: 46px;
+  height: 46px;
+  border: 1px solid #d8d8d8;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 5px rgb(255 255 255 / 0.3);
 }
 
 .theme3-ring-size-card {
@@ -5125,6 +5261,61 @@ img.rotate-minus-90{
 .theme3-root button:focus-visible {
   outline: 3px solid rgba(166, 120, 63, 0.3);
   outline-offset: 2px;
+}
+
+/* The API supplies only three visual tokens: primary text/active controls,
+   secondary text on a filled control, and a hover border. Background surfaces
+   intentionally remain the configurator's default colors. */
+.theme3-root,
+.theme3-root button,
+.theme3-root input,
+.theme3-root select,
+.theme3-root textarea,
+.gb-builder-shell,
+.gb-builder-shell button,
+.gb-builder-shell input,
+.gb-builder-shell select,
+.gb-builder-shell textarea {
+  color: var(--appearance-secondary-text);
+  border-color: var(--appearance-secondary);
+}
+
+.theme3-root .theme3-ring-type-btn.active,
+.theme3-root .theme3-panel-action-btn.active,
+.theme3-root .theme3-panel-footer > button,
+.gb-builder-shell .tab-main-btn.active,
+.gb-builder-shell .round-btn.active,
+.gb-builder-shell .summary-button-section .summary-button,
+.gb-builder-shell .cart-btn-summary {
+  color: var(--appearance-secondary) !important;
+}
+
+.theme3-root .gb-card-option.active,
+.theme3-root .gb-text-option.active,
+.theme3-root .gb-metal-option.active,
+.theme3-root .theme3-stone-type-control button.active,
+.theme3-root .theme3-stone-swatch.active,
+.theme3-root .theme3-bimetal-control button.active {
+  border-color: var(--appearance-primary);
+}
+
+.theme3-root .gb-card-option:hover:not(.active):not(:disabled),
+.theme3-root .gb-text-option:hover:not(.active):not(:disabled),
+.theme3-root .gb-metal-option:hover:not(.active):not(:disabled),
+.theme3-root .theme3-stone-type-control button:hover:not(.active):not(:disabled),
+.theme3-root .theme3-stone-swatch:hover:not(.active):not(:disabled),
+.theme3-root .theme3-bimetal-control button:hover:not(.active):not(:disabled) {
+  border-color: var(--appearance-hover-primary);
+}
+
+.theme3-root .theme3-panel-footer {
+  background: #ffffff;
+}
+
+.theme3-root .theme3-panel-footer > button {
+  border-color: var(--appearance-primary);
+  background: var(--appearance-primary);
+  color: var(--appearance-secondary);
 }
 
 .theme3-bimetal-note{
@@ -5485,6 +5676,56 @@ img.rotate-minus-90{
   }
 }
 
+/* Keep merchant appearance to the three supported colors. These overrides sit
+   last because the ring footer and option labels have more specific defaults. */
+.theme3-root .gb-card-option,
+.theme3-root .gb-text-option,
+.theme3-root .gb-metal-option,
+.theme3-root .gb-card-option span,
+.theme3-root .gb-metal-option b,
+.theme3-root .gb-delta-label,
+.theme3-root .theme3-option-section-header,
+.theme3-root .theme3-option-section-header > span,
+.theme3-root .theme3-option-section-header h3,
+.theme3-root .theme3-ring-type-label,
+.theme3-root .theme3-step-label,
+.theme3-root .theme3-summary-details-toggle span,
+.theme3-root .theme3-summary-toggle-arrow,
+.theme3-root .theme3-summary-price,
+.theme3-root .theme3-summary-tax-label,
+.theme3-root .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root .theme3-panel-action-btn.theme3-panel-reset-btn {
+  color: var(--appearance-secondary-text) !important;
+}
+.theme3-root .theme3-ring-type-price{
+  color: var(--appearance-primary);
+}
+.theme3-root .theme3-panel-footer .order-summary-row .order-summary-title{
+  color: var(--appearance-primary);
+}
+.order-summary-price{
+   color: var(--appearance-primary) !important; 
+}
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-panel-footer-cta {
+  border-color: var(--appearance-primary) !important;
+  background: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-panel-footer-cta:hover:not(:disabled) {
+  border-color: var(--appearance-primary) !important;
+  background: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+.theme3-ring-type-btn {
+    color: var(--appearance-primary) !important;  
+}
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
+  border-color: var(--appearance-primary) !important;
+  background: #ffffff !important;
+}
+
 @media (max-width: 640px) {
   /* Mobile: the icon nav row is removed entirely, and the space it used to
      take is handed to the options scroller (a flex sibling that already
@@ -5538,8 +5779,8 @@ img.rotate-minus-90{
   }
 
   .theme3-section-nav button.active .theme3-section-index {
-    background: var(--theme3-ink);
-    color: #ffffff;
+    background: var(--appearance-primary);
+    color: var(--appearance-primary-text);
   }
 
   .theme3-section-nav button:disabled .theme3-section-index {
@@ -5830,7 +6071,7 @@ img.rotate-minus-90{
     left: 0;
     right: 0;
     bottom: 100%;
-    z-index: 60;
+    z-index: 50;
     background: #ffffff;
     box-shadow: 0 -6px 18px rgba(28, 28, 26, 0.12);
     border-top: 1px solid var(--theme3-line);
@@ -6116,6 +6357,15 @@ img.rotate-minus-90{
   color: #303030;
 }
 
+/* Build summary section labels (RING / BAND / STONE): same uppercase heading
+   treatment as scrollable option rows; appearance heading tokens apply via
+   .theme3-section-heading once the API loads. */
+.theme3-root--ring .theme3-build-summary .order-summary-row .order-summary-title,
+.theme3-root--ring .theme3-build-summary .order-summary-row .order-summary-price,
+.theme3-root--ring .theme3-panel-footer .order-summary-row .order-summary-title.theme3-section-heading {
+  text-transform: uppercase;
+}
+
 .order-summary-price {
   font-size: 12px;
   font-weight: 700;
@@ -6161,25 +6411,25 @@ img.rotate-minus-90{
   padding: 8px 12px;
   min-height: 42px;
   background: #FFFFFF;
-  border: 1px solid #D7D7D2;
+  border: 1px solid var(--appearance-secondary, #D7D7D2);
   border-radius: 8px;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 1.8;
-  color: #303030;
+  color: var(--appearance-secondary-text, #303030);
   cursor: pointer;
   outline: none;
   gap: 8px;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .custom-ring-size-trigger:hover {
-  border-color: #303030;
+  border-color: var(--appearance-hover-primary, var(--appearance-primary, #303030));
 }
 
 .custom-ring-size-trigger.active {
-  border-color: #303030;
+  border-color: var(--appearance-primary, #303030);
   border-radius: 8px 8px 0 0;
 }
 
@@ -6200,7 +6450,7 @@ img.rotate-minus-90{
   z-index: 50;
   width: 142px;
   background: #FFFFFF;
-  border: 1px solid #303030;
+  border: 1px solid var(--appearance-primary, #303030);
   border-top: none;
   border-radius: 0 0 8px 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -6265,15 +6515,16 @@ img.rotate-minus-90{
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #303030;
-  text-decoration: underline;
+  color: var(--typography-link-color, #303030);
+  text-decoration: none;
   text-underline-offset: 2px;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: color 0.15s ease, opacity 0.15s ease;
 }
 
 .size-guide-link:hover {
-  opacity: 0.7;
+  color: var(--typography-link-hover-color, var(--typography-link-color, #303030));
+  opacity: 0.85;
 }
 
 .theme3-ring-size-header {
@@ -6309,6 +6560,19 @@ img.rotate-minus-90{
   align-items: start;
 }
 
+.theme3-root--ring .theme3-powered-by-keyideas {
+  position: absolute;
+  left: 50%;
+  bottom: 0px;
+  z-index: 12;
+  width: 146px;
+  height: auto;
+  max-height: 24px;
+  object-fit: contain;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
 .theme3-root--ring .theme3-panel-footer > .theme3-footer-build-summary {
   display: block;
   box-sizing: border-box;
@@ -6316,7 +6580,7 @@ img.rotate-minus-90{
   right: 0;
   bottom: 100%;
   left: 0;
-  z-index: 60;
+  z-index: 50;
   max-height: 55vh;
   padding: 16px 20px 12px;
   overflow-y: auto;
@@ -6361,16 +6625,11 @@ img.rotate-minus-90{
 }
 
 .theme3-root--ring .theme3-summary-details-toggle span {
-  color: #000000 !important;
-  font-size: 10px !important;
-  font-weight: 400 !important;
   text-transform: none !important;
-  text-decoration: underline !important;
-  text-underline-offset: 2px !important;
+  text-underline-offset: 2px;
 }
 
 .theme3-root--ring .theme3-summary-toggle-arrow {
-  color: #1c1c1a;
   transition: transform 0.2s ease;
 }
 
@@ -6410,8 +6669,15 @@ img.rotate-minus-90{
   gap: 30px;
 }
 
+.theme3-root--ring .theme3-footer-secondary-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .theme3-root--ring .theme3-panel-footer-cta,
-.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn {
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -6432,12 +6698,20 @@ img.rotate-minus-90{
   color: #ffffff !important;
 }
 
-.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn {
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
   width: 96px;
   padding: 0 16px;
   border: 1px solid #262626 !important;
   background: #ffffff !important;
   color: #262626 !important;
+  cursor: pointer;
+}
+
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn:hover,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn:hover {
+  background: #f5f5f3 !important;
+  border-color: #262626 !important;
 }
 
 @media (max-width: 900px) {
@@ -6451,15 +6725,877 @@ img.rotate-minus-90{
   }
 
   .theme3-root--ring .theme3-footer-actions {
-    gap: 30px;
+    gap: 16px;
     margin-left: auto;
   }
 
+  .theme3-root--ring .theme3-footer-secondary-actions {
+    gap: 8px;
+  }
+
   .theme3-root--ring .theme3-panel-footer-cta,
-  .theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn {
+  .theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+  .theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
     width: auto;
     min-height: 32px;
     height: 32px;
     padding: 0 14px;
   }
+}
+
+/* Ring footer rules are intentionally last: its layout stylesheet declares
+   hard-coded colors after the general appearance rules. */
+.theme3-root--ring .theme3-summary-price,
+.theme3-root--ring .theme3-summary-tax-label,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
+  color: var(--appearance-primary) !important;
+}
+
+.theme3-root--ring .theme3-panel-footer-cta {
+  border-color: var(--appearance-primary) !important;
+  background-color: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
+  border-color: var(--appearance-primary) !important;
+}
+
+/* Inline label styles are used by metal options and section headings. The
+   API primary color must win over those defaults. */
+.theme3-root .gb-metal-option small,
+.theme3-root .theme3-band-metal .gb-metal-option small,
+.theme3-root .theme3-band-bimetal .gb-metal-option small,
+.theme3-root .gb-option-title,
+.theme3-root .gb-option-title > span,
+.theme3-root .gb-option-title-price,
+.theme3-root .theme3-option-section-header h3,
+.theme3-root .theme3-option-section-header .theme3-section-header-price {
+  color: var(--appearance-secondary-text) !important;
+}
+
+/* Fallback titles before heading typography loads. Heading class wins once it is active. */
+.theme3-root:not(.theme3-has-heading-typography) .theme3-ring-size-header,
+.theme3-root:not(.theme3-has-heading-typography) .theme3-ring-size-header span,
+.theme3-root:not(.theme3-has-heading-typography) .theme3-engraving-controls > label,
+.theme3-root:not(.theme3-has-heading-typography) .theme3-engraving-controls > label > span {
+  color: var(--appearance-primary) !important;
+}
+
+/* Option state colors: inactive controls use the secondary token, while the
+   current selection keeps the primary border and text. */
+.theme3-root .gb-card-option:not(.active):not(:disabled),
+.theme3-root .gb-text-option:not(.active):not(:disabled),
+.theme3-root .gb-metal-option:not(.active):not(:disabled),
+.theme3-root .theme3-stone-type-control button:not(.active):not(:disabled),
+.theme3-root .theme3-stone-swatch:not(.active):not(:disabled),
+.theme3-root .theme3-bimetal-control button:not(.active):not(:disabled),
+.theme3-root .theme3-ring-type-btn:not(.active):not(:disabled) {
+  border-color: var(--appearance-secondary);
+  color: var(--appearance-secondary-text) !important;
+}
+
+.theme3-root .gb-card-option:not(.active):not(:disabled) span,
+.theme3-root .gb-text-option:not(.active):not(:disabled) span,
+.theme3-root .gb-metal-option:not(.active):not(:disabled) small,
+.theme3-root .gb-metal-option:not(.active):not(:disabled) .gb-delta-label {
+  color: var(--appearance-secondary-text) ;
+}
+
+.theme3-root .gb-card-option.active,
+.theme3-root .gb-text-option.active,
+.theme3-root .gb-metal-option.active,
+.theme3-root .theme3-stone-type-control button.active,
+.theme3-root .theme3-stone-swatch.active,
+.theme3-root .theme3-bimetal-control button.active {
+  border-color: var(--appearance-primary);
+  color: var(--appearance-primary) !important;
+}
+
+.theme3-root .gb-card-option.active span,
+.theme3-root .gb-text-option.active span,
+.theme3-root .gb-metal-option.active small,
+.theme3-root .gb-metal-option.active .gb-delta-label {
+  color: var(--appearance-secondary-text) ;
+}
+
+/* The preview's product title */
+.theme3-root .theme3-preview-caption,
+.theme3-root .theme3-preview-caption strong,
+.theme3-preview-caption strong,
+.gb-preview-label {
+  color: var(--appearance-primary) !important;
+}
+
+/* Preview controls (360, view, reset, share) and AI trigger styling */
+.theme3-root .gb-preview-control:not(.active),
+.gb-preview-control:not(.active) {
+  border: none !important;
+  background: #ffffff !important;
+  color: var(--appearance-primary) !important;
+}
+
+.theme3-root .gb-preview-control:not(.active):hover,
+.gb-preview-control:not(.active):hover {
+  border: none !important;
+  background: #ffffff !important;
+  color: var(--appearance-primary) !important;
+}
+
+.theme3-root .gb-preview-control.active,
+.gb-preview-control.active {
+  border: none !important;
+  background: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.theme3-root .gb-preview-control.active:hover,
+.gb-preview-control.active:hover {
+  border: none !important;
+  background: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.theme3-root .gb-preview-control.active svg,
+.gb-preview-control.active svg,
+.theme3-root .gb-preview-control.active span,
+.gb-preview-control.active span {
+  color: var(--appearance-primary-text) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root .gb-preview-control:not(.active) svg,
+.gb-preview-control:not(.active) svg,
+.theme3-root .gb-preview-control:not(.active) span,
+.gb-preview-control:not(.active) span {
+  color: var(--appearance-primary) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root .ring-ai-trigger:not(.ring-ai-trigger-open),
+.ring-ai-trigger:not(.ring-ai-trigger-open),
+.theme3-root .ring-ai-trigger:not(.ring-ai-trigger-open):hover,
+.ring-ai-trigger:not(.ring-ai-trigger-open):hover {
+  background: #ffffff !important;
+  border: none !important;
+  color: var(--appearance-primary) !important;
+  transform: none !important;
+}
+
+.theme3-root .ring-ai-trigger:not(.ring-ai-trigger-open) svg,
+.ring-ai-trigger:not(.ring-ai-trigger-open) svg,
+.theme3-root .ring-ai-trigger:not(.ring-ai-trigger-open) span,
+.ring-ai-trigger:not(.ring-ai-trigger-open) span,
+.theme3-root .ring-ai-trigger:not(.ring-ai-trigger-open):hover svg,
+.ring-ai-trigger:not(.ring-ai-trigger-open):hover svg,
+.theme3-root .ring-ai-trigger:not(.ring-ai-trigger-open):hover span,
+.ring-ai-trigger:not(.ring-ai-trigger-open):hover span {
+  color: var(--appearance-primary) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root .ring-ai-trigger.ring-ai-trigger-open,
+.ring-ai-trigger.ring-ai-trigger-open,
+.theme3-root .ring-ai-trigger.ring-ai-trigger-open:hover,
+.ring-ai-trigger.ring-ai-trigger-open:hover {
+  background: var(--appearance-primary) !important;
+  border: none !important;
+  color: var(--appearance-primary-text) !important;
+  transform: none !important;
+}
+
+.theme3-root .ring-ai-trigger.ring-ai-trigger-open svg,
+.ring-ai-trigger.ring-ai-trigger-open svg,
+.theme3-root .ring-ai-trigger.ring-ai-trigger-open span,
+.ring-ai-trigger.ring-ai-trigger-open span,
+.theme3-root .ring-ai-trigger.ring-ai-trigger-open:hover svg,
+.ring-ai-trigger.ring-ai-trigger-open:hover svg,
+.theme3-root .ring-ai-trigger.ring-ai-trigger-open:hover span,
+.ring-ai-trigger.ring-ai-trigger-open:hover span {
+  color: var(--appearance-primary-text) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn {
+  border-color: var(--appearance-secondary) !important;
+  color: var(--appearance-secondary) !important;
+}
+
+/* Share is an outlined primary action, not a secondary filter. This must
+   follow the filter rules above so it renders correctly without hovering. */
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn {
+  border-color: var(--appearance-primary) !important;
+  color: var(--appearance-primary) !important;
+}
+
+/* Section titles and their displayed prices are secondary-detail text. */
+.theme3-root .gb-option-title,
+.theme3-root .gb-option-title > span,
+.theme3-root .gb-option-title-price {
+  color: var(--appearance-primary) !important;
+}
+
+/* These are navigation/action controls, rather than filter options. */
+.theme3-root .theme3-ring-type-btn:not(.active):not(:disabled),
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn {
+  border-color: var(--appearance-primary) !important;
+  color: var(--appearance-primary) !important;
+}
+
+.theme3-root .custom-ring-size-trigger svg path {
+  stroke: currentColor;
+}
+
+.theme3-root:not(.theme3-has-heading-typography) .theme3-ring-size-header,
+.theme3-root:not(.theme3-has-heading-typography) .theme3-ring-size-header span,
+.theme3-root:not(.theme3-has-heading-typography) .theme3-engraving-controls > label,
+.theme3-root:not(.theme3-has-heading-typography) .theme3-engraving-controls > label > span {
+  color: var(--appearance-primary) !important;
+}
+
+/* Carat slider: active range, control, ticks, and scale numbers use heading color. */
+.theme3-root .gb-carat-slider-track-fill,
+.theme3-root .gb-carat-slider-input {
+  background: var(--typography-heading-color, var(--appearance-primary));
+}
+
+.theme3-root .gb-carat-slider-input {
+  background: linear-gradient(
+    to right,
+    var(--typography-heading-color, var(--appearance-primary)) 0%,
+    var(--typography-heading-color, var(--appearance-primary)) var(--gb-carat-slider-fill, 0%),
+    #dedede var(--gb-carat-slider-fill, 0%),
+    #dedede 100%
+  );
+}
+
+.theme3-root .gb-carat-slider-track-wrap input[type="range"]::-webkit-slider-thumb,
+.theme3-root .gb-carat-slider-input::-webkit-slider-thumb {
+  border-color: var(--typography-heading-color, var(--appearance-primary));
+}
+
+.theme3-root .gb-carat-slider-track-wrap input[type="range"]::-moz-range-thumb,
+.theme3-root .gb-carat-slider-input::-moz-range-thumb {
+  border-color: var(--typography-heading-color, var(--appearance-primary));
+}
+
+.theme3-root .gb-carat-slider-labels span,
+.theme3-root .gb-carat-slider-labels span.active,
+.theme3-root .gb-carat-slider-tick {
+  color: var(--typography-heading-color, var(--appearance-primary));
+}
+
+.theme3-root .gb-carat-slider-dot {
+  background-color: var(--typography-heading-color, var(--appearance-primary));
+}
+
+.theme3-root--ring .theme3-carat-value {
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  color: var(--typography-heading-color, var(--appearance-primary));
+}
+
+/* Five-color appearance contract
+   - primary / primary-text: filled actions
+   - secondary / secondary-text: filter controls
+   - hover: border only
+   - selected filters retain their normal surface and secondary text; only
+     their border changes to primary. */
+.theme3-root .theme3-ring-type-btn.active,
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-panel-footer-cta,
+.gb-builder-shell .tab-main-btn.active,
+.gb-builder-shell .round-btn.active,
+.gb-builder-shell .summary-button-section .summary-button,
+.gb-builder-shell .cart-btn-summary {
+  background-color: var(--appearance-primary) !important;
+  color: var(--appearance-primary-text) !important;
+}
+
+.theme3-root .gb-card-option:not(:disabled),
+.theme3-root .gb-stone-card-option:not(:disabled),
+.theme3-root .gb-text-option:not(:disabled),
+.theme3-root .beads-grid-card:not(:disabled):not(.active),
+.theme3-root .beads-picker-size-btn:not(:disabled),
+.theme3-root .beads-picker-type-select,
+.theme3-root .gb-metal-option:not(:disabled),
+.theme3-root .theme3-stone-type-control button:not(:disabled),
+.theme3-root .theme3-stone-swatch:not(:disabled),
+.theme3-root .theme3-bimetal-control button:not(:disabled),
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
+  border-color: var(--appearance-secondary) !important;
+  color: var(--appearance-secondary-text) !important ;
+}
+.theme3-root .theme3-ring-type-btn:not(.active):not(:disabled){
+   color: var(--appearance-primary) !important ; 
+}
+.theme3-root .gb-card-option:not(:disabled) span,
+.theme3-root .gb-text-option:not(:disabled) span,
+.theme3-root .gb-metal-option:not(:disabled) small,
+.theme3-root .gb-metal-option:not(:disabled) .gb-delta-label {
+  color: var(--appearance-secondary-text) ;
+}
+
+.theme3-root .beads-grid-card,
+.theme3-root .beads-grid-card.active {
+  box-shadow: none !important;
+}
+
+.theme3-root .gb-card-option.active,
+.theme3-root .gb-stone-card-option.active,
+.theme3-root .gb-text-option.active,
+.theme3-root .beads-grid-card.active,
+.theme3-root .beads-picker-size-btn.active,
+.theme3-root .gb-metal-option.active,
+.theme3-root .theme3-stone-type-control button.active,
+.theme3-root .theme3-stone-swatch.active,
+.theme3-root .theme3-bimetal-control button.active {
+  border-color: var(--appearance-primary) !important;
+}
+
+.theme3-root .theme3-ring-type-btn:not(:disabled):hover,
+.theme3-root .gb-card-option:not(:disabled):hover,
+.theme3-root .gb-stone-card-option:not(:disabled):hover,
+.theme3-root .gb-text-option:not(:disabled):hover,
+.theme3-root .beads-grid-card:not(:disabled):hover,
+.theme3-root .necklace-charm-category-btn:not(:disabled):hover,
+.theme3-root .gb-metal-option:not(:disabled):hover,
+.theme3-root .theme3-stone-type-control button:not(:disabled):hover,
+.theme3-root .theme3-stone-swatch:not(:disabled):hover,
+.theme3-root .theme3-bimetal-control button:not(:disabled):hover,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn:hover,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn:hover {
+  border-color: var(--appearance-hover-primary) !important;
+}
+
+.theme3-root .custom-ring-size-trigger,
+.theme3-root .custom-ring-size-trigger span,
+.theme3-root .custom-ring-size-option,
+.theme3-root .custom-ring-size-option span,
+.theme3-root .custom-ring-size-mm,
+.theme3-root .theme3-engraving-input-wrap > input,
+.theme3-root .theme3-engraving-controls input,
+.theme3-root .theme3-input-wrap > input,
+.theme3-root .theme3-engraving-count {
+  color: var(--appearance-secondary-text) !important;
+}
+
+.theme3-root .theme3-engraving-input-wrap > input::placeholder,
+.theme3-root .theme3-engraving-controls input::placeholder,
+.theme3-root .theme3-input-wrap > input::placeholder {
+  color: var(--appearance-secondary-text) !important;
+  opacity: 1;
+}
+
+.theme3-root .custom-ring-size-trigger,
+.theme3-root .custom-ring-size-dropdown,
+.theme3-root .theme3-engraving-controls > input,
+.theme3-root .theme3-engraving-input-wrap > input,
+.theme3-root .theme3-engraving-controls input,
+.theme3-root .theme3-input-wrap > input,
+.theme3-root .beads-picker-type-select {
+  border-color: var(--appearance-secondary) !important;
+}
+
+.theme3-root .custom-ring-size-trigger:hover,
+.theme3-root .theme3-engraving-controls > input:hover:not(:disabled),
+.theme3-root .theme3-engraving-input-wrap > input:hover:not(:disabled),
+.theme3-root .theme3-engraving-controls input:hover:not(:disabled),
+.theme3-root .theme3-input-wrap > input:hover:not(:disabled),
+.theme3-root .beads-picker-type-select:hover {
+  border-color: var(--appearance-hover-primary, var(--appearance-primary)) !important;
+}
+
+.theme3-root .custom-ring-size-trigger.active,
+.theme3-root .theme3-engraving-controls > input:focus,
+.theme3-root .theme3-engraving-input-wrap > input:focus,
+.theme3-root .theme3-engraving-controls input:focus,
+.theme3-root .theme3-input-wrap > input:focus,
+.theme3-root .beads-picker-type-select:focus {
+  border-color: var(--appearance-primary) !important;
+}
+
+/* Share and Reset are outlined primary actions, not secondary filters. */
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root--ring .theme3-panel-action-btn.theme3-panel-reset-btn {
+  border-color: var(--appearance-primary) !important;
+  color: var(--appearance-primary) !important;
+}
+
+/* Sound toggle button in preview canvas */
+.gb-preview-control--sound svg {
+  display: block;
+}
+
+[data-remove-logo="true"] .theme3-powered-by-keyideas,
+.theme3-root[data-remove-logo="true"] .theme3-powered-by-keyideas,
+.gb-app[data-remove-logo="true"] .theme3-powered-by-keyideas {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Heading typography: Ring, Band, Stone, Metal, and the other section titles. */
+.theme3-root.theme3-has-heading-typography {
+  --typography-heading-font-size: var(--typography-heading-font-size-desktop);
+}
+
+@media (max-width: 767px) {
+  .theme3-root.theme3-has-heading-typography {
+    --typography-heading-font-size: var(--typography-heading-font-size-mobile, var(--typography-heading-font-size-desktop));
+  }
+}
+
+.theme3-root.theme3-has-heading-typography .theme3-section-heading,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-ring-type-price,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-section-header-price,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-option-title-price,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-price,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-build-summary .order-summary-title,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-build-summary .order-summary-price,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-panel-footer .order-summary-row .order-summary-title,
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-panel-footer .order-summary-price {
+  font-family: var(--typography-heading-font-family, inherit) !important;
+  font-size: var(--typography-heading-font-size, inherit) !important;
+  font-weight: var(--typography-heading-font-weight, inherit) !important;
+  line-height: var(--typography-heading-line-height, inherit) !important;
+  letter-spacing: var(--typography-heading-letter-spacing, normal) !important;
+  color: var(--typography-heading-color, var(--appearance-primary)) !important;
+}
+
+/* Footer total stays at its large default, and only grows when the heading size is larger. */
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-price {
+  font-size: max(20px, var(--typography-heading-font-size, 20px)) !important;
+}
+
+@media (max-width: 900px) {
+  .theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-price {
+    font-size: max(18px, var(--typography-heading-font-size, 18px)) !important;
+  }
+}
+
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-carat-value {
+  color: var(--typography-heading-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-heading-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-carat-slider-track-fill,
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-input {
+  background: var(--typography-heading-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-input {
+  background: linear-gradient(
+    to right,
+    var(--typography-heading-color, var(--appearance-primary)) 0%,
+    var(--typography-heading-color, var(--appearance-primary)) var(--gb-carat-slider-fill, 0%),
+    #dedede var(--gb-carat-slider-fill, 0%),
+    #dedede 100%
+  ) !important;
+}
+
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-track-wrap input[type="range"]::-webkit-slider-thumb,
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-input::-webkit-slider-thumb {
+  border-color: var(--typography-heading-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-track-wrap input[type="range"]::-moz-range-thumb,
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-input::-moz-range-thumb {
+  border-color: var(--typography-heading-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-labels span,
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-labels span.active,
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-tick {
+  color: var(--typography-heading-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-heading-typography .gb-carat-slider-dot {
+  background-color: var(--typography-heading-color, var(--appearance-primary)) !important;
+}
+
+/* Body typography: inline prices and footer amount. */
+.theme3-root.theme3-has-body-typography {
+  --typography-body-font-size: var(--typography-body-font-size-desktop);
+}
+
+@media (max-width: 767px) {
+  .theme3-root.theme3-has-body-typography {
+    --typography-body-font-size: var(--typography-body-font-size-mobile, var(--typography-body-font-size-desktop));
+  }
+}
+
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-controls > label small.theme3-body-text,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-body-text,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-preview-caption,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-preview-caption strong,
+.theme3-root.theme3-has-body-typography .gb-preview-label,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-tax-label {
+  font-family: var(--typography-body-font-family, inherit) !important;
+  font-size: var(--typography-body-font-size, inherit) !important;
+  font-weight: var(--typography-body-font-weight, inherit) !important;
+  line-height: var(--typography-body-line-height, inherit) !important;
+  letter-spacing: var(--typography-body-letter-spacing, normal) !important;
+  color: var(--typography-body-color, var(--appearance-primary)) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-controls input.theme3-body-text::placeholder,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-input-wrap > input.theme3-body-text::placeholder,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-input-wrap > input.theme3-body-text::placeholder {
+  font-family: var(--typography-body-font-family, inherit) !important;
+  font-size: var(--typography-body-font-size, inherit) !important;
+  font-weight: var(--typography-body-font-weight, inherit) !important;
+  letter-spacing: var(--typography-body-letter-spacing, normal) !important;
+  color: var(--typography-body-color, var(--appearance-primary)) !important;
+  opacity: 1;
+}
+
+/* Engraving and name fields, plus their character counts, use the button primary text color. */
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-input-wrap > input,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-input-wrap > input.theme3-body-text,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-controls > input,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-input-wrap > input,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-input-wrap > input.theme3-body-text,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-count,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-controls > label small.theme3-body-text,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-input-wrap > input::placeholder,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-input-wrap > input.theme3-body-text::placeholder,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-engraving-controls > input::placeholder,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-input-wrap > input::placeholder,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-input-wrap > input.theme3-body-text::placeholder {
+  color: var(--typography-button-primary-text-color, var(--appearance-primary)) !important;
+  opacity: 1;
+}
+
+/* View details panel: detail lines only (labels + prices use heading typography). */
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-build-summary .order-summary-desc {
+  font-family: var(--typography-body-font-family, inherit) !important;
+  font-size: var(--typography-body-font-size, inherit) !important;
+  font-weight: var(--typography-body-muted-weight, 400) !important;
+  line-height: var(--typography-body-line-height, inherit) !important;
+  letter-spacing: var(--typography-body-letter-spacing, normal) !important;
+  color: var(--typography-body-color, var(--appearance-primary)) !important;
+}
+
+/* Demo Only ribbon: fixed dark sash + white label (not appearance/typography API). */
+.theme3-root .gb-card-option .demo-only-ribbon > span,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-card-option .demo-only-ribbon > span,
+.theme3-root .gb-card-option:disabled .demo-only-ribbon > span,
+.theme3-root.theme3-has-body-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-card-option:disabled .demo-only-ribbon > span {
+  background: #222222 !important;
+  color: #ffffff !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 7px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1.7 !important;
+}
+
+/* Link typography: Size Guide, View details, and theme3-link-text. */
+.theme3-root.theme3-has-link-typography {
+  --typography-link-font-size: var(--typography-link-font-size-desktop);
+}
+
+@media (max-width: 767px) {
+  .theme3-root.theme3-has-link-typography {
+    --typography-link-font-size: var(--typography-link-font-size-mobile, var(--typography-link-font-size-desktop));
+  }
+}
+
+.theme3-root.theme3-has-link-typography .theme3-link-text,
+.theme3-root.theme3-has-link-typography .size-guide-link,
+.theme3-root.theme3-has-link-typography .size-guide-btn {
+  font-family: var(--typography-link-font-family, inherit) !important;
+  font-size: var(--typography-link-font-size, inherit) !important;
+  font-weight: var(--typography-link-font-weight, inherit) !important;
+  line-height: var(--typography-link-line-height, inherit) !important;
+  letter-spacing: var(--typography-link-letter-spacing, normal) !important;
+  color: var(--typography-link-color, var(--appearance-secondary-text)) !important;
+  text-decoration: none;
+}
+
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle .theme3-link-text,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle .theme3-summary-toggle-arrow,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle .theme3-summary-toggle-arrow path {
+  font-family: var(--typography-link-font-family, inherit) !important;
+  font-size: var(--typography-link-font-size, inherit) !important;
+  font-weight: var(--typography-link-font-weight, inherit) !important;
+  line-height: var(--typography-link-line-height, inherit) !important;
+  letter-spacing: var(--typography-link-letter-spacing, normal) !important;
+  color: var(--typography-link-color, var(--appearance-secondary-text)) !important;
+  fill: currentColor !important;
+  text-decoration: none;
+}
+
+.theme3-root.theme3-has-link-typography .theme3-link-text:hover,
+.theme3-root.theme3-has-link-typography .size-guide-link:hover,
+.theme3-root.theme3-has-link-typography .size-guide-btn:hover,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle:hover,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle:hover .theme3-link-text,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle:hover .theme3-summary-toggle-arrow,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle:hover .theme3-summary-toggle-arrow path {
+  color: var(--typography-link-hover-color, var(--typography-link-color, var(--appearance-secondary-text))) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root.theme3-has-link-typography[data-link-underline="underline-on-hover"] .size-guide-link:hover,
+.theme3-root.theme3-has-link-typography[data-link-underline="underline-on-hover"] .theme3-link-text:hover:not(.theme3-summary-toggle-arrow),
+.theme3-root.theme3-has-link-typography[data-link-underline="underline-on-hover"] .theme3-summary-details-toggle:hover .theme3-link-text {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+.theme3-root.theme3-has-link-typography[data-link-underline="always"] .size-guide-link,
+.theme3-root.theme3-has-link-typography[data-link-underline="always"] .theme3-link-text:not(.theme3-summary-toggle-arrow),
+.theme3-root.theme3-has-link-typography[data-link-underline="always"] .theme3-summary-details-toggle .theme3-link-text {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+.theme3-root.theme3-has-link-typography[data-link-underline="none"] .size-guide-link,
+.theme3-root.theme3-has-link-typography[data-link-underline="none"] .theme3-link-text,
+.theme3-root.theme3-has-link-typography[data-link-underline="none"] .theme3-summary-details-toggle .theme3-link-text {
+  text-decoration: none !important;
+}
+
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle .theme3-summary-toggle-arrow,
+.theme3-root.theme3-has-link-typography .theme3-summary-details-toggle .theme3-summary-toggle-arrow path {
+  text-decoration: none !important;
+}
+
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .size-guide-link,
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .size-guide-link.theme3-link-text {
+  font-family: var(--typography-link-font-family, inherit) !important;
+  font-size: var(--typography-link-font-size, inherit) !important;
+  font-weight: var(--typography-link-font-weight, inherit) !important;
+  line-height: var(--typography-link-line-height, inherit) !important;
+  letter-spacing: var(--typography-link-letter-spacing, normal) !important;
+  color: var(--typography-link-color, var(--appearance-secondary-text)) !important;
+}
+
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .size-guide-link:hover {
+  color: var(--typography-link-hover-color, var(--typography-link-color, var(--appearance-secondary-text))) !important;
+}
+
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-details-toggle .theme3-link-text,
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-details-toggle .theme3-summary-toggle-arrow,
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-details-toggle .theme3-summary-toggle-arrow path {
+  color: var(--typography-link-color, var(--appearance-secondary-text)) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-details-toggle:hover .theme3-link-text,
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-details-toggle:hover .theme3-summary-toggle-arrow,
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-summary-details-toggle:hover .theme3-summary-toggle-arrow path {
+  color: var(--typography-link-hover-color, var(--typography-link-color, var(--appearance-secondary-text))) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds)[data-link-underline="underline-on-hover"] .theme3-summary-details-toggle:hover .theme3-link-text,
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds)[data-link-underline="always"] .theme3-summary-details-toggle .theme3-link-text {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds)[data-link-underline="always"] .size-guide-link {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+.theme3-root.theme3-has-link-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds)[data-link-underline="underline-on-hover"] .size-guide-link:hover {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+/* Button label typography: ring-type toggle + footer Checkout / Share / Reset. */
+.theme3-root.theme3-has-button-typography {
+  --typography-button-font-size: var(--typography-button-font-size-desktop);
+}
+
+@media (max-width: 767px) {
+  .theme3-root.theme3-has-button-typography {
+    --typography-button-font-size: var(--typography-button-font-size-mobile, var(--typography-button-font-size-desktop));
+  }
+}
+
+.theme3-root.theme3-has-button-typography .theme3-ring-type-btn,
+.theme3-root.theme3-has-button-typography .theme3-panel-footer-cta,
+.theme3-root.theme3-has-button-typography .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root.theme3-has-button-typography .theme3-panel-action-btn.theme3-panel-reset-btn,
+.theme3-root.theme3-has-button-typography .gb-card-option,
+.theme3-root.theme3-has-button-typography .gb-text-option,
+.theme3-root.theme3-has-button-typography .beads-picker-size-btn,
+.theme3-root.theme3-has-button-typography .beads-picker-type-select,
+.theme3-root.theme3-has-button-typography .custom-ring-size-trigger,
+.theme3-root.theme3-has-button-typography .gb-metal-option,
+.theme3-root.theme3-has-button-typography .gb-stone-card-option,
+.theme3-root.theme3-has-button-typography .jewelry-category-btn,
+.theme3-root.theme3-has-button-typography .theme3-stone-type-control button,
+.theme3-root.theme3-has-button-typography .theme3-stone-swatch,
+.theme3-root.theme3-has-button-typography .theme3-bimetal-control button,
+.theme3-root.theme3-has-button-typography .gb-preview-control,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger {
+  font-family: var(--typography-button-font-family, inherit) !important;
+  font-size: var(--typography-button-font-size, inherit) !important;
+  font-weight: var(--typography-button-font-weight, inherit) !important;
+  line-height: var(--typography-button-line-height, inherit) !important;
+  letter-spacing: var(--typography-button-letter-spacing, normal) !important;
+}
+
+/* Option tiles: label row = primaryTextColor, price row = secondaryTextColor (any state). */
+.theme3-root.theme3-has-button-typography .gb-card-option:not(:disabled),
+.theme3-root.theme3-has-button-typography .gb-text-option:not(:disabled),
+.theme3-root.theme3-has-button-typography .gb-metal-option:not(:disabled),
+.theme3-root.theme3-has-button-typography .gb-stone-card-option:not(:disabled),
+.theme3-root.theme3-has-button-typography .jewelry-category-btn:not(:disabled),
+.theme3-root.theme3-has-button-typography .theme3-stone-type-control button:not(:disabled),
+.theme3-root.theme3-has-button-typography .theme3-stone-swatch:not(:disabled),
+.theme3-root.theme3-has-button-typography .theme3-bimetal-control button:not(:disabled),
+.theme3-root.theme3-has-button-typography .custom-ring-size-trigger:not(:disabled) {
+  color: unset !important;
+}
+
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-card-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .theme3-option-box-label span,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option > span,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option b.theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-stone-type-control button .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-bimetal-control button .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-quality-options .quality-option-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-quality-options .quality-option-label span,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-category-options .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-stone-card-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .beads-picker-size-btn.theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .beads-picker-type-select.theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .custom-ring-size-trigger .theme3-option-box-label {
+  color: var(--typography-button-primary-text-color) !important;
+}
+
+/* Card and pill labels were pinned at 12px, so only the price (0.72em of the button) grew. */
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-card-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .theme3-option-box-label span,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option b.theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option small.theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-stone-type-control button .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-bimetal-control button .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-quality-options .quality-option-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-quality-options .quality-option-label span,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-category-options .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-stone-card-option .theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .beads-picker-size-btn.theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .beads-picker-type-select.theme3-option-box-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .custom-ring-size-trigger .theme3-option-box-label {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+}
+
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-card-option .theme3-option-box-price,
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .theme3-option-box-price,
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option .theme3-option-box-price,
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option .gb-delta-label,
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .gb-delta-label,
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-quality-options .gb-delta-label,
+.theme3-root:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-category-options .gb-delta-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-card-option .theme3-option-box-price,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .theme3-option-box-price,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option .theme3-option-box-price,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-metal-option .gb-delta-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .gb-text-option .gb-delta-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-quality-options .gb-delta-label,
+.theme3-root.theme3-has-button-typography:is(.theme3-root--ring, .theme3-root--jewelry, .theme3-root--beeds) .theme3-category-options .gb-delta-label {
+  font-size: 0.72em !important;
+  line-height: 1.2 !important;
+  font-weight: var(--typography-button-muted-weight, 400) !important;
+  color: var(--typography-button-primary-text-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-button-typography .theme3-ring-type-btn.active,
+.theme3-root.theme3-has-button-typography .theme3-panel-footer-cta,
+.theme3-root.theme3-has-button-typography .theme3-panel-footer-cta:hover:not(:disabled) {
+  color: var(--typography-button-secondary-text-color, var(--appearance-primary-text)) !important;
+}
+
+.theme3-root.theme3-has-button-typography .theme3-ring-type-btn:not(.active):not(:disabled),
+.theme3-root.theme3-has-button-typography .theme3-panel-action-btn.theme3-panel-share-btn,
+.theme3-root.theme3-has-button-typography .theme3-panel-action-btn.theme3-panel-reset-btn {
+  color: var(--typography-button-primary-text-color, var(--appearance-primary)) !important;
+}
+
+/* Preview controls (360°, view, sound, share): button typography on icon + labels. */
+.theme3-root.theme3-has-button-typography .gb-preview-control span {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+}
+
+.theme3-root.theme3-has-button-typography .gb-preview-control:not(.active),
+.theme3-root.theme3-has-button-typography .gb-preview-control:not(.active):hover {
+  color: var(--typography-button-primary-text-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-button-typography .gb-preview-control:not(.active) svg,
+.theme3-root.theme3-has-button-typography .gb-preview-control:not(.active) span {
+  color: var(--typography-button-primary-text-color, var(--appearance-primary)) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root.theme3-has-button-typography .gb-preview-control.active,
+.theme3-root.theme3-has-button-typography .gb-preview-control.active:hover {
+  color: var(--typography-button-secondary-text-color, var(--appearance-primary-text)) !important;
+}
+
+.theme3-root.theme3-has-button-typography .gb-preview-control.active svg,
+.theme3-root.theme3-has-button-typography .gb-preview-control.active span {
+  color: var(--typography-button-secondary-text-color, var(--appearance-primary-text)) !important;
+  fill: currentColor !important;
+}
+
+/* Ask AI pill: same button typography as Share / preview controls. */
+.theme3-root.theme3-has-button-typography .ring-ai-trigger:not(.ring-ai-trigger-open),
+.theme3-root.theme3-has-button-typography .ring-ai-trigger:not(.ring-ai-trigger-open):hover {
+  background: #ffffff !important;
+  border: none !important;
+  color: var(--typography-button-primary-text-color, var(--appearance-primary)) !important;
+}
+
+.theme3-root.theme3-has-button-typography .ring-ai-trigger:not(.ring-ai-trigger-open) span,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger:not(.ring-ai-trigger-open) svg,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger:not(.ring-ai-trigger-open):hover span,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger:not(.ring-ai-trigger-open):hover svg {
+  color: var(--typography-button-primary-text-color, var(--appearance-primary)) !important;
+  fill: currentColor !important;
+}
+
+.theme3-root.theme3-has-button-typography .ring-ai-trigger.ring-ai-trigger-open,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger.ring-ai-trigger-open:hover {
+  background: var(--appearance-primary) !important;
+  border: none !important;
+  color: var(--typography-button-secondary-text-color, var(--appearance-primary-text)) !important;
+}
+
+.theme3-root.theme3-has-button-typography .ring-ai-trigger.ring-ai-trigger-open span,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger.ring-ai-trigger-open svg,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger.ring-ai-trigger-open:hover span,
+.theme3-root.theme3-has-button-typography .ring-ai-trigger.ring-ai-trigger-open:hover svg {
+  color: var(--typography-button-secondary-text-color, var(--appearance-primary-text)) !important;
+  fill: currentColor !important;
+}
+
+.ring-ai-send{
+  color: #ffffff !important;
 }

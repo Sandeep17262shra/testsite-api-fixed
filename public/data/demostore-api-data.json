@@ -22,7 +22,17 @@
       "name": "Hidden Halo",
       "price": 300,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.1
+    },
+    {
+      "product_type": "head",
+      "product_id": "H021",
+      "name": "Hidden Halo 2",
+      "price": 300,
+      "currency": "USD",
+      "status": "active",
+      "sidestone_carat": 0.1
     },
     {
       "product_type": "head",
@@ -30,7 +40,8 @@
       "name": "Single Halo",
       "price": 600,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.25
     },
     {
       "product_type": "head",
@@ -38,7 +49,7 @@
       "name": "Double Halo",
       "price": 800,
       "currency": "USD",
-      "status": "active"
+      "status": "inactive"
     },
     {
       "product_type": "head",
@@ -54,15 +65,17 @@
       "name": "Halo",
       "price": 0,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.25
     },
     {
       "product_type": "head",
       "product_id": "H008",
-      "name": "Oval",
+      "name": "Three Stone",
       "price": 800,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.5
     },
     {
       "product_type": "head",
@@ -76,7 +89,7 @@
       "product_type": "head",
       "product_id": "H010",
       "name": "Two Stone",
-      "price": 0,
+      "price": 100,
       "currency": "USD",
       "status": "active"
     },
@@ -107,7 +120,7 @@
     {
       "product_type": "head",
       "product_id": "H014",
-      "name": "Aurelie",
+      "name": "Estelle",
       "price": 0,
       "currency": "USD",
       "status": "active"
@@ -115,40 +128,16 @@
     {
       "product_type": "head",
       "product_id": "H015",
-      "name": "Isadora",
+      "name": "Celine",
       "price": 0,
       "currency": "USD",
       "status": "active"
     },
     {
       "product_type": "head",
-      "product_id": "H016",
-      "name": "Trapezoid",
-      "price": 350,
-      "currency": "USD",
-      "status": "active"
-    },
-    {
-      "product_type": "head",
-      "product_id": "H017",
-      "name": "Half Moon",
-      "price": 400,
-      "currency": "USD",
-      "status": "active"
-    },
-    {
-      "product_type": "head",
-      "product_id": "H018",
-      "name": "Pear",
-      "price": 450,
-      "currency": "USD",
-      "status": "active"
-    },
-    {
-      "product_type": "head",
-      "product_id": "H019",
-      "name": "Baguette",
-      "price": 500,
+      "product_id": "H020",
+      "name": "Claw Set",
+      "price": 100,
       "currency": "USD",
       "status": "active"
     },
@@ -166,7 +155,8 @@
       "name": "Plate Prong",
       "price": 800,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.5
     },
     {
       "product_type": "shank",
@@ -182,7 +172,8 @@
       "name": "Channel",
       "price": 800,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.5
     },
     {
       "product_type": "shank",
@@ -222,7 +213,8 @@
       "name": "French Pave",
       "price": 0,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.5
     },
     {
       "product_type": "shank",
@@ -230,7 +222,8 @@
       "name": "Pave Stones",
       "price": 0,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.5
     },
     {
       "product_type": "shank",
@@ -238,7 +231,8 @@
       "name": "8 Stones",
       "price": 0,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.4
     },
     {
       "product_type": "shank",
@@ -246,15 +240,17 @@
       "name": "Multi Row",
       "price": 0,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.9
     },
     {
       "product_type": "shank",
       "product_id": "S013",
-      "name": "Cathedral Side Stone",
+      "name": "Cathedral Stones",
       "price": 0,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.6
     },
     {
       "product_type": "shank",
@@ -262,12 +258,13 @@
       "name": "Side Bezel Stones",
       "price": 0,
       "currency": "USD",
-      "status": "active"
+      "status": "active",
+      "sidestone_carat": 0.8
     },
     {
       "product_type": "shank",
       "product_id": "S015",
-      "name": "Twisted 2",
+      "name": "Vine",
       "price": 0,
       "currency": "USD",
       "status": "active"
@@ -292,7 +289,7 @@
       "product_type": "shank",
       "product_id": "S018",
       "name": "Amelie",
-      "price": 0,
+      "price": 1250,
       "currency": "USD",
       "status": "active"
     },
@@ -300,7 +297,7 @@
       "product_type": "shank",
       "product_id": "S019",
       "name": "Elan",
-      "price": 0,
+      "price": 1600,
       "currency": "USD",
       "status": "active"
     },
@@ -308,7 +305,7 @@
       "product_type": "shank",
       "product_id": "S020",
       "name": "Elanora",
-      "price": 0,
+      "price": 1250,
       "currency": "USD",
       "status": "active"
     },
@@ -316,7 +313,7 @@
       "product_type": "shank",
       "product_id": "S021",
       "name": "Aurelie",
-      "price": 0,
+      "price": 2250,
       "currency": "USD",
       "status": "active"
     },
@@ -324,9 +321,36 @@
       "product_type": "shank",
       "product_id": "S022",
       "name": "Isadora",
-      "price": 0,
+      "price": 2000,
       "currency": "USD",
       "status": "active"
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S023",
+      "name": "Tapered 3S",
+      "price": 0,
+      "currency": "USD",
+      "status": "active",
+      "sidestone_carat": 0.5
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S024",
+      "name": "Pear 3S",
+      "price": 0,
+      "currency": "USD",
+      "status": "active",
+      "sidestone_carat": 0.5
+    },
+    {
+      "product_type": "shank",
+      "product_id": "S025",
+      "name": "Half Moon 3S",
+      "price": 0,
+      "currency": "USD",
+      "status": "active",
+      "sidestone_carat": 0.5
     },
     {
       "product_type": "band",
@@ -373,6 +397,70 @@
       "product_id": "B006",
       "name": "Plate Prong Band",
       "price": 600,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "bandwidth",
+      "product_id": "BW01",
+      "name": "4mm",
+      "price": 0,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "bandwidth",
+      "product_id": "BW02",
+      "name": "5mm",
+      "price": 100,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "bandwidth",
+      "product_id": "BW03",
+      "name": "6mm",
+      "price": 200,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "sidestone",
+      "product_id": "SS001",
+      "name": "Oval",
+      "price": 0,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "sidestone",
+      "product_id": "SS002",
+      "name": "Round",
+      "price": 200,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "sidestone",
+      "product_id": "SS003",
+      "name": "Pear",
+      "price": 150,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "sidestone",
+      "product_id": "SS004",
+      "name": "Emerald",
+      "price": 0,
+      "currency": "USD",
+      "status": "active"
+    },
+    {
+      "product_type": "sidestone",
+      "product_id": "SS005",
+      "name": "Princess",
+      "price": 0,
       "currency": "USD",
       "status": "active"
     },
@@ -1081,6 +1169,61 @@
       "shape": "GS07",
       "carat": null,
       "color": "yellow-sapphire",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "sidestone",
+      "shape": "SS001",
+      "carat": null,
+      "color": "Oval",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "sidestone",
+      "shape": "SS002",
+      "carat": null,
+      "color": "Round",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "sidestone",
+      "shape": "SS003",
+      "carat": null,
+      "color": "Pear",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "sidestone",
+      "shape": "SS004",
+      "carat": null,
+      "color": "Emerald",
+      "quality": null,
+      "clarity": null,
+      "pricing_method": "fixed",
+      "value": 0,
+      "status": "active"
+    },
+    {
+      "rule_type": "sidestone",
+      "shape": "SS005",
+      "carat": null,
+      "color": "Princess",
       "quality": null,
       "clarity": null,
       "pricing_method": "fixed",

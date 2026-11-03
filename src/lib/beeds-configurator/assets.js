@@ -252,11 +252,41 @@ export const BEAD_CHARMS = [
   withCharmBail({ key: "daisy", name: "Daisy", image: `${BEADS_CHARM_ASSET_BASE}/daisy.png`, price: 50 }),
   withCharmBail({ key: "flower", name: "Flower", image: `${BEADS_CHARM_ASSET_BASE}/flower.png`, price: 50 }),
   withCharmBail({ key: "heart", name: "Heart", image: `${BEADS_CHARM_ASSET_BASE}/heart.png`, price: 50, bailY: 0.14 }),
-  withCharmBail({ key: "kitten", name: "Kitten", image: `${BEADS_CHARM_ASSET_BASE}/kitten.png`, price: 50 }),
-  withCharmBail({ key: "moon-2", name: "Moon", image: `${BEADS_CHARM_ASSET_BASE}/moon-2.png`, price: 50 }),
-  withCharmBail({ key: "moon", name: "Crescent Moon", image: `${BEADS_CHARM_ASSET_BASE}/moon.png`, price: 50 }),
+  withCharmBail({
+    key: "kitten",
+    name: "Kitten",
+    image: `${BEADS_CHARM_ASSET_BASE}/kitten.png`,
+    price: 50,
+    bailX: 0.44,
+    bailY: 0.09,
+  }),
+  withCharmBail({
+    key: "moon-2",
+    name: "Moon",
+    image: `${BEADS_CHARM_ASSET_BASE}/moon-2.png`,
+    price: 50,
+    bailX: 0.51,
+    bailY: 0.1,
+    bailY3d: 0.05,
+  }),
+  withCharmBail({
+    key: "moon",
+    name: "Crescent Moon",
+    image: `${BEADS_CHARM_ASSET_BASE}/moon.png`,
+    price: 50,
+    bailX: 0.57,
+    bailY: 0.1,
+    bailY3d: 0.055,
+  }),
   withCharmBail({ key: "paw", name: "Paw", image: `${BEADS_CHARM_ASSET_BASE}/paw.png`, price: 50 }),
-  withCharmBail({ key: "puppy", name: "Puppy", image: `${BEADS_CHARM_ASSET_BASE}/puppy.png`, price: 50 }),
+  withCharmBail({
+    key: "puppy",
+    name: "Puppy",
+    image: `${BEADS_CHARM_ASSET_BASE}/puppy.png`,
+    price: 50,
+    bailX: 0.45,
+    bailY: 0.05,
+  }),
   withCharmBail({
     key: "rainbow",
     name: "Rainbow",
@@ -275,13 +305,14 @@ export const BEAD_CHARMS = [
     bailY: 0.08,
     holeR: 0.03,
   }),
-  withCharmBail({
+   withCharmBail({
     key: "hello-kitty",
     name: "Hello Kitty",
     image: `${BEADS_CHARM_ASSET_BASE}/hello-kitty.png`,
     price: 50,
     aspect: 0.85,
-    bailY: 0.1,
+    bailY: 0.25,
+    bailY3d: 0.1,
     holeR: 0.028,
   }),
 ];
@@ -304,7 +335,7 @@ export const BEAD_JEWELRY_CATEGORIES = [
 /** Manual build — empty string; also available in the style picker. */
 export const EMPTY_BEAD_STYLE = {
   id: "empty",
-  label: "Empty",
+  label: "Custom Bracelet",
   preview: "empty",
   previewSvg: `${BEAD_STYLE_PREVIEW_BASE_URL}/empty.svg`,
   manual: true,
@@ -472,9 +503,9 @@ export const DEFAULT_BEAD_SIZE_ID = "10mm";
 /** Initial load — showcase a filled preset bracelet. */
 export const DEFAULT_STYLE_ID = "full-bead";
 export const DEFAULT_LENGTH_ID = "5";
-/** Reset — start manual building on a free-size empty string. */
+/** Reset — start manual building on an empty 4" string. */
 export const RESET_STYLE_ID = "empty";
-export const RESET_LENGTH_ID = FREE_SIZE_LENGTH_ID;
+export const RESET_LENGTH_ID = "4";
 /** @deprecated Charm limit is gap/space based (`getValidCharmGaps`, `MAX_CHARMS_ON_EMPTY_RING`). */
 export const MAX_BEAD_CHARMS = 8;
 /** Fixed render/capacity size for all beads in the 2D preview. */

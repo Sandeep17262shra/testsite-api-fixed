@@ -120,3 +120,23 @@ export function buildPatternCustomizeSummaryLines(pattern = []) {
 
   return lines;
 }
+
+function pieceCountLabel(count, singular, plural) {
+  if (!count) return "";
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+/** Preview title from what is actually on the string, same shape as the other configurators. */
+export function buildBeadPreviewLabel(pattern = [], { styleLabel = "", displayLengthLabel = "" } = {}) {
+  const beadCount = pattern.filter((item) => item.type === "bead").length;
+  const spacerCount = pattern.filter((item) => item.type === "spacer").length;
+  const charmCount = pattern.filter((item) => item.type === "charm").length;
+  const details = [
+    displayLengthLabel,
+    pieceCountLabel(beadCount, "Bead", "Beads"),
+    pieceCountLabel(spacerCount, "Spacer", "Spacers"),
+    pieceCountLabel(charmCount, "Charm", "Charms"),
+  ].filter(Boolean);
+
+  return [styleLabel, details.length ? `(${details.join(", ")})` : ""].filter(Boolean).join(" ");
+}

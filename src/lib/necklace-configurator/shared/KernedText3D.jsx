@@ -54,16 +54,65 @@ function inkGap(prevPts, prevX, nextPts, nextX) {
   return gap === Infinity ? null : gap;
 }
 
-function translateShape(shape, dx) {
+function translateShape(shape, dx, dy = 0) {
   const move = (path) => path.curves.forEach((curve) => {
-    ['v0', 'v1', 'v2', 'v3'].forEach((k) => { if (curve[k]) curve[k].x += dx; });
+    ['v0', 'v1', 'v2', 'v3'].forEach((k) => {
+      if (curve[k]) {
+        curve[k].x += dx;
+        if (dy) curve[k].y += dy;
+      }
+    });
   });
   move(shape);
   (shape.holes || []).forEach(move);
 }
 
+// Brings the floating dot (tittle) of lowercase "i" and "j" directly down
+// to touch and slightly overlap the letter's stem, fusing them into one
+// continuous, solid piece of metal as in authentic cast script jewelry.
+function attachDotToStem(charShapes, size = 1) {
+  if (!charShapes || charShapes.length < 2) return;
+
+  // Identify dot (higher minY) vs stem (lower minY)
+  const b0 = charShapes[0].getPoints(20).reduce((m, p) => Math.min(m, p.y), Infinity);
+  const b1 = charShapes[1].getPoints(20).reduce((m, p) => Math.min(m, p.y), Infinity);
+  const stemShape = b0 < b1 ? charShapes[0] : charShapes[1];
+  const dotShape = b0 < b1 ? charShapes[1] : charShapes[0];
+
+  const stemPts = stemShape.getPoints(80);
+  const dotPts = dotShape.getPoints(80);
+
+  let minDist = Infinity;
+  let bestStem = null;
+  let bestDot = null;
+
+  dotPts.forEach((dp) => {
+    stemPts.forEach((sp) => {
+      const d = Math.hypot(dp.x - sp.x, dp.y - sp.y);
+      if (d < minDist) {
+        minDist = d;
+        bestStem = sp;
+        bestDot = dp;
+      }
+    });
+  });
+
+  if (!bestStem || !bestDot || minDist === 0) return;
+
+  const dx = bestStem.x - bestDot.x;
+  const dy = bestStem.y - bestDot.y;
+  const dist = Math.hypot(dx, dy);
+
+  // Overlap slightly into the stem so the dot and stem fuse seamlessly into a single unit
+  const overlap = 0.02 * size;
+  const pullFactor = (dist + overlap) / dist;
+
+  translateShape(dotShape, dx * pullFactor, dy * pullFactor);
+}
+
 // Same layout as three's font.generateShapes (advance + letterSpacing per
-// character), plus the capital-pair tightening described above.
+// character), plus the capital-pair tightening described above, and
+// touching dots for "i" and "j".
 export function layoutKernedShapes(font, text, size, letterSpacing = 0, tightenCapitals = true) {
   const chars = Array.from(text || '');
   const scale = size / font.data.resolution;
@@ -71,7 +120,13 @@ export function layoutKernedShapes(font, text, size, letterSpacing = 0, tightenC
     const glyph = font.data.glyphs[c] || font.data.glyphs['?'];
     return glyph ? glyph.ha * scale : 0;
   };
-  const shapesPerChar = chars.map((c) => font.generateShapes(c, size));
+  const shapesPerChar = chars.map((c) => {
+    const charShapes = font.generateShapes(c, size);
+    if ((c === 'i' || c === 'j') && charShapes.length === 2) {
+      attachDotToStem(charShapes, size);
+    }
+    return charShapes;
+  });
   const pointsPerChar = shapesPerChar.map((shapes) => (tightenCapitals ? glyphPoints(shapes) : []));
 
   const offsets = [];
@@ -123,7 +178,9 @@ const KernedText3D = forwardRef(({
   bevelSegments = 4,
   letterSpacing = 0,
   tightenCapitals = true,
+  measurementKey,
   children,
+  userData,
   ...props
 }, ref) => {
   const font = useFont(fontSource);
@@ -142,7 +199,12 @@ const KernedText3D = forwardRef(({
   useEffect(() => () => geometry.dispose(), [geometry]);
 
   return (
-    <mesh ref={ref} geometry={geometry} {...props}>
+    <mesh
+      ref={ref}
+      geometry={geometry}
+      userData={{ ...userData, fontMeasurementKey: measurementKey }}
+      {...props}
+    >
       {rest}
     </mesh>
   );

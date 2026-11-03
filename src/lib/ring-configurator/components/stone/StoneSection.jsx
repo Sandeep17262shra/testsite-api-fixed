@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useClickSound } from "../../hooks/useClickSound";
 import apiData from '../../data/api-data.json';
 import { applyFilterWithLoader } from "../../utility/applyFilterWithLoader";
 import { DiamondContext } from "../../contexts/DiamondContext";
@@ -14,6 +15,7 @@ import { getCurrencyRate, hideNaturalOption, getCurrencySign, getFancyPriceFacto
 import { formatStoreCurrency, getDiamondPrice, filterAvailableOptions, getColoredDiamondExtraPrice, getGemstoneExtraPrice, getIntensityPrice as getStoreIntensityPrice, getAvailableCaratSizes } from "../../utility/storePriceHelper";
 
 function StoneSection() {
+    const { playClick } = useClickSound();
     const shapeItems = [
         "Round",
         "Emerald",
@@ -289,13 +291,10 @@ const INTENSITY_SPRITE_BG = { backgroundImage: "url(/images/intensity.webp)", ba
         };
 
     const handleShape = (shape) => {
+        playClick();
         applyFilterWithLoader(setLoader, () => {
             setShape(shape);
             const newPrice = calculateFinalDiamondPrice(activeDiamondSize, activeDiamondType, activeCut, clarity, activePriceColor, shape);
-
-            if(shapeList.includes(shape) && headStyle == "three-stone"){
-                handleHeadChangeSub(shape);
-            }
 
             //setInitialDiamondPrice(newPrice.finalPrice);
             //setShapePrice(newPrice.breakdown.shape);
@@ -305,6 +304,7 @@ const INTENSITY_SPRITE_BG = { backgroundImage: "url(/images/intensity.webp)", ba
 
 	// Update the handleCarat function
 	const handleCarat = (caratObj) => {
+	  playClick();
 	  applyFilterWithLoader(setLoader, () => {
 		setActiveDiamondSize(caratObj.size);
 		setCaratP(caratObj.price);
@@ -327,6 +327,7 @@ const INTENSITY_SPRITE_BG = { backgroundImage: "url(/images/intensity.webp)", ba
 	};
 
     const handleCut = (cut) => {
+        playClick();
         applyFilterWithLoader(setLoader, () => {
             setActiveCut(cut);
             setCut(cut);
@@ -339,6 +340,7 @@ const INTENSITY_SPRITE_BG = { backgroundImage: "url(/images/intensity.webp)", ba
     };
 
     const handleClarity = (clarity) => {
+        playClick();
         applyFilterWithLoader(setLoader, () => {
             setClarity(clarity);
             const newPrice = calculateFinalDiamondPrice(caratP, activeDiamondType, activeCut, clarity, activePriceColor, shape);
@@ -350,6 +352,7 @@ const INTENSITY_SPRITE_BG = { backgroundImage: "url(/images/intensity.webp)", ba
     };
 
     const handlePriceColorChange = (values) => {
+        playClick();
         setDiamondColorClarity(values);
         const newPrice = calculateFinalDiamondPrice(caratP, activeDiamondType, activeCut, clarity, values, shape);
         setActivePriceColor(newPrice.breakdown.color);
@@ -359,6 +362,7 @@ const INTENSITY_SPRITE_BG = { backgroundImage: "url(/images/intensity.webp)", ba
     };
 
     const handleDiamondType = (type) => {
+        playClick();
         if (type === "lab-diamond")
             setDiamondType("Lab");
         else
@@ -498,16 +502,19 @@ const INTENSITY_SPRITE_BG = { backgroundImage: "url(/images/intensity.webp)", ba
         setClarityPriceDiff(null);
     };
 const handleFancyDiamond = (value) => {
+    playClick();
     setFancyDiamond(value);
     setSummaryBlink(true);
 };
 
 const handleGemstone = (value) => {
+    playClick();
     setGemstone(value);
     setSummaryBlink(true);
 };
 
     const handleFancyColorChange = (value) => {
+        playClick();
         setFancyDiamondIntensity(value);
         const price = getIntensityPrice(value);
         setIntensityPrice(price);
@@ -705,7 +712,7 @@ useEffect(() => {
     const formatPrice = (price) => formatStoreCurrency(price, parent);
     // quality related ends
 const availableShapes = filterAvailableOptions(
-  ["round", "emerald", "oval", "pear", "asscher", "cushion", "marquise", "princess", "radiant", "heart"],
+  ["round", "emerald", "oval", "moval", "pear", "asscher", "cushion", "marquise", "princess", "radiant", "heart"],
   parent,
   'diamondShapes'
 );
@@ -886,19 +893,19 @@ const availableDiamondTypes = filterAvailableOptions(
                         <div className="color-style-tab">
                             <span
                                 className={`cursor-pointer ${activeTab === "Colorless" ? "active" : ""}`}
-                                onClick={() => { setActiveTab("Colorless"); setColorType("colorless") }}
+                                onClick={() => { playClick(); setActiveTab("Colorless"); setColorType("colorless") }}
                             >
                                 Colorless
                             </span>
                             <span
                                 className={`cursor-pointer ${activeTab === "Fancy Colored" ? "active" : ""}`}
-                                onClick={() => { setActiveTab("Fancy Colored"); setColorType("fancycolored") }}
+                                onClick={() => { playClick(); setActiveTab("Fancy Colored"); setColorType("fancycolored") }}
                             >
                                 Colored
                             </span>
                             <span
                                 className={`cursor-pointer ${activeTab === "Fancy-Gemstone" ? "active" : ""}`}
-                                onClick={() => { setActiveTab("Fancy-Gemstone"); setColorType("fancygem") }}
+                                onClick={() => { playClick(); setActiveTab("Fancy-Gemstone"); setColorType("fancygem") }}
                             >
                                 Gemstone
                             </span>
@@ -1085,16 +1092,17 @@ const availableDiamondTypes = filterAvailableOptions(
                             className="grid grid-cols-[65px_1fr_1fr] items-center mb-2">
                                 <div className="font-000">{row.quality}</div>
                                 {activeTab !== "Fancy-Gemstone" &&
-  !naturaldiamondoption && availableDiamondTypes.includes("Natural") && (
+  !naturaldiamondoption && (
     <button
       className={`${
         selectedQuality.type === "Natural" && selectedQuality.quality === row.quality
           ? "border-black"
           : "border-gray-300"
       }`}
-      onClick={() =>
+      onClick={() => {
+        playClick();
         setSelectedQuality({ type: "Natural", quality: row.quality })
-      }
+      }}
     >
         {CurrencySign}{(row.Natural)}
     </button>
@@ -1106,7 +1114,7 @@ const availableDiamondTypes = filterAvailableOptions(
                                     ? "border-black"
                                     : "border-gray-300"
                                 }`}
-                                onClick={() => setSelectedQuality({ type: "Lab", quality: row.quality })}
+                                onClick={() => { playClick(); setSelectedQuality({ type: "Lab", quality: row.quality }) }}
                                 >
                                 {CurrencySign}{(row.Lab)}
                                 </button>

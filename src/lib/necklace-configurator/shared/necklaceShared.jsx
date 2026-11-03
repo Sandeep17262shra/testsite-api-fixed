@@ -27,7 +27,7 @@ const NAME_FONT_URLS = {
 
 // ─── Letter spacing per font ─────────────────────────────────────────────────
 const NAME_FONT_LETTER_SPACING = {
-  dancing:       -0.10,
+  dancing:       -0.14,
   yellowtail:    -0.10,
   lobster:       -0.08,
   darklarch:     -0.08,

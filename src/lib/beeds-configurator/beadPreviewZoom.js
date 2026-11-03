@@ -1,5 +1,5 @@
 export const PREVIEW_ZOOM_MIN = 1;
-export const PREVIEW_ZOOM_MAX = 2.75;
+export const PREVIEW_ZOOM_MAX = 1.15;
 export const PREVIEW_WHEEL_ZOOM_SENSITIVITY = 0.0012;
 
 export function clampPreviewZoom(scale) {

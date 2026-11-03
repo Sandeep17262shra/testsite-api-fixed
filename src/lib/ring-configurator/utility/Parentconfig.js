@@ -118,7 +118,8 @@ export const resolveParentUrl = () => {
     return document.referrer;
   }
 
-  return window.location.href;
+  // Not embedded in an iframe and no store query parameter provided.
+  return "";
 };
 
 export const getLogo = (parentUrl) => getConfig(parentUrl)?.logo ?? "";

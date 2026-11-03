@@ -1,6 +1,7 @@
 import React, {
   forwardRef,
   useCallback,
+  useContext,
   useEffect,
   useImperativeHandle,
   useLayoutEffect,
@@ -29,10 +30,13 @@ import {
   resolvePatternAsset,
 } from "../assets";
 import { isJewelryShellActive, requestJewelryCategory } from "@/lib/jewelry-shell/jewelryCategoryBus";
+import { getFooterSummaryTaxLabel } from "@/lib/jewelry-shell/summaryTaxLabel";
 import { useBeedsContext } from "../contexts/BeedsContext";
 import { usePreviewFocus } from "../contexts/PreviewFocusContext";
+import { View360Context } from "../contexts/View360Context";
 import { unlockBeadsAudio } from "../beadsSounds";
 import { buildPatternCustomizeSummaryLines } from "../pricing";
+import { renderOptionBoxLabel } from "@/lib/ring-configurator/theme3OptionLabels";
 
 const customizeTabsShownInUi = VISIBLE_BEAD_CUSTOMIZE_TABS;
 
@@ -48,12 +52,13 @@ function CardOption({ active, label, image, onClick, disabled = false }) {
       disabled={disabled}
     >
       {image && <img src={image} alt={label || ""} />}
-      {label && <span>{label}</span>}
+      {label && <span className="theme3-option-box-label">{label}</span>}
     </button>
   );
 }
 
 function TextOption({ active, label, onClick, disabled = false, children }) {
+  const content = children != null ? children : label;
   return (
     <button
       type="button"
@@ -61,7 +66,7 @@ function TextOption({ active, label, onClick, disabled = false, children }) {
       onClick={onClick}
       disabled={disabled}
     >
-      {children || label}
+      {content != null ? renderOptionBoxLabel(content) : null}
     </button>
   );
 }
@@ -74,11 +79,9 @@ function BeadPickerCard({
   onClick,
   showPrice = true,
   showSizeInLabel = false,
-  displayLabel,
 }) {
   const cardLabel =
-    displayLabel ??
-    (showSizeInLabel && sizeLabel ? `${asset.name} · ${sizeLabel}` : asset.name);
+    showSizeInLabel && sizeLabel ? `${asset.name} · ${sizeLabel}` : asset.name;
 
   return (
     <button
@@ -96,9 +99,9 @@ function BeadPickerCard({
           loading="eager"
         />
       </span>
-      <span className="beads-grid-card__label">{cardLabel}</span>
+      <span className="beads-grid-card__label theme3-option-box-label">{cardLabel}</span>
       {showPrice && (
-        <span className="beads-grid-card__meta">
+        <span className="beads-grid-card__meta theme3-option-box-price">
           {sizeLabel && !showSizeInLabel ? `${sizeLabel} - ` : ""}${asset.price || 8}
         </span>
       )}
@@ -176,8 +179,8 @@ function OptionRow({ title, children, className }) {
   return (
     <section className={`gb-option-row${className ? ` ${className}` : ""}`}>
       {title && (
-        <div className="gb-option-title">
-          <span>{title}</span>
+        <div className="gb-option-title beads-gb-option-title">
+          <span className="theme3-section-heading">{title}</span>
         </div>
       )}
       <div className="gb-option-slider">
@@ -241,6 +244,8 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
     canAddBead,
     canReplaceCustomizeSlotAt,
     canApplyBeadSizeToAllPresetSlots,
+    canChangePresetBeadSize,
+    applyPresetBeadSizeChange,
     canAddSpacer,
     canAddCharm,
     addManualItem,
@@ -267,6 +272,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
     setShowResetPopup,
   } = useBeedsContext();
   const { requestPreviewFocus } = usePreviewFocus();
+  const { view360 } = useContext(View360Context);
 
   const sectionRefs = {
     jewelry: useRef(null),
@@ -359,14 +365,27 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
     [onSectionChange]
   );
 
-  const footerCtaLabel = activeSection === "jewelry" ? "Choose Beads" : "Add to cart";
-  const footerCtaDisabled = activeSection !== "jewelry";
+  const footerCtaLabel =
+    view360 || activeSection !== "jewelry" ? "Add to cart" : "Choose Beads";
+  const footerCtaDisabled = view360 ? false : activeSection !== "jewelry";
 
   const handleFooterContinue = () => {
+    if (view360) {
+      return;
+    }
     if (activeSection === "jewelry") {
       scrollToSectionId("customize");
     }
   };
+
+  useEffect(() => {
+    if (!view360) {
+      return;
+    }
+    setActiveSlotIndex(null);
+    setDraggingSlotIndex(null);
+    beadDragRef.current = null;
+  }, [view360]);
 
   const filteredBeads = useMemo(() => {
     if (collectionId === "all") {
@@ -493,7 +512,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
       }
 
       if (!isManualMode && customizeSlotItems.some((item) => item.type === "bead")) {
-        return canAddBead(beadSizeId) || canApplyBeadSizeToAllPresetSlots(beadSizeId);
+        return canAddBead(beadSizeId) || canChangePresetBeadSize(beadSizeId);
       }
 
       return canAddBead(beadSizeId);
@@ -502,7 +521,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
       activeSlotIndex,
       activeSlotItem,
       canAddBead,
-      canApplyBeadSizeToAllPresetSlots,
+      canChangePresetBeadSize,
       canReplaceCustomizeSlotAt,
       customizeSlotItems,
       isManualMode,
@@ -521,6 +540,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
         }
       }
       if (
+        !isManualMode &&
         activeSlotIndex === null &&
         customizeSlotItems.some((item) => item.type === "spacer")
       ) {
@@ -558,7 +578,8 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
         return;
       }
 
-      if (hasSpacers && isSpacerPickerEntryEnabled(key)) {
+      // Empty-string build adds another spacer. Preset styles keep one spacer look.
+      if (!isManualMode && hasSpacers && isSpacerPickerEntryEnabled(key)) {
         applySpacerToAllPresetSpacerSlots(key, { applyToAll: true });
         return;
       }
@@ -619,16 +640,16 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
       return;
     }
 
-    if (beadSizeId !== sizeId && activeSlotIndex === null) {
-      setSizeId(beadSizeId);
+    const hasPresetBeads = customizeSlotItems.some((item) => item.type === "bead");
+    if (hasPresetBeads) {
+      if (canChangePresetBeadSize(beadSizeId)) {
+        applyPresetBeadSizeChange(beadSizeId, key);
+      }
       return;
     }
 
-    const hasPresetBeads = customizeSlotItems.some((item) => item.type === "bead");
-    if (hasPresetBeads) {
-      if (canApplyBeadSizeToAllPresetSlots(beadSizeId)) {
-        applyBeadToAllPresetBeadSlots(key, beadSizeId);
-      }
+    if (beadSizeId !== sizeId && activeSlotIndex === null) {
+      setSizeId(beadSizeId);
       return;
     }
 
@@ -1014,25 +1035,23 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
     }
 
     const nextSizeId = `${normalizedFilterId}mm`;
-    if (activeSlotIndex !== null && customizeSlotItems[activeSlotIndex]?.type === "bead") {
-      const slot = customizeSlotItems[activeSlotIndex];
-      if (isManualMode) {
-        updateManualItemSizeAt(activeSlotIndex, nextSizeId);
-      } else {
-        replaceCustomizeSlotAt(activeSlotIndex, {
-          type: "bead",
-          assetKey: slot.assetKey,
-          beadSizeId: nextSizeId,
-        });
-      }
+    setPickerBeadSizeId(nextSizeId);
+
+    if (!isManualMode && customizeSlotItems.some((item) => item.type === "bead")) {
+      applyPresetBeadSizeChange(nextSizeId, selectedBeadKey);
       return;
     }
 
-    setPickerBeadSizeId(nextSizeId);
+    if (activeSlotIndex !== null && customizeSlotItems[activeSlotIndex]?.type === "bead") {
+      updateManualItemSizeAt(activeSlotIndex, nextSizeId);
+      return;
+    }
+
     setSizeId(nextSizeId);
   };
 
   const styleLabel = getBeadStyleLabel(styleId);
+  const footerSummaryTaxLabel = getFooterSummaryTaxLabel();
   const lengthOptions = isManualMode ? BEAD_LENGTH_OPTIONS : BEAD_LENGTHS;
 
   const customizeSummaryLines = useMemo(
@@ -1047,8 +1066,8 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
     <section className="theme3-build-summary order-summary-card" aria-label="Build Summary">
       <div className="order-summary-section">
         <div className="order-summary-row">
-          <span className="order-summary-title">String</span>
-          <span className="order-summary-price">${jewelryPrice.toLocaleString()}</span>
+          <span className="order-summary-title theme3-section-heading">String</span>
+          <span className="order-summary-price theme3-section-heading">${jewelryPrice.toLocaleString()}</span>
         </div>
         <div className="order-summary-desc">Thread included · {styleLabel}</div>
         <div className="order-summary-desc">Length: {displayLengthLabel}</div>
@@ -1057,15 +1076,15 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
         <>
           <div className="order-summary-section">
             <div className="order-summary-row">
-              <span className="order-summary-title">Customize</span>
-              <span className="order-summary-price">${customizePrice.toLocaleString()}</span>
+              <span className="order-summary-title theme3-section-heading">Customize</span>
+              <span className="order-summary-price theme3-section-heading">${customizePrice.toLocaleString()}</span>
             </div>
           </div>
           {customizeSummaryLines.map((line) => (
             <div key={line.key} className="order-summary-section order-summary-section--nested">
               <div className="order-summary-row">
-                <span className="order-summary-title">{line.title}</span>
-                <span className="order-summary-price">${line.price.toLocaleString()}</span>
+                <span className="order-summary-title theme3-section-heading">{line.title}</span>
+                <span className="order-summary-price theme3-section-heading">${line.price.toLocaleString()}</span>
               </div>
               {line.detail && <div className="order-summary-desc">{line.detail}</div>}
             </div>
@@ -1076,42 +1095,62 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
   ) : null;
 
   return (
-    <aside className="theme3-configurator-panel">
-      <header className="theme3-panel-header" ref={headerRef} aria-hidden="true" />
-
-      <div className="theme3-panel-scroll" ref={scrollContainerRef}>
+    <aside
+      className={`theme3-configurator-panel${view360 ? " beads-controls--view-only" : ""}`}
+      aria-busy={view360 ? "true" : undefined}
+    >
+      <div
+        className={`beads-panel-edit-body${view360 ? " is-360-disabled" : ""}`}
+        aria-hidden={view360 ? "true" : undefined}
+      >
+        <div className="theme3-panel-scroll theme3-panel-scroll--flush-top" ref={scrollContainerRef}>
         <div className="theme3-option-section" data-theme3-section="jewelry" ref={sectionRefs.jewelry}>
-          <header className="theme3-option-section-header">
-            <h3>Jewelry</h3>
-            <span className="theme3-section-header-price">${jewelryPrice.toLocaleString()}</span>
+          <header className="theme3-jewelry-section-header">
+            <span className="theme3-section-heading">Jewelry</span>
           </header>
-
-          <OptionRow title="Category">
-            {/* Merged /Jewelery-customizer shell only: jump to the other apps. */}
-            {isJewelryShellActive() && (
-              <>
-                <TextOption
-                  active={false}
-                  label="Necklace"
-                  onClick={() => requestJewelryCategory("necklace")}
-                />
-                <TextOption
-                  active={false}
-                  label="Bracelet"
-                  onClick={() => requestJewelryCategory("bracelet")}
-                />
-              </>
-            )}
-            {BEAD_JEWELRY_CATEGORIES.map((category) => (
-              <TextOption
-                key={category.id}
-                active={jewelryCategory === category.id}
-                label={category.label}
-                disabled={category.disabled}
-                onClick={() => setJewelryCategory(category.id)}
-              />
-            ))}
-          </OptionRow>
+          <div
+            className="jewelry-category-row jewelry-category-row--compact"
+            role="tablist"
+            aria-label="Jewelry category"
+          >
+            <div className="jewelry-category-row-options">
+              {isJewelryShellActive() && (
+                <>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    className="jewelry-category-btn theme3-option-box-label"
+                    onClick={() => requestJewelryCategory("necklace")}
+                  >
+                    Necklace
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    className="jewelry-category-btn theme3-option-box-label"
+                    onClick={() => requestJewelryCategory("bracelet")}
+                  >
+                    Bracelet
+                  </button>
+                </>
+              )}
+              {BEAD_JEWELRY_CATEGORIES.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={jewelryCategory === category.id}
+                  className={`jewelry-category-btn theme3-option-box-label${jewelryCategory === category.id ? " active" : ""}`}
+                  disabled={category.disabled}
+                  onClick={() => setJewelryCategory(category.id)}
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <OptionRow title="Style" className="beads-style-row">
             {VISIBLE_BEAD_STYLES.map((style) => (
@@ -1124,7 +1163,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
                 <span className="beads-style-card__thumb">
                   <StylePreviewThumb styleId={style.id} />
                 </span>
-                <span>{style.label}</span>
+                <span className="theme3-option-box-label">{style.label}</span>
               </button>
             ))}
           </OptionRow>
@@ -1148,8 +1187,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
           ref={sectionRefs.customize}
         >
           <header className="theme3-option-section-header">
-            <h3>Customize</h3>
-            <span className="theme3-section-header-price">${customizePrice.toLocaleString()}</span>
+            <h3 className="theme3-section-heading">Customize</h3>
           </header>
 
           {activeSlotItem && (
@@ -1314,10 +1352,10 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
               {customizeTab === "beads" && (
                 <div className="beads-picker-filters">
                   <div className="beads-picker-filter beads-picker-filter--type">
-                    <span className="beads-picker-filter__label">Type</span>
+                    <span className="beads-picker-filter__label theme3-section-heading">Type</span>
                     <div className="beads-picker-type-select-wrap">
                       <select
-                        className="beads-picker-type-select"
+                        className="beads-picker-type-select theme3-option-box-label"
                         value={collectionId}
                         onChange={(event) => setCollectionId(event.target.value)}
                         aria-label="Bead type"
@@ -1337,7 +1375,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
                   </div>
 
                   <div className="beads-picker-filter beads-picker-filter--size">
-                    <span className="beads-picker-filter__label">Size (mm)</span>
+                    <span className="beads-picker-filter__label theme3-section-heading">Size (mm)</span>
                     <div className="beads-picker-size-options">
                       {BEAD_GRID_SIZE_FILTERS.map((filter) => {
                         const isActive = gridSizeFilter === filter.id;
@@ -1346,7 +1384,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
                           <button
                             key={filter.id}
                             type="button"
-                            className={`beads-picker-size-btn ${isActive ? "active" : ""}`}
+                            className={`beads-picker-size-btn theme3-option-box-label ${isActive ? "active" : ""}`}
                             onClick={() => handleGridSizeFilter(filter.id)}
                           >
                             {filter.label}
@@ -1378,12 +1416,9 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
                               activeSlotIndex !== null &&
                               customizeSlotItems[activeSlotIndex]?.assetKey === entry.asset.key &&
                               (customizeSlotItems[activeSlotIndex]?.sizeId || sizeId) === entry.sizeId) ||
-                            (activeSlotItem?.type !== "bead" &&
-                              activeSlotIndex === null &&
+                            ((activeSlotIndex === null || activeSlotItem?.type !== "bead") &&
                               selectedBeadKey === entry.asset.key &&
-                              (gridSizeFilter === "all"
-                                ? pickerBeadSizeId === null || entry.sizeId === pickerBeadSizeId
-                                : entry.sizeId === `${gridSizeFilter}mm`))
+                              entry.sizeId === activeBeadSizeId)
                           }
                           disabled={!isBeadPickerEntryEnabled(entry.asset.key, entry.sizeId)}
                           sizeLabel={entry.sizeLabel}
@@ -1417,9 +1452,16 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
                                 ? !isSpacerPickerEntryEnabled(asset.key)
                                 : !canAddCurrentSelection
                           }
-                          sizeLabel={customizeTab === "charms" ? "Charm" : gridSizeLabel}
-                          showPrice={customizeTab === "beads" || customizeTab === "charms"}
-                          displayLabel={customizeTab === "charms" ? "Charm" : undefined}
+                          sizeLabel={
+                            customizeTab === "spacers" || customizeTab === "charms"
+                              ? null
+                              : gridSizeLabel
+                          }
+                          showPrice={
+                            customizeTab === "beads" ||
+                            customizeTab === "charms" ||
+                            customizeTab === "spacers"
+                          }
                           onClick={(event) => handleAssetSelect(asset.key, event)}
                         />
                       ))}
@@ -1428,6 +1470,7 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
             </div>
           )}
         </div>
+      </div>
       </div>
 
       <footer className="theme3-panel-footer" ref={footerRef}>
@@ -1442,9 +1485,9 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
               aria-expanded={isSummaryExpanded}
               onClick={handleSummaryArrowClick}
             >
-              <span>View details</span>
+              <span className="theme3-link-text">View details</span>
               <svg
-                className={`theme3-summary-toggle-arrow${isSummaryExpanded ? " is-expanded" : ""}`}
+                className={`theme3-summary-toggle-arrow theme3-link-text${isSummaryExpanded ? " is-expanded" : ""}`}
                 xmlns="http://www.w3.org/2000/svg"
                 width="8"
                 height="5"
@@ -1460,8 +1503,10 @@ const BeedsControls = forwardRef(function BeedsControls({ activeSection = "jewel
             </button>
 
             <div className="theme3-summary-price-row">
-              <strong className="theme3-summary-price">${totalPrice.toLocaleString()}</strong>
-              <span className="theme3-summary-tax-label">+ tax</span>
+              <strong className="theme3-summary-price theme3-section-heading">${totalPrice.toLocaleString()}</strong>
+              {footerSummaryTaxLabel ? (
+                <span className="theme3-summary-tax-label theme3-body-text">{footerSummaryTaxLabel}</span>
+              ) : null}
             </div>
           </div>
 

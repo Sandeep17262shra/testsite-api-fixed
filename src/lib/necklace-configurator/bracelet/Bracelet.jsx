@@ -420,10 +420,34 @@ function braceletLocalToScene(localPos, braceletPath, scaleFallback) {
 // Position/rotation now come from getPointPlacement()/getOrbitCharmTransform()
 // above. Only `scale` still comes from the hand-tuned BRACELET_CHARM_POSITIONS data,
 // since per-charm/per-bracelet size still needs manual tuning.
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── 3D CHARM SIZE OVERRIDES ─────────────────────────────────────────────────
+// Set the display size for every 3D GLB charm here.
+// Format: [x, y, z]  — use equal values for uniform scaling.
+// These take priority over anything stored in BRACELET_CHARM_POSITIONS.
+// ════════════════════════════════════════════════════════════════════════════
+const GLB_CHARM_SCALE_OVERRIDES = {
+  "/bc-assets/bracelet_models/CHARMS1.glb": [20, 20, 20],  // Classic Butterfly
+  "/bc-assets/bracelet_models/CHARMS2.glb": [15, 15, 15],  // Elegant Floral
+  "/bc-assets/bracelet_models/CHARMS3.glb": [0.07, 0.07, 0.07],  // Starfish
+  "/bc-assets/bracelet_models/CHARMS4.glb": [0.05, 0.05, 0.05],  // Modern Star
+  "/bc-assets/bracelet_models/CHARMS5.glb": [0.05, 0.05, 0.05],  // Sphere Locket
+  "/bc-assets/bracelet_models/CHARMS6.glb": [0.1, 0.1, 0.1],  // Silken Tassel
+  "/bc-assets/bracelet_models/CHARMS7.glb": [0.07, 0.07, 0.07],  // Classic Heart
+  "/bc-assets/bracelet_models/CHARMS8.glb": [0.02, 0.02, 0.02],  // Gladiator Helmet
+};
+// ════════════════════════════════════════════════════════════════════════════
+
 function getGLBCharmScale(braceletPath, charmPath) {
+  // 1. Per-charm override block above (highest priority)
+  if (GLB_CHARM_SCALE_OVERRIDES[charmPath]) {
+    return GLB_CHARM_SCALE_OVERRIDES[charmPath];
+  }
+  // 2. Legacy per-bracelet/per-charm data in BRACELET_CHARM_POSITIONS
   const entries = BRACELET_CHARM_POSITIONS[braceletPath]?.[charmPath];
   const first = entries?.[0];
-  return first?.scale ?? [20, 20, 20];
+  return first?.scale ?? [0.01, 0.01, 0.01];
 }
 // ─────────────────────────────────────────────────────────────────────────────
 // Remove solid-colour backgrounds via corner flood-fill
@@ -1365,12 +1389,14 @@ const Bracelet = () => {
     return () => media.removeEventListener('change', updateIsMobile);
   }, []);
   const {
+    selectedBracelet,
     braceletPath, charms, setCharms,
+    braceletMetal, braceletPurity, braceletSize,
     namePendant,
     materialPropsBracelet, materialProps, texture,
     pendantMetalHex,
     setHighlightedIndex, highlightedIndex,
-    setSelectedIndex, cameraView, setCameraView,
+    setSelectedIndex, cameraView, setCameraView, activeCharmSlot, setActiveCharmSlot,
     capture, resetObj, setResetObj, loader,
   } = useContext(BraceletContext);
 
@@ -1468,7 +1494,20 @@ useEffect(() => {
 
   useEffect(() => {
     if (!share) return;
-    const config = { type: 'bracelet', braceletPath, charms, namePendant, materialPropsBracelet, materialProps, pendantMetalHex, cameraView };
+    const config = {
+      type: 'bracelet',
+      selectedBracelet,
+      braceletPath,
+      braceletMetal,
+      braceletPurity,
+      braceletSize,
+      charms,
+      namePendant,
+      materialPropsBracelet,
+      materialProps,
+      pendantMetalHex,
+      cameraView,
+    };
     let encoded;
     try { encoded = Base64.encode(JSON.stringify(config)); } catch { return; }
     const url = parentUrl ? new URL(parentUrl) : new URL(window.location.href);
@@ -1477,7 +1516,7 @@ useEffect(() => {
     setShareUrl(finalUrl);
     navigator.clipboard.writeText(finalUrl).catch(console.error);
     setShare(false);
-  }, [share, braceletPath, charms, namePendant, materialPropsBracelet, cameraView, parentUrl]);
+  }, [share, selectedBracelet, braceletPath, braceletMetal, braceletPurity, braceletSize, charms, namePendant, materialPropsBracelet, cameraView, parentUrl]);
 
   const [scale]  = useState(30);
   const groupRef = useRef();
@@ -1499,7 +1538,11 @@ const deleteCharm = index => {
     if (now - lastDeleteMs.current < 350) return;
     lastDeleteMs.current = now;
 
-    setCharms(charms.filter((_, charmIndex) => charmIndex !== index));
+    const updated = charms.filter((_, charmIndex) => charmIndex !== index);
+    const focusIndex = updated.length ? Math.max(0, index - 1) : 0;
+    setCharms(updated);
+    setActiveCharmSlot(focusIndex);
+    setCameraView(updated.length ? `charmProduct-${focusIndex}` : '');
 };
 
   const handlePlaceholderClick = index => {
@@ -1547,6 +1590,49 @@ const deleteCharm = index => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [charms, braceletPath, braceletPoints, scale, isNameChain, nameChainGeom.gapHalfAngle]);
+
+  // Keep the newest charm at the front-centre of the product view. As more
+  // charms are distributed around the bracelet, this rotates the same product
+  // framing toward the just-added slot instead of leaving it off to one side.
+  const braceletCameraViews = useMemo(() => {
+    const activePosition = charmRenderData[activeCharmSlot]?.position;
+    const [x = 0, , z = 1] = activePosition || [];
+    const radialLength = Math.hypot(x, z) || 1;
+    const basePosition = CAMERA_POSITIONS.charmsOnly.desktop;
+    const horizontalDistance = Math.hypot(basePosition[0], basePosition[2]);
+    // Keep the same rotation around the bracelet, but use the low product-shot
+    // elevation so the chain reads as a front/side profile rather than a
+    // top-down oval.
+    const productViewHeight = DESKTOP_ORBIT_TARGET[1] + 0.45;
+    const position = [
+      (x / radialLength) * horizontalDistance,
+      productViewHeight,
+      (z / radialLength) * horizontalDistance,
+    ];
+    const viewName = `charmProduct-${activeCharmSlot ?? 0}`;
+
+    return {
+      // The View button's standard presets must share OrbitControls' product
+      // target. Generic CameraController presets aim at world y=0, while the
+      // bracelet centre is y=0.6, causing the side and front views to sit high.
+      top: {
+        position: scaleFromTarget([0, DESKTOP_ORBIT_TARGET[1] + DESKTOP_CHAIN_VIEW_DISTANCE, 0.001], DESKTOP_ORBIT_TARGET, mobileFitFactor),
+        target: DESKTOP_ORBIT_TARGET,
+      },
+      side: {
+        position: scaleFromTarget([DESKTOP_CHAIN_VIEW_DISTANCE, DESKTOP_ORBIT_TARGET[1], 0], DESKTOP_ORBIT_TARGET, mobileFitFactor),
+        target: DESKTOP_ORBIT_TARGET,
+      },
+      front: {
+        position: scaleFromTarget([0, DESKTOP_ORBIT_TARGET[1], DESKTOP_CHAIN_VIEW_DISTANCE], DESKTOP_ORBIT_TARGET, mobileFitFactor),
+        target: DESKTOP_ORBIT_TARGET,
+      },
+      [viewName]: {
+        position: scaleFromTarget(position, DESKTOP_ORBIT_TARGET, mobileFitFactor),
+        target: DESKTOP_ORBIT_TARGET,
+      },
+    };
+  }, [activeCharmSlot, charmRenderData, mobileFitFactor]);
 
   return (
     <div style={{ height: '100%', width: '100%', background: '#f8f8f8', position: 'relative' }}>
@@ -1713,7 +1799,11 @@ const deleteCharm = index => {
         </group>
 
         <AxesLines />
-        <CameraController view={cameraView} setView={setCameraView} />
+        <CameraController
+          view={cameraView}
+          setView={setCameraView}
+          customViewPositions={braceletCameraViews}
+        />
         {capture && <Capture targetGroup={groupRef} />}
         {/* minDistance is how far IN the shopper can zoom. On desktop it equals
             DESKTOP_CHAIN_VIEW_DISTANCE (measured from the ring centre), so the

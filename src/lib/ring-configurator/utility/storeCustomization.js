@@ -1,12 +1,12 @@
 import { getAvailableOptions } from "./storePriceHelper.js";
 import { isDiamondWiseParentUrl } from "../priceConfig.js";
 
-const STORE_KEYS = ["anelladiamond", "bongioielli", "dimendscaasi", "elitejewelers", "labgrownlove", "diamondwise", "jewelith-pricing-test", "jewelith"];
+const STORE_KEYS = ["anelladiamond", "bongioielli", "dimendscaasi", "elitejewelers", "labgrownlove", "diamondwise", "jewelith"];
 
 const OPTION_CATALOG = {
   metalPurities: ["9K", "10K", "14K", "18K"],
-  shankStyles: ["PLAIN", "PLATE-PRONG", "KNIFE-EDGE", "CHANNEL", "CATHEDRAL", "SPLIT", "TWISTED", "WIDE-PLAIN"],
-  headStyles: ["4-PRONG", "SINGLE-HALO", "6-PRONG", "DOUBLE-HALO", "BEZEL", "OVAL", "HIDDEN-HALO"],
+  shankStyles: ["PLAIN", "PLATE-PRONG", "KNIFE-EDGE", "CHANNEL", "CATHEDRAL", "SPLIT", "TWISTED", "WIDE-PLAIN", "FRENCH-PAVE", "PAVE-STONES", "8-STONES", "MULTI-ROW", "TWISTED-2", "FLUTED", "BRAIDED", "CATHEDRAL-SIDE-STONE", "SIDE-BEZEL-STONES", "BAGUETTE-SIDE-STONE", "PEAR-SIDE-STONE", "HALF-MOON-SIDE-STONE"],
+  headStyles: ["4-PRONG", "SINGLE-HALO", "6-PRONG", "DOUBLE-HALO", "BEZEL", "OVAL", "HIDDEN-HALO", "HIDDEN-HALO-2"],
   diamondShapes: ["round", "pear", "princess", "emerald", "cushion", "marquise", "oval", "moval", "heart", "asscher", "radiant"],
   matchingBandStyles: ["PLAIN", "CHANNEL", "PLATE-PRONG"],
   diamondTypes: ["Lab", "Natural"],
@@ -20,11 +20,12 @@ const DEFAULT_RULES = {
   defaultColorType: "colorless",
   defaultMetalColor: "#FFD280",
   roundOnlyHeadStyles: ["hidden-halo", "single-halo", "double-halo"],
-  threeStoneShapes: ["round", "princess", "oval", "pear", "baguette"],
+  threeStoneShapes: ["round", "princess", "cushion", "oval", "radiant", "pear", "emerald", "marquise", "heart", "asscher", "moval"],
   headDefaultShapes: {
     plain: "round",
     bezel: "round",
     "hidden-halo": "round",
+    "hidden-halo-2": "round",
     "single-halo": "round",
     "double-halo": "round",
     "three-stone": "oval",
@@ -33,12 +34,13 @@ const DEFAULT_RULES = {
     plain: ["round", "emerald", "oval", "moval", "pear", "asscher", "cushion", "marquise", "princess", "radiant", "heart"],
     bezel: ["round", "emerald", "oval", "moval", "pear", "asscher", "cushion", "marquise", "princess", "radiant", "heart"],
     "hidden-halo": ["round", "moval"],
+    "hidden-halo-2": ["round", "emerald", "oval", "moval", "pear", "asscher", "cushion", "marquise", "princess", "radiant", "heart"],
     "single-halo": ["round"],
     "double-halo": ["round"],
-    "three-stone": ["round", "princess", "oval", "pear"],
+    "three-stone": ["round", "princess", "cushion", "oval", "radiant", "pear", "emerald", "marquise", "heart", "asscher", "moval"],
   },
   threeStoneShapeMap: {
-    round: "HALF-MOON",
+    round: "OVAL",
     princess: "TRAPEZOID",
     oval: "OVAL",
     pear: "PEAR",
@@ -47,10 +49,11 @@ const DEFAULT_RULES = {
     plain: "4-PRONG",
     bezel: "BEZEL",
     "hidden-halo": "HIDDEN-HALO",
+    "hidden-halo-2": "HIDDEN-HALO-2",
     "single-halo": "SINGLE-HALO",
     "double-halo": "DOUBLE-HALO",
   },
-  matchingBandCompatibleShanks: ["PLAIN", "CATHEDRAL", "KNIFE-EDGE", "SPLIT", "CHANNEL", "PLATE-PRONG", "FRENCH-PAVE", "PAVE-STONES", "8-STONES", "MULTI-ROW", "TWISTED-2", "FLUTED", "BRAIDED", "CATHEDRAL-SIDE-STONE", "SIDE-BEZEL-STONES"],
+  matchingBandCompatibleShanks: ["PLAIN", "CATHEDRAL", "KNIFE-EDGE", "SPLIT", "CHANNEL", "PLATE-PRONG", "FRENCH-PAVE", "PAVE-STONES", "8-STONES", "MULTI-ROW", "TWISTED-2", "FLUTED", "BRAIDED", "CATHEDRAL-SIDE-STONE", "SIDE-BEZEL-STONES", "BAGUETTE-SIDE-STONE", "PEAR-SIDE-STONE", "HALF-MOON-SIDE-STONE"],
 };
 
 const STORE_RULE_OVERRIDES = {
@@ -61,7 +64,6 @@ const STORE_RULE_OVERRIDES = {
   elitejewelers: {},
   labgrownlove: {},
   diamondwise: {},
-  "jewelith-pricing-test": {},
   jewelith: {},
 };
 
@@ -149,13 +151,13 @@ export const getResolvedHeadSelection = (headStyle, requestedShape, settings) =>
   if (headStyle === "three-stone") {
     const shape = rules.threeStoneShapes.includes(requestedShape)
       ? requestedShape
-      : firstAvailable(rules.threeStoneShapes, "oval");
+      : "oval";
 
     return {
       headStyle,
       shape,
-      ringHead: rules.threeStoneShapeMap[shape] ?? "OVAL",
-      threestone: shape === "round" ? "half-moon" : shape === "princess" ? "trapezoid" : shape,
+      ringHead: "OVAL",
+      threestone: "oval",
       shapeList: rules.threeStoneShapes.join(","),
     };
   }

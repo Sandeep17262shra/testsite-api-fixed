@@ -52,7 +52,7 @@ export function toEncPath(path) {
 // version changes the cache key so the smaller file is actually fetched.
 //
 // BUMP THIS whenever a model file is re-exported or re-compressed in place.
-const ASSET_VERSION = '14';
+const ASSET_VERSION = '24';
 
 function versioned(url) {
   return `${url}${url.includes('?') ? '&' : '?'}v=${ASSET_VERSION}`;
@@ -149,8 +149,15 @@ export async function preloadModel(path, signal) {
 
   const request = (async () => {
     const encPath = toEncPath(path);
-    const response = await fetch(versioned(encPath), { signal });
-    if (!response.ok) throw new Error(`Failed to fetch: ${encPath} (${response.status})`);
+    let response = await fetch(versioned(encPath), { signal });
+    if (!response.ok) {
+      // Fall back to unencrypted path if .enc file does not exist
+      response = await fetch(versioned(path), { signal });
+      if (!response.ok) throw new Error(`Failed to fetch: ${path} (${response.status})`);
+      const buffer = await response.arrayBuffer();
+      cacheBuffer(path, buffer);
+      return buffer;
+    }
     const encrypted = await response.arrayBuffer();
     const decrypted = xorDecrypt(encrypted);
     cacheBuffer(path, decrypted);

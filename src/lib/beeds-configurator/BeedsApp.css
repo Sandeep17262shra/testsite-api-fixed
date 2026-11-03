@@ -2703,6 +2703,7 @@ button:focus{
             display: flex;
     justify-content: center;
     align-items: center;
+    display: none !important;
 }
 .arrow-icon {
   font-size: 20px;
@@ -3599,15 +3600,46 @@ button:focus{
   transform-style: preserve-3d;
   transform-origin: 50% 46%;
   backface-visibility: hidden;
+}
+
+.beads-preview-morph.is-morphing .beads-preview-morph__layer {
+  transition:
+    opacity 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
   will-change: opacity, transform;
 }
 
 .beads-preview-morph__layer--2d {
   z-index: 2;
+  opacity: 1;
+  transform: none;
+}
+
+.beads-preview-morph.is-3d-active .beads-preview-morph__layer--2d {
+  opacity: 0;
+  transform: translate3d(0, -14px, 0) scale(0.955) rotateX(-16deg);
 }
 
 .beads-preview-morph__layer--3d {
   z-index: 3;
+  opacity: 0;
+  /* Stay flat. A rotateX here tilts the WebGL canvas during the 360° fade
+     and the round bracelet reads as an oval until the tilt finishes. */
+  transform: none;
+  pointer-events: none;
+}
+
+/* The canvas defaults to pointer-events: auto, which still hits even when this
+   layer is none. Force the whole hidden 3D view out of the way in 2D. */
+.beads-preview-morph:not(.is-3d-active) .beads-preview-morph__layer--3d,
+.beads-preview-morph:not(.is-3d-active) .beads-preview-morph__layer--3d * {
+  pointer-events: none !important;
+}
+
+.beads-preview-morph.is-3d-active .beads-preview-morph__layer--3d {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
 .beads-preview-morph.is-morphing .beads-2d-stage-wrap {
@@ -3653,6 +3685,19 @@ button:focus{
   display: flex;
   align-items: center;
   pointer-events: none;
+}
+
+.beads-preview-morph.is-morphing.is-3d-active .beads-preview-desc-overlay {
+  animation: beads-preview-desc-in 200ms ease 160ms both;
+}
+
+@keyframes beads-preview-desc-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .beads-preview-desc-overlay strong {
@@ -3710,6 +3755,21 @@ button:focus{
 .beads-2d-string {
   vector-effect: non-scaling-stroke;
   stroke-opacity: 0.88;
+}
+
+.beads-2d-ring-visual {
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+.beads-2d-ring-visual.is-art-ready {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beads-2d-ring-visual {
+    transition: none;
+  }
 }
 
 .beads-2d-string--free-size {
@@ -4309,6 +4369,22 @@ button:focus{
   min-height: 44px;
 }
 
+/* Global RCApp.css uses --appearance-secondary on pill text (too light on white). */
+.beeds-configurator-root.theme3-root:not(.theme3-has-button-typography) .gb-text-option:not(:disabled),
+.beeds-configurator-root.theme3-root:not(.theme3-has-button-typography) .gb-text-option:not(.active):not(:disabled),
+.beeds-configurator-root.theme3-root:not(.theme3-has-button-typography) .gb-text-option.active {
+  color: #303030 !important;
+}
+
+.beeds-configurator-root.theme3-root .gb-text-option:not(.active):not(:disabled) {
+  border-color: #e2e2de;
+}
+
+.beeds-configurator-root.theme3-root .gb-text-option.active {
+  border-color: #303030;
+  background: #f8f8f8;
+}
+
 .beads-picker-filters {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
@@ -4543,9 +4619,10 @@ button:focus{
   position: absolute;
   top: 50%;
   right: 12px;
+  z-index: 1;
   width: 12px;
   height: 8px;
-  color: #111;
+  color: var(--typography-button-primary-text-color, var(--appearance-secondary-text, #303030));
   pointer-events: none;
   transform: translateY(-50%);
 }
@@ -4554,6 +4631,10 @@ button:focus{
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.beads-picker-type-select__chevron svg path {
+  stroke: currentColor;
 }
 
 .beads-picker-size-options {
@@ -4598,8 +4679,8 @@ button:focus{
 }
 
 .beads-grid-card.active {
-  border-color: #111;
-  box-shadow: inset 0 0 0 1px #111;
+  border-color: var(--appearance-primary, #111);
+  box-shadow: none;
 }
 
 .beads-grid-card.is-disabled {
@@ -4658,9 +4739,33 @@ button:focus{
 }
 
 .beads-grid-card__meta {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.2;
   color: #666;
+}
+
+/* Beads / spacers / charms picker: same 12px name + price on every store.
+   Appearance API still colors borders; it must not shrink these labels. */
+.beeds-configurator-root.theme3-root.theme3-root--beeds .beads-grid-card,
+.beeds-configurator-root.theme3-root.theme3-has-button-typography.theme3-root--beeds .beads-grid-card {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  letter-spacing: normal !important;
+}
+
+.beeds-configurator-root.theme3-root.theme3-root--beeds .beads-grid-card .theme3-option-box-label,
+.beeds-configurator-root.theme3-root.theme3-root--beeds .beads-grid-card .beads-grid-card__label,
+.beeds-configurator-root.theme3-root.theme3-has-button-typography.theme3-root--beeds .beads-grid-card .theme3-option-box-label,
+.beeds-configurator-root.theme3-root.theme3-has-button-typography.theme3-root--beeds .beads-grid-card .beads-grid-card__label,
+.beeds-configurator-root.theme3-root.theme3-root--beeds .beads-grid-card .theme3-option-box-price,
+.beeds-configurator-root.theme3-root.theme3-root--beeds .beads-grid-card .beads-grid-card__meta,
+.beeds-configurator-root.theme3-root.theme3-has-button-typography.theme3-root--beeds .beads-grid-card .theme3-option-box-price,
+.beeds-configurator-root.theme3-root.theme3-has-button-typography.theme3-root--beeds .beads-grid-card .beads-grid-card__meta {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  letter-spacing: normal !important;
 }
 
 @media (max-width: 900px) {
@@ -4864,9 +4969,18 @@ button:focus{
 }
 
 .beeds-configurator-root.theme3-root .selected-charm-slot {
+  box-sizing: border-box;
   width: 64px;
   height: 64px;
+  min-width: 64px;
+  min-height: 64px;
   flex: 0 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 2px 3px;
   border: 1px solid #dcdcd8;
   border-style: solid;
   border-radius: 4px;
@@ -4874,9 +4988,12 @@ button:focus{
 }
 
 .beeds-configurator-root.theme3-root .selected-charm-slot img {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
+  max-width: 36px;
+  max-height: 36px;
   object-fit: contain;
+  flex: 0 0 auto;
 }
 
 .beeds-configurator-root.theme3-root .selected-charm-slot.add-slot {
@@ -4904,14 +5021,16 @@ button:focus{
   background: #f5f5f3;
 }
 
-.beeds-configurator-root.theme3-root .selected-charm-slot .remove-slot-btn {
+.beeds-configurator-root.theme3-root .selected-charm-slot .remove-slot-btn,
+.beeds-configurator-root.theme3-root .selected-charm-slot .remove-slot-btn:hover {
   top: -6px;
   right: -6px;
   width: 18px;
   height: 18px;
-  border: 0;
-  background: #303030;
-  color: #ffffff;
+  border: 0 !important;
+  border-radius: 50%;
+  background: #303030 !important;
+  color: #ffffff !important;
 }
 
 .beeds-configurator-root.theme3-root .selected-charms-row.is-readonly .selected-charm-slot {
@@ -4928,16 +5047,16 @@ button:focus{
 }
 
 .beeds-configurator-root.theme3-root .selected-charm-slot .beads-slot-size-label {
-  position: absolute;
-  left: 4px;
-  bottom: 4px;
-  padding: 1px 4px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #333;
-  font-size: 9px;
+  position: static;
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  color: #303030;
+  font-size: 10px;
   font-weight: 600;
   line-height: 1.2;
+  text-align: center;
   pointer-events: none;
 }
 .beeds-configurator-root.theme3-root .gb-option-row--bead-picker.gb-option-row--two-line .gb-option-track {
@@ -5092,7 +5211,7 @@ button:focus{
   line-height: 1.2;
 }
 
-.theme3-root--beeds .theme3-summary-details-toggle span {
+.theme3-root--beeds:not(.theme3-has-link-typography) .theme3-summary-details-toggle span {
   color: #000000 !important;
   font-size: 10px !important;
   font-weight: 400 !important;
@@ -5177,11 +5296,41 @@ button:focus{
   cursor: not-allowed;
 }
 
+/* 360° preview: orbit-only on canvas; options panel read-only; footer row stays interactive. */
+.theme3-root--beeds .beads-panel-edit-body {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Same washed-out look as .gb-card-option:disabled (opacity 0.35). */
+.theme3-root--beeds .beads-panel-edit-body.is-360-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  user-select: none;
+  cursor: not-allowed;
+  transition: opacity 0.28s ease;
+}
+
+.theme3-root--beeds.theme3-root--view360 .theme3-section-nav {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+  transition: opacity 0.28s ease;
+}
+
+.theme3-root--beeds.theme3-root--view360 .theme3-section-nav > button {
+  cursor: not-allowed;
+}
+
 .theme3-root--beeds .theme3-panel-action-btn.theme3-panel-share-btn,
 .theme3-root--beeds .theme3-panel-action-btn.theme3-panel-reset-btn {
   width: 96px;
   padding: 0 16px;
-  border: 1px solid #262626 !important;
+  border: 1px solid var(--appearance-primary, #262626) !important;
   background: #ffffff !important;
   color: #262626 !important;
 }
@@ -5189,16 +5338,14 @@ button:focus{
 .theme3-root--beeds .theme3-panel-action-btn.theme3-panel-share-btn:hover,
 .theme3-root--beeds .theme3-panel-action-btn.theme3-panel-reset-btn:hover {
   background: #f5f5f3 !important;
-  border-color: #262626 !important;
+  border-color: var(--appearance-hover-primary, var(--appearance-primary, #262626)) !important;
 }
 
 @media (min-width: 901px) {
   .theme3-root--beeds .theme3-workspace {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: 60px minmax(0, 1fr);
-    grid-template-areas:
-      "preview nav"
-      "preview options";
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "preview options";
   }
 
   .theme3-root--beeds .theme3-preview-caption {
@@ -5231,8 +5378,8 @@ button:focus{
     border-right-color: var(--theme3-ink, #262626);
   }
 
-  .theme3-root--beeds .theme3-panel-scroll > [data-theme3-section="jewelry"] > .theme3-option-section-header {
-    padding-top: 8px;
+  .theme3-root--beeds .theme3-panel-scroll > [data-theme3-section="jewelry"] > .theme3-jewelry-block-header {
+    padding-top: 0;
   }
 }
 
@@ -5283,4 +5430,11 @@ button:focus{
   .theme3-root--beeds .theme3-panel-footer-cta {
     min-width: 108px;
   }
+}
+
+/* Let store button typography control pill labels (same as ring / jewelry). */
+.beeds-configurator-root.theme3-root.theme3-has-button-typography .gb-text-option:not(:disabled),
+.beeds-configurator-root.theme3-root.theme3-has-button-typography .gb-text-option:not(.active):not(:disabled),
+.beeds-configurator-root.theme3-root.theme3-has-button-typography .gb-text-option.active {
+  color: unset !important;
 }

@@ -2,8 +2,28 @@
   {
     "head_id": "H000",
     "name": "No Head",
-    "compatible_shanks": ["S001", "S004", "S003", "S002", "S008"],
-    "compatible_shapes": [],
+    "compatible_shanks": [
+      "S001",
+      "S002",
+      "S003",
+      "S004",
+      "S008",
+      "S011",
+      "S014"
+    ],
+    "compatible_shapes": [
+      "SH01",
+      "SH02",
+      "SH03",
+      "SH04",
+      "SH05",
+      "SH06",
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
+    ],
     "compatible_bands": []
   },
   {
@@ -22,8 +42,11 @@
       "S010",
       "S011",
       "S012",
-      "S016",
-      "S017"
+      "S013",
+      "S014",
+      "S023",
+      "S024",
+      "S025"
     ],
     "compatible_shapes": [
       "SH01",
@@ -35,7 +58,8 @@
       "SH07",
       "SH08",
       "SH09",
-      "SH10"
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",
@@ -60,7 +84,10 @@
       "S011",
       "S012",
       "S013",
-      "S014"
+      "S014",
+      "S023",
+      "S024",
+      "S025"
     ],
     "compatible_shapes": [
       "SH01",
@@ -72,7 +99,8 @@
       "SH07",
       "SH08",
       "SH09",
-      "SH10"
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",
@@ -83,6 +111,46 @@
   {
     "head_id": "H003",
     "name": "Hidden Halo",
+    "compatible_shanks": [
+      "S001",
+      "S002",
+      "S003",
+      "S004",
+      "S006",
+      "S007",
+      "S008",
+      "S009",
+      "S010",
+      "S011",
+      "S012",
+      "S014",
+      "S015",
+      "S016",
+      "S017",
+      "S024"
+    ],
+    "compatible_shapes": [
+      "SH01",
+      "SH02",
+      "SH03",
+      "SH04",
+      "SH05",
+      "SH06",
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
+    ],
+    "compatible_bands": [
+      "B001",
+      "B005",
+      "B006"
+    ]
+  },
+  {
+    "head_id": "H005",
+    "name": "Double Halo",
     "compatible_shanks": [
       "S001",
       "S002",
@@ -109,29 +177,8 @@
       "SH07",
       "SH08",
       "SH09",
-      "SH10"
-    ],
-    "compatible_bands": [
-      "B001",
-      "B005",
-      "B006"
-    ]
-  },
-  {
-    "head_id": "H005",
-    "name": "Double Halo",
-    "compatible_shanks": [
-      "S001",
-      "S002",
-      "S003",
-      "S004",
-      "S005",
-      "S006",
-      "S007",
-      "S008"
-    ],
-    "compatible_shapes": [
-      "SH01"
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",
@@ -152,7 +199,10 @@
       "S011",
       "S012",
       "S013",
-      "S014"
+      "S014",
+      "S015",
+      "S016",
+      "S017"
     ],
     "compatible_shapes": [
       "SH01",
@@ -164,7 +214,8 @@
       "SH07",
       "SH08",
       "SH09",
-      "SH10"
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",
@@ -181,6 +232,8 @@
       "S003",
       "S004",
       "S005",
+      "S006",
+      "S007",
       "S008",
       "S009",
       "S010",
@@ -199,7 +252,8 @@
       "SH07",
       "SH08",
       "SH09",
-      "SH10"
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",
@@ -212,15 +266,20 @@
     "name": "Three Stone",
     "compatible_shanks": [
       "S001",
-      "S003",
-      "S008"
+      "S011"
     ],
     "compatible_shapes": [
       "SH01",
       "SH02",
+      "SH03",
       "SH04",
+      "SH05",
       "SH06",
-      "SH07"
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",
@@ -236,20 +295,60 @@
       "S002",
       "S003",
       "S004",
+      "S005",
+      "S007",
       "S008",
       "S009",
       "S010",
       "S011",
       "S012",
       "S013",
-      "S014"
+      "S014",
+      "S015",
+      "S016",
+      "S017",
+      "S023",
+      "S024",
+      "S025"
     ],
     "compatible_shapes": [
       "SH01",
+      "SH02",
       "SH03",
       "SH04",
+      "SH05",
       "SH06",
-      "SH07"
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
+    ],
+    "compatible_bands": [
+      "B001",
+      "B005",
+      "B006"
+    ]
+  },
+  {
+    "head_id": "H010",
+    "name": "Two Stone",
+    "compatible_shanks": [
+      "S001",
+      "S011"
+    ],
+    "compatible_shapes": [
+      "SH01",
+      "SH02",
+      "SH03",
+      "SH04",
+      "SH05",
+      "SH06",
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
     ],
     "compatible_bands": [
       "B001",
@@ -260,36 +359,137 @@
   {
     "head_id": "H011",
     "name": "Amélie",
-    "compatible_shanks": ["S018"],
-    "compatible_shapes": ["SH08"],
+    "compatible_shanks": [
+      "S018"
+    ],
+    "compatible_shapes": [
+      "SH08",
+      "SH11"
+    ],
     "compatible_bands": []
   },
   {
     "head_id": "H012",
     "name": "Élan",
-    "compatible_shanks": ["S019"],
-    "compatible_shapes": ["SH08"],
+    "compatible_shanks": [
+      "S019"
+    ],
+    "compatible_shapes": [
+      "SH08",
+      "SH11"
+    ],
     "compatible_bands": []
   },
   {
     "head_id": "H013",
     "name": "Élanora",
-    "compatible_shanks": ["S020"],
-    "compatible_shapes": ["SH04"],
+    "compatible_shanks": [
+      "S020"
+    ],
+    "compatible_shapes": [
+      "SH04",
+      "SH11"
+    ],
     "compatible_bands": []
   },
   {
     "head_id": "H014",
     "name": "Aurélie",
-    "compatible_shanks": ["S021"],
-    "compatible_shapes": ["SH04"],
+    "compatible_shanks": [
+      "S021"
+    ],
+    "compatible_shapes": [
+      "SH04",
+      "SH11"
+    ],
     "compatible_bands": []
   },
   {
     "head_id": "H015",
     "name": "Isadora",
-    "compatible_shanks": ["S022"],
-    "compatible_shapes": ["SH07"],
+    "compatible_shanks": [
+      "S022"
+    ],
+    "compatible_shapes": [
+      "SH07",
+      "SH11"
+    ],
     "compatible_bands": []
+  },
+
+  {
+    "head_id": "H020",
+    "name": "Claw Set",
+    "compatible_shanks": [
+      "S001",
+      "S002",
+      "S003",
+      "S004",
+      "S005",
+      "S006",
+      "S007",
+      "S008",
+      "S009",
+      "S010",
+      "S011",
+      "S012",
+      "S013",
+      "S014",
+      "S015",
+      "S016",
+      "S017",
+      "S023",
+      "S024",
+      "S025"
+    ],
+    "compatible_shapes": [
+      "SH01",
+      "SH02",
+      "SH03",
+      "SH04",
+      "SH05",
+      "SH06",
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
+    ],
+    "compatible_bands": [
+      "B001",
+      "B005",
+      "B006"
+    ]
+  },
+  {
+    "head_id": "H021",
+    "name": "Hidden Halo 2",
+    "compatible_shanks": [
+      "S001",
+      "S002",
+      "S003",
+      "S004",
+      "S006",
+      "S007",
+      "S008"
+    ],
+    "compatible_shapes": [
+      "SH01",
+      "SH02",
+      "SH03",
+      "SH04",
+      "SH05",
+      "SH06",
+      "SH07",
+      "SH08",
+      "SH09",
+      "SH10",
+      "SH11"
+    ],
+    "compatible_bands": [
+      "B001",
+      "B005",
+      "B006"
+    ]
   }
 ]

@@ -10,6 +10,7 @@ import {
   readStoredJewelryCategory,
   storeJewelryCategory,
 } from "@/lib/jewelry-shell/jewelryCategoryBus";
+import ConfiguratorSkeleton from "./ConfiguratorSkeleton";
 
 const SHELL_STYLE = {
   position: "fixed",
@@ -45,6 +46,7 @@ export default function JewelryCustomizerClient() {
   const [category, setCategory] = useState(null);
   const [necklaceType, setNecklaceType] = useState(null);
   const [opened, setOpened] = useState({ necklace: false, beads: false });
+  const [loaded, setLoaded] = useState({ necklace: false, beads: false });
 
   const initialAppRef = useRef(null);
   const frameRefs = useRef({ necklace: null, beads: null });
@@ -68,6 +70,14 @@ export default function JewelryCustomizerClient() {
     }
     setOpened((prev) => (prev[app] ? prev : { ...prev, [app]: true }));
     setCategory(wanted);
+  }, []);
+
+  const handleFrameLoad = useCallback((app) => {
+    // Safety fallback: if the frame's mount postMessage wasn't received,
+    // mark as loaded shortly after iframe window load so skeleton doesn't stay stuck
+    setTimeout(() => {
+      setLoaded((prev) => (prev[app] ? prev : { ...prev, [app]: true }));
+    }, 300);
   }, []);
 
   // Tell an already-open necklace frame to switch type in place (see the ref
@@ -97,6 +107,14 @@ export default function JewelryCustomizerClient() {
       const fromFrame = frames.some((node) => node && node.contentWindow === event.source);
 
       if (fromFrame) {
+        if (event.data?.type === "jewelry-frame:ready") {
+          const readyApp = event.data.app;
+          if (readyApp) {
+            setLoaded((prev) => ({ ...prev, [readyApp]: true }));
+          }
+          return;
+        }
+
         if (event.data?.type === JEWELRY_SHELL_MESSAGE) {
           const category = normalizeJewelryCategory(event.data.category);
           if (event.data.switch) {
@@ -130,9 +148,8 @@ export default function JewelryCustomizerClient() {
     return () => window.removeEventListener("message", onMessage);
   }, [openCategory]);
 
-  if (!category) return null;
-
-  const activeApp = jewelryAppForCategory(category);
+  const activeApp = category ? jewelryAppForCategory(category) : null;
+  const isCurrentFrameLoaded = activeApp ? Boolean(loaded[activeApp]) : false;
 
   return (
     <div style={SHELL_STYLE}>
@@ -146,6 +163,7 @@ export default function JewelryCustomizerClient() {
             includeConfig: initialAppRef.current === "necklace",
           })}
           style={frameStyle(activeApp === "necklace")}
+          onLoad={() => handleFrameLoad("necklace")}
           allow="xr-spatial-tracking; fullscreen; clipboard-write"
         />
       )}
@@ -158,8 +176,25 @@ export default function JewelryCustomizerClient() {
             includeConfig: initialAppRef.current === "beads",
           })}
           style={frameStyle(activeApp === "beads")}
+          onLoad={() => handleFrameLoad("beads")}
           allow="xr-spatial-tracking; fullscreen; clipboard-write"
         />
+      )}
+      {!isCurrentFrameLoaded && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 10,
+            width: "100%",
+            height: "100%",
+            overflow: "hidden",
+            background: "#fff",
+            pointerEvents: "auto",
+          }}
+        >
+          <ConfiguratorSkeleton />
+        </div>
       )}
     </div>
   );

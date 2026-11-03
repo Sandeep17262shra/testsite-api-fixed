@@ -46,7 +46,7 @@ export const ShareProvider = ({ children }) => {
       })
       .catch((error) => {
         console.warn("Unable to refresh store price configuration:", error);
-      });
+      })
 
     return () => {
       cancelled = true;

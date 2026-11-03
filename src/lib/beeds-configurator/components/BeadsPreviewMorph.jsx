@@ -11,10 +11,10 @@ const BeadsPreview3D = dynamic(() => import("./BeadsPreview3D"), {
   ),
 });
 
-const MORPH_DURATION_MS = 620;
+const MORPH_DURATION_MS = 420;
 
-function easeInOutCubic(t) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function prefetchBeadsPreview3D() {
+  import("./BeadsPreview3D").catch(() => {});
 }
 
 function prefersReducedMotion() {
@@ -41,109 +41,71 @@ function BeadsPreviewDescriptionOverlay({ visible, previewLabel }) {
 
 export default function BeadsPreviewMorph({ previewLabel = "" }) {
   const { view360 } = useContext(View360Context);
-  const progressRef = useRef(view360 ? 1 : 0);
-  const [progress, setProgress] = useState(view360 ? 1 : 0);
-  const [show2d, setShow2d] = useState(!view360);
-  const [show3d, setShow3d] = useState(view360);
-  const rafRef = useRef(null);
+  const [show2d, setShow2d] = useState(true);
+  const [morphing, setMorphing] = useState(false);
+  /** Visual end state. Flips one frame after both layers are mounted so CSS can transition. */
+  const [settled3d, setSettled3d] = useState(view360);
+  const skipMountEffectRef = useRef(true);
 
   useEffect(() => {
-    const target = view360 ? 1 : 0;
-    const from = progressRef.current;
+    prefetchBeadsPreview3D();
+  }, []);
 
-    if (Math.abs(target - from) < 0.001) {
-      setShow2d(target < 1);
-      setShow3d(target > 0);
+  useEffect(() => {
+    if (skipMountEffectRef.current) {
+      skipMountEffectRef.current = false;
       return undefined;
     }
 
-    if (target === 1) {
-      setShow3d(true);
-      setShow2d(true);
-    } else {
-      setShow2d(true);
-      setShow3d(true);
-    }
+    let rafId = 0;
+    let timerId = 0;
 
-    const duration = prefersReducedMotion() ? 0 : MORPH_DURATION_MS;
-    const start = performance.now();
-
-    const finish = (value) => {
-      progressRef.current = value;
-      setProgress(value);
-      setShow2d(value < 1);
-      setShow3d(value > 0);
-    };
-
-    if (duration <= 0) {
-      finish(target);
+    if (prefersReducedMotion()) {
+      setMorphing(false);
+      setSettled3d(view360);
+      setShow2d(!view360);
       return undefined;
     }
 
-    const tick = (now) => {
-      const t = Math.min(1, (now - start) / duration);
-      const value = from + (target - from) * easeInOutCubic(t);
-      progressRef.current = value;
-      setProgress(value);
-      if (t < 1) {
-        rafRef.current = requestAnimationFrame(tick);
-      } else {
-        finish(target);
-      }
-    };
-
-    if (rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-    }
-    rafRef.current = requestAnimationFrame(tick);
+    setShow2d(true);
+    setMorphing(true);
+    rafId = requestAnimationFrame(() => {
+      setSettled3d(view360);
+    });
+    timerId = window.setTimeout(() => {
+      setMorphing(false);
+      setShow2d(!view360);
+    }, MORPH_DURATION_MS + 40);
 
     return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(timerId);
     };
   }, [view360]);
 
-  const morphing = progress > 0.02 && progress < 0.98;
-  const p2d = 1 - progress;
-  const p3d = progress;
-
   return (
     <div
-      className={`beads-preview-morph${morphing ? " is-morphing" : ""}${view360 ? " is-3d-active" : " is-2d-active"}`}
-      style={{ "--morph-p": progress }}
+      className={`beads-preview-morph${morphing ? " is-morphing" : ""}${settled3d ? " is-3d-active" : " is-2d-active"}`}
       aria-busy={morphing}
     >
       <BeadsPreviewDescriptionOverlay
-        visible={view360 && progress > 0.55}
+        visible={settled3d}
         previewLabel={previewLabel}
       />
       {show2d ? (
         <div
           className="beads-preview-morph__layer beads-preview-morph__layer--2d"
-          style={{
-            opacity: p2d,
-            transform: `translate3d(0, ${progress * -14}px, 0) scale(${1 - progress * 0.045}) rotateX(${progress * -16}deg)`,
-            pointerEvents: !view360 && progress < 0.45 ? "auto" : "none",
-          }}
-          aria-hidden={progress > 0.92}
+          aria-hidden={settled3d}
         >
           <BeadsPreview2D />
         </div>
       ) : null}
-      {show3d ? (
-        <div
-          className="beads-preview-morph__layer beads-preview-morph__layer--3d"
-          style={{
-            opacity: p3d,
-            transform: `translate3d(0, ${(1 - progress) * 18}px, 0) scale(${0.93 + progress * 0.07}) rotateX(${(1 - progress) * 20}deg)`,
-            pointerEvents: view360 && progress > 0.55 ? "auto" : "none",
-          }}
-          aria-hidden={progress < 0.08}
-        >
-          <BeadsPreview3D />
-        </div>
-      ) : null}
+      <div
+        className="beads-preview-morph__layer beads-preview-morph__layer--3d"
+        aria-hidden={!settled3d}
+      >
+        <BeadsPreview3D active={settled3d || morphing} />
+      </div>
     </div>
   );
 }

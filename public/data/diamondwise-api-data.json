@@ -60,9 +60,9 @@
       "product_type": "head",
       "product_id": "H008",
       "name": "Oval",
-      "price": 0,
+      "price": 800,
       "currency": "USD",
-      "status": "inactive"
+      "status": "active"
     },
     {
       "product_type": "head",

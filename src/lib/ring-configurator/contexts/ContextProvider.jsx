@@ -10,37 +10,127 @@ import { LoaderProvider } from "./LoaderContext";
 import { RecordingProvider } from "./RecordingContext";
 import { SectionProvider } from "./SectionContext";
 import { SceneStageProvider } from "./SceneStageContext";
-import { initPriceConfig, isPriceConfigReady } from "../priceConfig";
+import { initAppearanceConfig } from "../appearanceApiClient";
+import { preloadThemeTypographyFonts } from "../theme3Appearance";
+import { initPriceConfig, getPricingAccessState } from "../priceConfig";
+import ConfiguratorSkeleton from "../../../components/ConfiguratorSkeleton";
 
 const PriceConfigGate = ({ children }) => {
-    const [priceConfigReady, setPriceConfigReady] = useState(() => isPriceConfigReady());
-    const { parentUrl, shop } = useStoreContext();
+    const {
+        parentUrl,
+        shop,
+        canonicalShop,
+        planStatus,
+        setAppearance,
+        setHeadingTypography,
+        setButtonTypography,
+        setBodyTypography,
+        setLinkTypography,
+        setRemoveLogo,
+    } = useStoreContext();
+    const [planInactive, setPlanInactive] = useState(() => planStatus === "inactive" || getPricingAccessState().planStatus === "inactive");
+    const storeConfigKey = `${canonicalShop}|${shop}|${parentUrl}`;
+    const [loadedStoreConfigKey, setLoadedStoreConfigKey] = useState("");
+    const hasStoreIdentity = Boolean(parentUrl || shop || canonicalShop);
 
     useEffect(() => {
         let cancelled = false;
-        // A parentUrl can arrive after the initial iframe load. Do not render
-        // the previous store's catalogue while the new store fixture/API
-        // response is being selected and loaded.
-        setPriceConfigReady(false);
+        // Localhost/default mode deliberately has no store identity. It must
+        // use the full built-in catalogue and must never be hidden by plan
+        // status returned for another store during development or hot reload.
+        const applyThemePage = (themePage) => {
+            if (cancelled || !themePage) return;
+            if (themePage.appearance) {
+                setAppearance(themePage.appearance);
+            }
+            if (themePage.heading) {
+                setHeadingTypography(themePage.heading);
+            }
+            if (themePage.button) {
+                setButtonTypography(themePage.button);
+            }
+            if (themePage.body) {
+                setBodyTypography(themePage.body);
+            }
+            if (themePage.links) {
+                setLinkTypography(themePage.links);
+            }
+        };
 
-        initPriceConfig({ force: false, parentUrl, shop })
-            .then(() => {
-                if (!cancelled) setPriceConfigReady(true);
-            })
-            .catch((err) => {
-                console.warn("Pricing config background fetch failed:", err);
-                if (!cancelled) setPriceConfigReady(true);
+        if (!hasStoreIdentity) {
+            Promise.all([
+                initPriceConfig({ parentUrl: "", shop: "", canonicalShop: "" }),
+                initAppearanceConfig({ parentUrl: "", shop: "", canonicalShop: "" }),
+            ]).then(async ([, themePage]) => {
+                if (cancelled) return;
+                applyThemePage(themePage);
+                await preloadThemeTypographyFonts(themePage);
+                if (cancelled) return;
+                const accessState = getPricingAccessState();
+                if (typeof accessState.removeLogo === "boolean" && setRemoveLogo) {
+                    setRemoveLogo(accessState.removeLogo);
+                }
+                setPlanInactive(false);
+                setLoadedStoreConfigKey("");
             });
+
+            return () => {
+                cancelled = true;
+            };
+        }
+
+        // A parentUrl can arrive after the initial iframe load. Keep the
+        // existing controls interactive while the new store fixture/API
+        // response is selected and applied in the background.
+        Promise.all([
+            initPriceConfig({ force: false, parentUrl, shop, canonicalShop }).catch((err) => {
+                console.warn("Pricing config background fetch failed:", err);
+                return null;
+            }),
+            initAppearanceConfig({ force: false, parentUrl, shop, canonicalShop }),
+        ]).then(async ([, themePage]) => {
+            if (cancelled) return;
+            applyThemePage(themePage);
+            await preloadThemeTypographyFonts(themePage);
+            if (cancelled) return;
+            const accessState = getPricingAccessState();
+            if (typeof accessState.removeLogo === "boolean" && setRemoveLogo) {
+                setRemoveLogo(accessState.removeLogo);
+            }
+            setPlanInactive(planStatus === "inactive" || getPricingAccessState().planStatus === "inactive");
+            setLoadedStoreConfigKey(storeConfigKey);
+        });
 
         return () => {
             cancelled = true;
         };
-    }, [parentUrl, shop]);
+    }, [
+        parentUrl,
+        shop,
+        canonicalShop,
+        planStatus,
+        setAppearance,
+        setHeadingTypography,
+        setButtonTypography,
+        setBodyTypography,
+        setLinkTypography,
+        setRemoveLogo,
+        storeConfigKey,
+    ]);
 
-    if (!priceConfigReady) {
+    if (planInactive) {
         return null;
     }
 
+    if (hasStoreIdentity && loadedStoreConfigKey !== storeConfigKey) {
+        return <ConfiguratorSkeleton label="Loading your store configuration" />;
+    }
+
+    // Pricing and store appearance are enhancements, not prerequisites for
+    // mounting the configurator. The contexts already expose their default
+    // values, so render the controls immediately and update their labels and
+    // prices when the async config request finishes. This leaves the scene's
+    // own loader responsible only for the 3D assets that are still loading.
     return children;
 };
 

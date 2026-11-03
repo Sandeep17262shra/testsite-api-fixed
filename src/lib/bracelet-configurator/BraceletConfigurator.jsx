@@ -7,6 +7,8 @@ import { BraceletContext } from "./contexts/BraceletContext";
 import { View360Context } from "./contexts/View360Context";
 import { ShareContext } from "./contexts/ShareContext";
 import { BRACELETS, NAME_PENDANT_SUPPORTED_PATHS, sanitizePendantText } from "./assets";
+import { SoundToggleButton } from "../beeds-configurator/components/BeadsSoundToggleButton";
+import { useTheme3Appearance } from "@/lib/ring-configurator/theme3Appearance";
 
 const isModelOnlyPreview =
   typeof window !== "undefined" &&
@@ -14,11 +16,6 @@ const isModelOnlyPreview =
    (window.self !== window.top && document.referrer && (() => {
      try { return new URL(document.referrer).searchParams.get("preview") === "model-only"; } catch { return false; }
    })()));
-
-const BRACELET_SECTIONS = [
-  { id: "bracelet", label: "Bracelet Selection", icon: "/images/bracelet-tab-icon.svg" },
-  { id: "charms", label: "Add-ons", icon: "/images/charms-tab-icon.svg" },
-];
 
 function BraceletConfigurator() {
   const { view360, setView360 } = useContext(View360Context);
@@ -37,11 +34,19 @@ function BraceletConfigurator() {
   const [activeStep, setActiveStep] = useState("bracelet");
   const [sandboxCollapsed, setSandboxCollapsed] = useState(false);
   const controlsRef = useRef(null);
-  const theme3SectionNavRef = useRef(null);
   const theme3PanelScrollRef = useRef(null);
   const isMobileRef = useRef(false);
   const wasAtPanelBottomRef = useRef(false);
   const wasAtPanelTopRef = useRef(false);
+
+  const { theme3RootClassName, themeRootDataAttrs, appearanceStyle } = useTheme3Appearance(
+    "theme3-root--jewelry"
+  );
+  const theme3RootProps = {
+    className: theme3RootClassName,
+    style: appearanceStyle,
+    ...themeRootDataAttrs,
+  };
 
   const views = ['Top', 'Side', 'Front'];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -90,6 +95,12 @@ function BraceletConfigurator() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.parent?.postMessage({ type: "jewelry-frame:ready", app: "necklace" }, "*");
+    } catch {}
   }, []);
 
   // --- Scroll passthrough: find the scroll container on mount ---
@@ -182,12 +193,6 @@ function BraceletConfigurator() {
     };
   }, []);
 
-  const handleSectionClick = (sectionId) => {
-    setActiveStep(sectionId);
-    controlsRef.current?.scrollToSection(sectionId);
-    if (isMobileRef.current) setSandboxCollapsed(true);
-  };
-
   const handleSandboxToggle = useCallback(() => {
     if (isMobileRef.current) setSandboxCollapsed(false);
   }, []);
@@ -195,17 +200,6 @@ function BraceletConfigurator() {
   const handleSectionChange = useCallback((sectionId) => {
     setActiveStep(sectionId);
   }, []);
-
-  useEffect(() => {
-    const nav = theme3SectionNavRef.current;
-    const activeButton = nav?.querySelector(`[data-theme3-nav="${activeStep}"]`);
-    if (!nav || !activeButton) return;
-
-    nav.scrollTo({
-      left: activeButton.offsetLeft - (nav.clientWidth - activeButton.clientWidth) / 2,
-      behavior: "smooth",
-    });
-  }, [activeStep]);
 
   // Compute live preview title caption
   const chainName = BRACELETS[selectedBracelet]?.name || "Bracelet";
@@ -233,9 +227,6 @@ function BraceletConfigurator() {
   const previewLabel = [purityName, metalName, chainName, nameLabel, `(${[sizeName, charmsName].filter(Boolean).join(", ")})`]
     .filter(Boolean)
     .join(" ");
-
-  const activeSectionMeta =
-    BRACELET_SECTIONS.find((s) => s.id === activeStep) || BRACELET_SECTIONS[0];
 
   const renderPreviewControls = ({ includeReset = false, includeShare = false } = {}) => (
     <div className="gb-preview-controls" aria-label="Preview controls">
@@ -284,6 +275,7 @@ function BraceletConfigurator() {
           />
         </button>
       )}
+      <SoundToggleButton className="gb-preview-control gb-preview-control--sound" />
       {includeShare && (
         <button
           type="button"
@@ -300,7 +292,7 @@ function BraceletConfigurator() {
 
   if (isModelOnlyPreview) {
     return (
-      <div className="theme3-root preview-model-only">
+      <div {...theme3RootProps} className={`${theme3RootClassName} preview-model-only`}>
         <div className="theme3-builder">
           <div className="theme3-workspace">
             <section className="theme3-preview-pane model-only" aria-label="Interactive bracelet preview">
@@ -314,7 +306,7 @@ function BraceletConfigurator() {
   }
 
   return (
-    <div className="theme3-root">
+    <div {...theme3RootProps}>
       <div className="theme3-builder">
         <div className="theme3-mobile-preview-label" aria-live="polite">
           <strong>{previewLabel}</strong>
@@ -326,73 +318,14 @@ function BraceletConfigurator() {
             aria-label="Interactive bracelet preview"
             onClick={handleSandboxToggle}
           >
-            {isKeyideasParent && (
-              <div className="bracelet-necklace">
-                <button
-                  type="button"
-                  onClick={() => setShowPopup2(true)}
-                  title="Switch to Ring"
-                >
-                  <span style={{ marginRight: "4px" }}>GO TO RING</span>
-                  <img
-                    src="/down-arrow.svg"
-                    alt=""
-                    style={{ width: "10px", height: "10px", transform: "rotate(-90deg)" }}
-                  />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowPopup(true)}
-                  title="Switch to Pendant"
-                >
-                  <span style={{ marginRight: "4px" }}>GO TO PENDANT</span>
-                  <img
-                    src="/down-arrow.svg"
-                    alt=""
-                    style={{ width: "10px", height: "10px", transform: "rotate(-90deg)" }}
-                  />
-                </button>
-              </div>
-            )}
 
-            {renderPreviewControls()}
+            {renderPreviewControls({ includeReset: true })}
             <Bracelet />
 
             <div className="theme3-preview-caption">
               <strong>{previewLabel}</strong>
             </div>
           </section>
-
-          <nav
-            className="theme3-section-nav"
-            ref={theme3SectionNavRef}
-            aria-label="Bracelet customization sections"
-            style={{ "--theme3-section-count": BRACELET_SECTIONS.length }}
-          >
-            {BRACELET_SECTIONS.map((section) => (
-              <button
-                key={section.id}
-                type="button"
-                className={activeStep === section.id ? "active" : ""}
-                data-theme3-nav={section.id}
-                onClick={() => handleSectionClick(section.id)}
-                aria-current={activeStep === section.id ? "true" : undefined}
-              >
-                <span className="theme3-section-index" aria-hidden="true">
-                  <span
-                    className="theme3-section-icon"
-                    style={{
-                      maskImage: `url(${section.icon})`,
-                      WebkitMaskImage: `url(${section.icon})`,
-                    }}
-                  />
-                </span>
-                <span className="theme3-section-copy">
-                  <strong>{section.label}</strong>
-                </span>
-              </button>
-            ))}
-          </nav>
 
           <div className="theme3-options-pane" onClick={() => { if (isMobileRef.current) setSandboxCollapsed(true); }}>
             <Controls

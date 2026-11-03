@@ -71,6 +71,10 @@ const NEW_DEFAULT_SHANKS = new Set([
   // would double-render diamonds on top of the new single-mesh geometry's
   // own baked-in stones.
   "CHANNEL", "PLATE-PRONG",
+  "TWISTED",
+  "BAGUETTE-SIDE-STONE", "PEAR-SIDE-STONE",
+  "HALF-MOON-SIDE-STONE",
+  "BAGUETTE", "PEAR",
 ]);
 const ENGRAVING_CANVAS_FONT_FAMILIES = {
   "Times New Roman": '"Times New Roman", Times, serif',
@@ -148,14 +152,41 @@ const COLOR_CLARITY = {
 export const ENGRAVING_POSITIONS = {
   // Each asset has a different inner-band profile. These positions keep the
   // text mask in the metal instead of using one shared offset for all shanks.
+  // Z = -0.05 keeps the text slightly recessed in the band in normal view.
+  //
+  // CHANNEL, PLATE-PRONG and TWISTED use the new single-mesh GLBs (swapped
+  // Sept 2026) that are rendered via NEW_DEFAULT_SHANKS with SETTING_SCALE
+  // (0.335) instead of RING_SCALE (0.40). Their activePosition Y values are
+  // also higher than the legacy shanks: CHANNEL/PLATE-PRONG sit at Y=1.25,
+  // TWISTED at Y=1.45. The old engraving Y values below were tuned for the
+  // previous geometry/position and left the engraving cylinder far below the
+  // inner band on all three. Recomputed using PLAIN as the reference:
+  //   PLAIN delta = 1.29 - 0.75 = 0.54 at scale 0.40
+  //   NEW_DEFAULT delta = 0.54 * (0.335 / 0.40) ≈ 0.45
+  //   CHANNEL / PLATE-PRONG: 1.25 + 0.45 = 1.70
+  //   TWISTED:                1.45 + 0.45 = 1.90
   "PLAIN": [0, 1.29, -0.05],
   "WIDE-PLAIN": [0, 0.57, 0],
   "CATHEDRAL": [0, 0.51, 0],
   "KNIFE-EDGE": [0, 0.57, 0],
   "SPLIT": [0, 1.265, 0],
-  "TWISTED": [0, 0.57, 0],
-  "CHANNEL": [0, 1.16, -0.05],
-  "PLATE-PRONG": [0, 1.16, -0.05],
+  "TWISTED": [0, 1.58, -0.05],
+  "CHANNEL": [0, 1.205, -0.05],
+  "PLATE-PRONG": [0, 1.21, -0.05],
+  "FRENCH-PAVE": [0, 1.21, -0.05],
+  "PAVE-STONES": [0, 1.19, -0.05],
+  "8-STONES": [0, 1.17, -0.05],
+  "MULTI-ROW": [0, 1.21, -0.05],
+  "SIDE-BEZEL-STONES": [0, 1.31, -0.05],
+  "PEAR-SIDE-STONE": [0, 1.21, -0.05],
+  "PEAR": [0, 1.21, -0.05],
+  "HALF-MOON-SIDE-STONE": [0, 1.21, -0.05],
+  "BAGUETTE-SIDE-STONE": [0, 1.16, -0.05],
+  "BAGUETTE": [0, 1.16, -0.05],
+  "CATHEDRAL-SIDE-STONE": [0, 1.21, -0.05],
+  "BRAIDED": [0, 1.2, -0.05],
+  "TWISTED-2": [0, 1.25, -0.05],
+  "FLUTED": [0, 1.24, -0.05],
   // DiamondWise shanks (default placeholder coordinates — user can tune directly)
   "dw-jul-ma-02-shank": [0, 0.21, 0],
   "dw-ju-m-0031-shank": [0, 0.21, 0],
@@ -167,6 +198,31 @@ export const ENGRAVING_POSITIONS = {
   "diamondwise-mar-ma-019": [0, 1.0, 0],
   "diamondwise-LR1046": [0, 1.0, 0],
   "diamondwise-JAN027": [0, 1.0, 0],
+};
+
+// Engraving positions when the engraving zoom view is active.
+// Only shanks where the position differs from the normal view need an entry
+// here — all others fall back to ENGRAVING_POSITIONS via getEngravingLocalPositionForZoom.
+// Z = 0 (vs -0.05) lifts the text slightly toward the viewer in the close-up.
+const ENGRAVING_POSITIONS_ZOOM = {
+  "PLAIN": [0, 1.29, 0],
+  "TWISTED": [0, 1.58, 0],
+  "CHANNEL": [0, 1.205, 0],
+  "PLATE-PRONG": [0, 1.21, 0],
+  "FRENCH-PAVE": [0, 1.21, 0],
+  "PAVE-STONES": [0, 1.21, 0],
+  "8-STONES": [0, 1.21, 0],
+  "MULTI-ROW": [0, 1.21, 0],
+  "SIDE-BEZEL-STONES": [0, 1.31, 0],
+  "PEAR-SIDE-STONE": [0, 1.21, 0],
+  "PEAR": [0, 1.21, 0],
+  "HALF-MOON-SIDE-STONE": [0, 1.21, 0],
+  "BAGUETTE-SIDE-STONE": [0, 1.16, 0],
+  "BAGUETTE": [0, 1.16, 0],
+  "CATHEDRAL-SIDE-STONE": [0, 1.26, 0],
+  "BRAIDED": [0, 1.26, 0],
+  "TWISTED-2": [0, 1.30, 0],
+  "FLUTED": [0, 1.30, 0],
 };
 
 // Same "side setting overrides a plain shank" rule the engraving position
@@ -182,12 +238,98 @@ export const getEngravingLocalPosition = (sideSetting, shank) => {
   return ENGRAVING_POSITIONS[mixSettingShank] || ENGRAVING_POSITIONS.PLAIN;
 };
 
+// Returns the zoom-specific position when the engraving close-up is active,
+// falling back to the normal position for shanks not listed in ENGRAVING_POSITIONS_ZOOM.
+const getEngravingLocalPositionForZoom = (sideSetting, shank) => {
+  if (shank && ENGRAVING_POSITIONS_ZOOM[shank]) return ENGRAVING_POSITIONS_ZOOM[shank];
+  const mixSettingShank =
+    sideSetting === "PLAIN" && shank !== "PLAIN" ? shank : sideSetting;
+  return ENGRAVING_POSITIONS_ZOOM[mixSettingShank] || getEngravingLocalPosition(sideSetting, shank);
+};
+
 const RING_SCALE = [0.40, 0.40, 0.45];
 const SETTING_SCALE = [0.335, 0.335, 0.335];
+// These GLB files were authored at different physical widths. Width choices
+// only scale the band across its width axis (Z), leaving the ring diameter
+// and head seat intact.
+const BAND_WIDTH_SCALABLE_SHANKS = new Set(["WIDE-PLAIN", "CATHEDRAL", "SIDE-BEZEL-STONES"]);
+const BAND_WIDTH_BASE_MM = {
+  "WIDE-PLAIN": 6,
+  "CATHEDRAL": 4,
+  "SIDE-BEZEL-STONES": 4,
+};
+const getBandWidthScale = (shank, bandWidth) => {
+  const width = Number.parseFloat(bandWidth);
+  const baseWidth = BAND_WIDTH_BASE_MM[shank] || 4;
+  return Number.isFinite(width) && width > 0 ? width / baseWidth : 1;
+};
 const DEFAULT_ROTATION = [0, 0, 0];
 const ENGRAVING_SCALE = [-0.3, 0.33, 0.315];
 
-const ENGRAVING_LETTER_SPACING = 2.5;
+// The inner-band atlas originally sat at 1500×35 with 13px glyphs. That is
+// enough from the product camera, but the engraving close-up magnifies the
+// same texels well past 1:1 and the letters read as blocks. Keep the original
+// layout (full circumference, same relative glyph size) and only raise pixel
+// density. 8192 stays within typical WebGL MAX_TEXTURE_SIZE.
+const ENGRAVING_ATLAS_BASE_WIDTH = 1500;
+const ENGRAVING_ATLAS_WIDTH = 8192;
+const ENGRAVING_ATLAS_HEIGHT = 192;
+const ENGRAVING_ATLAS_SCALE = ENGRAVING_ATLAS_WIDTH / ENGRAVING_ATLAS_BASE_WIDTH;
+const ENGRAVING_FONT_SIZE_PX = 13 * ENGRAVING_ATLAS_SCALE;
+const ENGRAVING_LETTER_SPACING = 2.5 * ENGRAVING_ATLAS_SCALE;
+const ENGRAVING_TEXT_Y_NUDGE = 6 * ENGRAVING_ATLAS_SCALE;
+
+function createEngravingTextTexture(engraving, engravingFont) {
+  const canvas = document.createElement("canvas");
+  canvas.width = ENGRAVING_ATLAS_WIDTH;
+  canvas.height = ENGRAVING_ATLAS_HEIGHT;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#858686";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+
+  const baseFont =
+    ENGRAVING_CANVAS_FONT_FAMILIES[engravingFont] ||
+    ENGRAVING_CANVAS_FONT_FAMILIES.Arial;
+  const fontStyle = engravingFont === "Segoe UI" ? "italic" : "normal";
+  const symbolFont = "'Segoe UI Symbol', 'Arial Unicode MS', Arial, sans-serif";
+  const y = canvas.height / 2 - ENGRAVING_TEXT_Y_NUDGE;
+  const symbolRegex = /[♡☆☾∞☯♑♓♈♉♒♋♌♍♎♏♐]/;
+  const fontFor = (char) =>
+    `${fontStyle} ${ENGRAVING_FONT_SIZE_PX}px ${symbolRegex.test(char) ? symbolFont : baseFont}`;
+
+  const chars = [...engraving];
+  const widths = chars.map((char) => {
+    ctx.font = fontFor(char);
+    return ctx.measureText(char).width;
+  });
+  const totalWidth =
+    widths.reduce((a, b) => a + b, 0) +
+    ENGRAVING_LETTER_SPACING * (chars.length - 1);
+
+  let x = (canvas.width - totalWidth) / 2;
+  chars.forEach((char, i) => {
+    ctx.font = fontFor(char);
+    ctx.fillText(char, x, y);
+    x += widths[i] + ENGRAVING_LETTER_SPACING;
+  });
+
+  const canvasTexture = new THREE.CanvasTexture(canvas);
+  // Skip mipmaps: the inner-band cylinder has steep UVs around the
+  // circumference, so a mipmapped sample would pick a blurry lod in the
+  // engraving close-up even though the atlas itself is high-res.
+  canvasTexture.generateMipmaps = false;
+  canvasTexture.minFilter = THREE.LinearFilter;
+  canvasTexture.magFilter = THREE.LinearFilter;
+  canvasTexture.anisotropy = 1;
+  canvasTexture.wrapS = canvasTexture.wrapT = THREE.ClampToEdgeWrapping;
+  canvasTexture.colorSpace = THREE.SRGBColorSpace;
+  canvasTexture.needsUpdate = true;
+  return canvasTexture;
+}
 function cloneMeshes(gltf) {
   const meshes = [];
   gltf.scene.traverse((child) => {
@@ -211,10 +353,19 @@ async function loadEncryptedMeshes(url) {
 const loadShank = (shank) =>
   ensureAsset("shank", shank, () => loadEncryptedMeshes(`/3d-models/RING-SHANK/${shank}.glb`));
 
-const loadWeddingBand = (band) =>
-  ensureAsset("wedding-band", band, () =>
-    loadEncryptedMeshes(`/3d-models/WEDDING-BANDS/${band}.glb`)
-  );
+const loadWeddingBand = (band, coverage = "3_4") => {
+  const isPave = band === "PLATE-PRONG";
+  const isChannel = band === "CHANNEL";
+  const normalizedCoverage = coverage || "3_4";
+  const cacheKey = (isPave || isChannel) ? `${band}:${normalizedCoverage}` : band;
+  const path = isChannel
+    ? `/3d-models/WEDDING-BANDS/Channel-Models/${normalizedCoverage}.glb`
+    : isPave
+    ? `/3d-models/WEDDING-BANDS/Pave-Models/${normalizedCoverage}.glb`
+    : `/3d-models/WEDDING-BANDS/${band}.glb`;
+
+  return ensureAsset("wedding-band", cacheKey, () => loadEncryptedMeshes(path));
+};
 
 const loadSideSetting = (setting) =>
   ensureAsset("setting", setting, () =>
@@ -356,8 +507,12 @@ export const EngravingMesh = React.memo(function EngravingMesh({ customPosition 
   const activeShank = displayed?.ringShank || ringShank;
   const activeSideSetting = displayed?.ringSideSetting || ringSideSetting;
   const engravePos = useMemo(
-    () => customPosition || getEngravingLocalPosition(activeSideSetting, activeShank),
-    [customPosition, activeSideSetting, activeShank]
+    () => customPosition || (
+      engravingFocus
+        ? getEngravingLocalPositionForZoom(activeSideSetting, activeShank)
+        : getEngravingLocalPosition(activeSideSetting, activeShank)
+    ),
+    [customPosition, activeSideSetting, activeShank, engravingFocus]
   );
 
   useEffect(() => {
@@ -366,52 +521,8 @@ export const EngravingMesh = React.memo(function EngravingMesh({ customPosition 
       return;
     }
 
-    const canvas = document.createElement("canvas");
-    canvas.width = 1500;
-    canvas.height = 35;
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#858686";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-
-    const baseFont =
-      ENGRAVING_CANVAS_FONT_FAMILIES[engravingFont] ||
-      ENGRAVING_CANVAS_FONT_FAMILIES.Arial;
-    let fontStyle = "normal";
-    if (engravingFont === "Segoe UI") {
-      fontStyle = "italic";
-    }
-
-    const symbolFont = "'Segoe UI Symbol', 'Arial Unicode MS', Arial, sans-serif";
-    const y = canvas.height / 2 - 6;
-    const symbolRegex = /[♡☆☾∞☯♑♓♈♉♒♋♌♍♎♏♐]/;
-    const fontFor = (char) =>
-      `${fontStyle} 13px ${symbolRegex.test(char) ? symbolFont : baseFont}`;
-
-    const chars = [...engraving];
-    const widths = chars.map((char) => {
-      ctx.font = fontFor(char);
-      return ctx.measureText(char).width;
-    });
-    const totalWidth =
-      widths.reduce((a, b) => a + b, 0) +
-      ENGRAVING_LETTER_SPACING * (chars.length - 1);
-
-    let x = (canvas.width - totalWidth) / 2;
-    chars.forEach((char, i) => {
-      ctx.font = fontFor(char);
-      ctx.fillText(char, x, y);
-      x += widths[i] + ENGRAVING_LETTER_SPACING;
-    });
-
-    const canvasTexture = new THREE.CanvasTexture(canvas);
-    canvasTexture.anisotropy = 16;
-    canvasTexture.wrapS = canvasTexture.wrapT = THREE.ClampToEdgeWrapping;
-    canvasTexture.needsUpdate = true;
+    const canvasTexture = createEngravingTextTexture(engraving, engravingFont);
+    if (!canvasTexture) return;
 
     setTextTexture(canvasTexture);
 
@@ -456,7 +567,7 @@ export const EngravingMesh = React.memo(function EngravingMesh({ customPosition 
 });
 
 function Ring() {
-  const { ringColor, engraving, engravingFont, ringWidth, metalness, roughness, reflectivity, clearcoat, clearcoatRoughness, envMapIntensity, engravingFocus } = useContext(RingContext);
+  const { ringColor, engraving, engravingFont, ringWidth, bandWidth, metalness, roughness, reflectivity, clearcoat, clearcoatRoughness, envMapIntensity, engravingFocus } = useContext(RingContext);
   const { cut, clarity, diamondColorClarity } = useContext(DiamondContext);
   const { handleMetal } = useContext(SectionContext);
   const { target, displayed, reportPartReady } = useSceneStage();
@@ -479,11 +590,11 @@ function Ring() {
     if (!isStandardTarget) return undefined;
 
     let alive = true;
-    const [kind, name] = targetKey.split(":");
+    const [kind, name, coverage] = targetKey.split(":");
     const request = kind === "setting"
       ? loadSideSetting(name)
       : kind === "wedding-band"
-      ? loadWeddingBand(name)
+      ? loadWeddingBand(name, coverage)
       : loadShank(name);
 
     request
@@ -646,8 +757,10 @@ function Ring() {
   const commitId = displayed.commitId;
 
   const engravePos = useMemo(
-    () => getEngravingLocalPosition(displayedSideSetting, displayedShank),
-    [displayedSideSetting, displayedShank]
+    () => engravingFocus
+      ? getEngravingLocalPositionForZoom(displayedSideSetting, displayedShank)
+      : getEngravingLocalPosition(displayedSideSetting, displayedShank),
+    [displayedSideSetting, displayedShank, engravingFocus]
   );
 
   // Engraving texture
@@ -657,54 +770,8 @@ function Ring() {
       return;
     }
 
-    const canvas = document.createElement("canvas");
-    canvas.width = 1500;
-    canvas.height = 35;
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#858686";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-
-    const baseFont =
-      ENGRAVING_CANVAS_FONT_FAMILIES[engravingFont] ||
-      ENGRAVING_CANVAS_FONT_FAMILIES.Arial;
-    var fontStyle = "normal";
-    if (engravingFont === "Segoe UI") {
-      fontStyle = "italic";
-    }
-
-    const symbolFont = "'Segoe UI Symbol', 'Arial Unicode MS', Arial, sans-serif";
-    const y = canvas.height / 2 - 6;
-    const symbolRegex = /[♡☆☾∞☯♑♓♈♉♒♋♌♍♎♏♐]/;
-    const fontFor = (char) =>
-      `${fontStyle} 13px ${symbolRegex.test(char) ? symbolFont : baseFont}`;
-
-    // Measure every character first (spacing must be included before we
-    // can center the whole string).
-    const chars = [...engraving];
-    const widths = chars.map((char) => {
-      ctx.font = fontFor(char);
-      return ctx.measureText(char).width;
-    });
-    const totalWidth =
-      widths.reduce((a, b) => a + b, 0) +
-      ENGRAVING_LETTER_SPACING * (chars.length - 1);
-
-    let x = (canvas.width - totalWidth) / 2;
-    chars.forEach((char, i) => {
-      ctx.font = fontFor(char);
-      ctx.fillText(char, x, y);
-      x += widths[i] + ENGRAVING_LETTER_SPACING;
-    });
-
-    const canvasTexture = new THREE.CanvasTexture(canvas);
-    canvasTexture.anisotropy = 16;
-    canvasTexture.wrapS = canvasTexture.wrapT = THREE.ClampToEdgeWrapping;
-    canvasTexture.needsUpdate = true;
+    const canvasTexture = createEngravingTextTexture(engraving, engravingFont);
+    if (!canvasTexture) return;
 
     setTextTexture(canvasTexture);
 
@@ -726,14 +793,25 @@ function Ring() {
   const renderRingModels = useMemo(() => {
     if (displayedLayer !== "shank") return null;
 
+    const displayedCoverage = displayed.weddingBandCoverage || "3_4";
+    const weddingBandKey = isWeddingBandModel
+      ? (displayedShank === "CHANNEL" || displayedShank === "PLATE-PRONG")
+        ? `${displayedShank}:${displayedCoverage}`
+        : displayedShank
+      : displayedShank;
+
     const models = getCachedAsset(
       isWeddingBandModel ? "wedding-band" : "shank",
-      displayedShank
+      weddingBandKey
     );
     if (!models) return null;
 
     const width = ringWidth / 10;
     const scale = [RING_SCALE[0], RING_SCALE[1], 0.40 + Number(width)];
+    const widthScale = BAND_WIDTH_SCALABLE_SHANKS.has(displayedShank)
+      ? getBandWidthScale(displayedShank, bandWidth)
+      : 1;
+    const scaleForBandWidth = (baseScale) => [baseScale[0], baseScale[1], baseScale[2] * widthScale];
 
     let activePosition = displayedShank === "PLAIN" ? [0, 0.75, 0] : displayedShank === "SPLIT" ? [0, 0.65, 0] : [0, 0.4, 0];
     if (displayedShank === "CATHEDRAL") {
@@ -756,19 +834,28 @@ function Ring() {
       // from this shank's own GLB bounding box (local max Y ~=7.63) that's
       // ~0.50, so the old 1.0 needs to become ~1.5 to keep the same
       // head-junction height as before the scale changed.
-      activePosition = [0, 1.5, 0];
+      activePosition = [0, 1.3, 0];
     } else if (displayedShank === "TWISTED-2") {
       // Re-tuned for the same reason as CATHEDRAL-SIDE-STONE/whole-round
       // shanks above: extending the SETTING_SCALE fix to this shank (was
       // `scale`) drops its world-space top edge by localTopY * (0.40 -
       // 0.335); measured localTopY ~=6.82 -> drop ~=0.44, so 0.85 -> ~1.29.
-      activePosition = [0, 1.29, 0];
+      activePosition = [0, 1.34, 0];
     } else if (displayedShank === "FLUTED") {
       // Same correction, this shank's own localTopY ~=6.86 -> drop ~=0.45.
-      activePosition = [0, 1.30, 0];
+      activePosition = [0, 1.34, 0];
+    } else if (displayedShank === "TWISTED") {
+      // Adjust position for TWISTED shank: [X, Y, Z]
+      // Increase Y to move the shank UP, decrease Y to move the shank DOWN.
+      activePosition = [0, 1.45, 0];
     } else if (displayedShank === "BRAIDED") {
-      // Same correction, this shank's own localTopY ~=6.28 -> drop ~=0.41.
       activePosition = [0, 1.3, 0];
+    } else if (displayedShank === "PEAR-SIDE-STONE" || displayedShank === "PEAR") {
+      activePosition = [0, 1.25, 0];
+    } else if (displayedShank === "BAGUETTE-SIDE-STONE" || displayedShank === "BAGUETTE") {
+      activePosition = [0, 1.2, 0];
+    } else if (displayedShank === "HALF-MOON-SIDE-STONE") {
+      activePosition = [0, 1.25, 0];
     } else if (NEW_DEFAULT_SHANKS.has(displayedShank)) {
       // Re-tuned after the BUG #3 scale fix for the same reason as
       // CATHEDRAL-SIDE-STONE above: these 7 "whole round" shanks
@@ -778,7 +865,7 @@ function Ring() {
       // all of them - old 1.0 becomes ~1.41. CHANNEL/PLATE-PRONG also land
       // here now (see NEW_DEFAULT_SHANKS comment above) since their new
       // geometry is literally CHANNEL-2/PLATE-PRONG-2's own model.
-      activePosition = [0, 1.2, 0];
+      activePosition = [0, 1.25, 0];
     }
 
     return models.map((mesh, i) => {
@@ -808,13 +895,18 @@ function Ring() {
         // longer grow/shrink with the ringWidth slider (every other gem-
         // bearing shank in the app already ignores it too).
         showDiamond = SETTING_SCALE;
-        isDiamond = Boolean(mesh.material?.name?.toLowerCase().startsWith("gem"));
+        isDiamond = Boolean(
+          mesh.material?.name?.toLowerCase().startsWith("gem") ||
+          mesh.material?.name?.toLowerCase().startsWith("shank_") ||
+          mesh.material?.name?.toLowerCase().includes("baguette") ||
+          mesh.material?.name?.toLowerCase().includes("pear")
+        );
       }
 
       // Keep wedding Pave/Channel mesh transforms identical to MatchingBand.
       // Their stone meshes are authored at a smaller scale than the band;
       // applying the shank scale makes the stones appear to float outside it.
-      const meshScale = isWeddingBandModel
+      const baseMeshScale = isWeddingBandModel
         ? isPlainMesh
           ? RING_SCALE
           : mesh.name === "metal002"
@@ -825,10 +917,11 @@ function Ring() {
         : mesh.name === "metal002"
         ? [0.33, 0.33, 0.33]
         : showDiamond;
+      const meshScale = scaleForBandWidth(baseMeshScale);
 
       return (
         <FadeMeshRing
-          key={`ring_${displayedShank}_${i}_${ringWidth}`}
+          key={`ring_${displayedShank}_${displayedCoverage}_${i}_${ringWidth}_${bandWidth}`}
           geometry={mesh.geometry}
           position={activePosition}
           rotation={DEFAULT_ROTATION}
@@ -841,7 +934,7 @@ function Ring() {
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayedLayer, displayedShank, isWeddingBandModel, commitId, ringMaterialProps, ringColor, ringWidth, diamondMaterialProps]);
+  }, [displayedLayer, displayedShank, displayed.weddingBandCoverage, isWeddingBandModel, commitId, ringMaterialProps, ringColor, ringWidth, bandWidth, diamondMaterialProps]);
 
   const renderSettingModels = useMemo(() => {
     if (displayedLayer !== "setting") return null;

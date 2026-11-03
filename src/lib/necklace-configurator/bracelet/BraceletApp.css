@@ -2703,6 +2703,7 @@ button:focus{
             display: flex;
     justify-content: center;
     align-items: center;
+    display: none !important;
 }
 .arrow-icon {
   font-size: 20px;

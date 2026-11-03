@@ -4,6 +4,7 @@
       "4-PRONG",
       "6-PRONG",
       "HIDDEN-HALO",
+      "HIDDEN-HALO-2",
       "SINGLE-HALO",
       "DOUBLE-HALO",
       "BEZEL"
@@ -25,7 +26,10 @@
       "FLUTED",
       "BRAIDED",
       "CATHEDRAL-SIDE-STONE",
-      "SIDE-BEZEL-STONES"
+      "SIDE-BEZEL-STONES",
+      "BAGUETTE-SIDE-STONE",
+      "PEAR-SIDE-STONE",
+      "HALF-MOON-SIDE-STONE"
     ],
     "sideSetting": [
       "PLAIN",

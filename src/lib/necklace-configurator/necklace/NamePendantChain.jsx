@@ -156,7 +156,7 @@ const getNamePendantCharmPlacement = ({ pendantText, pendantFontStyle }) => {
 };
 
 // ─── BoundsMeasurer ───────────────────────────────────────────────────────────
-const BoundsMeasurer = ({ targetRef, onMeasured, deps }) => {
+const BoundsMeasurer = ({ targetRef, onMeasured, deps, measurementKey }) => {
   const stableCount = useRef(0);
   const lastBox     = useRef(null);
   const reported    = useRef(false);
@@ -170,7 +170,15 @@ const BoundsMeasurer = ({ targetRef, onMeasured, deps }) => {
   useFrame(() => {
     if (reported.current || !targetRef.current) return;
     targetRef.current.updateWorldMatrix(true, true);
-    const box = new THREE.Box3().setFromObject(targetRef.current);
+    const box = new THREE.Box3();
+    targetRef.current.traverse((child) => {
+      // Do not settle on the old mesh while the newly selected font is still
+      // loading behind Suspense. The matching key is set only by the ready
+      // KernedText3D mesh.
+      if (child.isMesh && child.userData.fontMeasurementKey === measurementKey) {
+        box.expandByObject(child);
+      }
+    });
     if (box.isEmpty()) return;
     const prev   = lastBox.current;
     const stable =
@@ -451,6 +459,7 @@ const NamePendant = ({
   const [inkBounds, setInkBounds] = useState(null);
 
   const fontUrl    = NAME_FONT_URLS[pendant.fontStyle] || NAME_FONT_URLS.dancing;
+  const measurementKey = `${cleanText}|${pendant.fontStyle || 'dancing'}|${pendant.size || ''}`;
   const sizeConfig = NAME_SIZE_CONFIG;
   const appliedSpacing = NAME_FONT_LETTER_SPACING[pendant.fontStyle] ?? DEFAULT_LETTER_SPACING;
 
@@ -501,8 +510,6 @@ const NamePendant = ({
   const FIXED_Y   = positionY ?? placement?.y        ?? -1.2;
   const FIXED_Z   = positionZ ?? placement?.z        ?? 0.08;
   const rotation  = placement?.rotation ?? [0, 0, 0];
-  const depArray  = [cleanText, pendant.fontStyle, pendant.size, pendantScale];
-
   // ── LEFT washer position ───────────────────────────────────────────────────
   // X: base left edge + sizeConfig offset + per-first-char leftWasherX nudge
   // Z (Y in UI): base loopZ + per-first-char leftWasherY nudge
@@ -574,6 +581,7 @@ const NamePendant = ({
         <group ref={textRef} position={[textOffsetX, 0, 0]}>
           <Suspense fallback={null}>
             <KernedText3D
+              measurementKey={measurementKey}
               font={fontUrl}
               size={sizeConfig.size}
               height={sizeConfig.height}
@@ -614,14 +622,16 @@ const NamePendant = ({
       <BoundsMeasurer
         targetRef={textRef}
         onMeasured={handleMeasured}
-        deps={depArray}
+        deps={[measurementKey, pendantScale]}
+        measurementKey={measurementKey}
       />
       {inkWashers && (
         <TextBoundsProbe
           targetRef={textRef}
           onMeasured={setInkBounds}
           band={sizeConfig.size * INK_WASHER_BAND_RATIO}
-          deps={[cleanText, pendant.fontStyle]}
+          deps={[measurementKey]}
+          measurementKey={measurementKey}
         />
       )}
     </>
